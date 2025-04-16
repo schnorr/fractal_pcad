@@ -1,0 +1,11 @@
+* Fractal @ PCAD
+
+We'll keep here our efforts for the "UFRGS Portas Abertas". Our idea
+is to run an enourmous fractal in an interactive manner for our
+visitors at the Informatics Institute data center.
+
+People involved:
+- Prof. Lucas Mello Schnorr (@schnorr)
+- Rayan Raddatz de Matos (@rddtz)
+
+If you want to get yourself involved, get in touch quickly. ;-)
