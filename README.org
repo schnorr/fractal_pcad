@@ -7,6 +7,5 @@ visitors at the Informatics Institute data center.
 People involved:
 - Prof. Lucas Mello Schnorr (@schnorr)
 - Rayan Raddatz de Matos (@rddtz)
-- Francisco Pegoraro Etcheverria (@thedoubleace)
 
 If you want to get yourself involved, get in touch quickly. ;-)
