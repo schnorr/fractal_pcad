@@ -160,6 +160,8 @@ int main(int argc, char* argv[])
   pthread_create(&payload_thread, NULL, net_thread_send_payload, &connection);
   pthread_create(&response_thread, NULL, net_thread_receive_response, &connection);
 
+  /* raylib program goes here */
+
   pthread_join(ui_thread, NULL);
   pthread_join(render_thread, NULL);
   pthread_join(payload_thread, NULL);
