@@ -153,7 +153,10 @@ int main(int argc, char* argv[])
 
   int connection = open_connection(argv[1], atoi(argv[2]));
 
-  pthread_t ui_thread, render_thread, payload_thread, response_thread;
+  pthread_t ui_thread = 0;
+  pthread_t render_thread = 0;
+  pthread_t payload_thread = 0;
+  pthread_t response_thread = 0;
 
   pthread_create(&ui_thread, NULL, ui_thread_function, NULL);
   pthread_create(&render_thread, NULL, render_thread_function, NULL);
