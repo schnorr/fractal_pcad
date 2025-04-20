@@ -118,6 +118,14 @@ void *ui_thread_function () {
   pthread_exit(NULL);
 }
 
+/*
+  render_thread_function: this function is responsible for
+  drawing the responses in the raylib canvas, so it probably
+  must be initilized with access to the raylib canvas. The
+  function queue_dequeue blocks until a new response is obtained
+  so we must be very reactive. As soon as it receives a new
+  response, the drawing must be fast.
+*/
 void *render_thread_function () {
   // This action is guided by the responses from the coordinator
 
@@ -144,6 +152,10 @@ void *render_thread_function () {
   pthread_exit(NULL);
 }
 
+/*
+  net_thread_send_payload: this function is responsible for
+  sending the payload to the coordinator.
+*/
 void *net_thread_send_payload (void *arg)
 {
   int connection = *(int *)arg;
@@ -164,6 +176,16 @@ void *net_thread_send_payload (void *arg)
   pthread_exit(NULL);
 }
 
+/*
+  net_thread_receive_response: this function is responsible for
+  receiving response. As the responses can be numerous (thousands), it
+  is important to receive them as soon as possible. Algorithm: 1/ we
+  receive the response size (sent by the coordinator); 2/ we mallocate
+  the space needed to receive the response; 3/ we receive the actual data
+  with the recv_all function; 4/ we deserialize the function with the
+  response_deserialize function; 5/ and then we enqueue this function
+  so the render_thread can do its work.
+*/
 void *net_thread_receive_response (void *arg)
 {
   int connection = *(int *)arg;
