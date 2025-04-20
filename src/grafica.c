@@ -48,10 +48,12 @@ void *ui_thread_function () {
     payload->screen_width = rand() % 1000;
     payload->screen_height = rand() % 1000;
 
-    printf("Enqueueing payload: [%d, %d, %d, (%lf, %lf), (%lf, %lf), %d, %d]\n",
-           payload->generation, payload->granularity, payload->fractal_depth, 
-           payload->ll.x, payload->ll.y, payload->ur.x, payload->ur.y, 
-           payload->screen_width, payload->screen_height);
+    printf("%s: Enqueueing payload (%d).\n", __func__, payload->generation);
+           /* : [%d, %d, (%lf, %lf), (%lf, %lf), %d, %d]\n", */
+	   /* __func__, */
+           /* payload->generation, payload->granularity, payload->fractal_depth,  */
+           /* payload->ll.x, payload->ll.y, payload->ur.x, payload->ur.y,  */
+           /* payload->screen_width, payload->screen_height); */
 
     queue_enqueue(&payload_queue, payload);
     payload = NULL;
