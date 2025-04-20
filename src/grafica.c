@@ -54,11 +54,12 @@ void *ui_thread_function () {
   Vector2 first_click = {0, 0};
   Vector2 second_click = {0, 0};
 
-  bool interaction = false; // Start was true to send the first payload
+  bool interaction = false; 
   bool initial = true;
   
   while(true) {
-    if(initial && IsWindowReady()){ // If window is ready, send the first payload
+    
+    if(initial && IsWindowReady()){ // If window is ready, send a intial payload
       screen_width = (double)GetMonitorWidth(GetCurrentMonitor());
       screen_height = (double)GetMonitorHeight(GetCurrentMonitor());
 
