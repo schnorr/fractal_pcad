@@ -35,8 +35,7 @@ static queue_t response_queue = {0};
 // Main thread manages the window and user interaction
 
 /*
-  ui_thread_function: this function is a placeholder
-  to simulate user interaction. Every time a user selects
+  ui_thread_function: Every time a user selects
   a new area to compute, a payload must be created with a
   new generation. This payload must then be queued in the
   payload_queue using the queue_enqueue function.
