@@ -4,6 +4,10 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#define bool int
+#define true 1
+#define false 0
+
 /* a fractal coordinate */
 typedef struct {
   float x;
