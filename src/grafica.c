@@ -1,8 +1,8 @@
 #include "fractal.h"
 #include "connection.h"
 #include "queue.h"
-#include "raylib"
 
+#include <raylib.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -189,6 +189,23 @@ int main(int argc, char* argv[])
 
   /* raylib program goes here */
 
+  int screen_width = GetScreenWidth();
+  int screen_height = GetScreenHeight();
+  
+  InitWindow(screen_width, screen_height, "Fractal @ PCAD");
+  SetTargetFPS(60);            
+  while (!WindowShouldClose()) {
+
+    BeginDrawing();
+
+    ClearBackground(RAYWHITE);
+    
+    DrawText("Congrats! You created your first window!", 190, 200, 20, LIGHTGRAY);
+	    
+    EndDrawing();
+  
+  }
+  
   pthread_join(ui_thread, NULL);
   pthread_join(render_thread, NULL);
   pthread_join(payload_thread, NULL);
