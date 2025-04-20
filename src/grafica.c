@@ -15,8 +15,8 @@
 
 #define MAX_QUEUE_SIZE 100 // Should probably be much higher
 
-static queue_t payload_queue;
-static queue_t response_queue;
+static queue_t payload_queue = {0};
+static queue_t response_queue = {0};
 
 // Currently sending random packets then ending threads.
 
