@@ -22,6 +22,7 @@ static queue_t response_queue;
 
 // Main thread manages the window and user interaction
 void *ui_thread_function () {
+  static int generation = 0;
   //This action is guided by the user
 
   // Placeholder: Currently simulating user input with random payloads every 5-10 seconds
@@ -36,7 +37,7 @@ void *ui_thread_function () {
       pthread_exit(NULL);
     }
 
-    payload->generation = rand() % 100;
+    payload->generation = generation++;
     payload->granularity = rand() % 100;
     payload->fractal_depth = rand() % 100;
     payload->ll.x = (float)(rand() % 100) / 100.0f;
