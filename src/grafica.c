@@ -43,40 +43,76 @@ static queue_t response_queue = {0};
 */
 void *ui_thread_function () {
   static int generation = 0;
+
   //This action is guided by the user
 
   // Placeholder: Currently simulating user input with random payloads every 5-10 seconds
   // Input handling function would be here instead
-  while(1) {
-    int wait_seconds = (rand() % 6) + 5;
-    sleep(wait_seconds);
 
-    // User interaction creates a new payload
-    payload_t *payload = malloc(sizeof(payload_t));
-    if (payload == NULL) {
-      perror("malloc failed.\n");
-      pthread_exit(NULL);
+  double screen_width = 0.0f;
+  double screen_height = 0.0f;
+  
+  Vector2 first_click = {0, 0};
+  Vector2 second_click = {0, 0};
+
+  bool interaction = false; // Start was true to send the first payload
+  bool initial = true;
+  
+  while(true) {
+    if(initial && IsWindowReady()){ // If window is ready, send the first payload
+      screen_width = (double)GetMonitorWidth(GetCurrentMonitor());
+      screen_height = (double)GetMonitorHeight(GetCurrentMonitor());
+
+      second_click.x = screen_width;
+      second_click.y = screen_height;
+
+      initial = false;
+      interaction = true;
+    }
+    
+    if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ 
+      first_click.x = GetMouseX();
+      first_click.y = GetMouseY();
     }
 
-    payload->generation = generation++;
-    payload->granularity = rand() % 100;
-    payload->fractal_depth = rand() % 100;
-    payload->ll.x = (float)(rand() % 100) / 100.0f;
-    payload->ll.y = (float)(rand() % 100) / 100.0f;
-    payload->ur.x = (float)(rand() % 100) / 100.0f;
-    payload->ur.y = (float)(rand() % 100) / 100.0f;
-    payload->screen_width = rand() % 1000;
-    payload->screen_height = rand() % 1000;
+    if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT) // User interaction creates a new payload
+	&& GetMouseX() != first_click.x){ // If mouse has moved from last click
+     
+      second_click.x = GetMouseX();
+      second_click.y = GetMouseY();
+      interaction = true;
+    }
 
-    printf("%s: Enqueueing payload (%d).\n", __func__, payload->generation);
-           /* : [%d, %d, (%lf, %lf), (%lf, %lf), %d, %d]\n", */
-	   /* __func__, */
-           /* payload->generation, payload->granularity, payload->fractal_depth,  */
-           /* payload->ll.x, payload->ll.y, payload->ur.x, payload->ur.y,  */
-           /* payload->screen_width, payload->screen_height); */
+    if(interaction == true){
+      interaction = false;
+      
+      payload_t *payload = malloc(sizeof(payload_t));
+      if (payload == NULL) {
+	perror("malloc failed.\n");
+	pthread_exit(NULL);
+      }
 
-    queue_enqueue(&payload_queue, payload);
-    payload = NULL;
+      payload->generation = generation++;
+      payload->granularity = 10; // placeholder values
+      payload->fractal_depth = 255; // <-/
+      payload->ll.x = (float) min(first_click.x, second_click.x); 
+      payload->ll.y = (float) max(first_click.y, second_click.y); // in Raylib, origin (0, 0) is in the upper-right corner
+      payload->ur.x = (float) max(first_click.x, second_click.x);
+      payload->ur.y = (float) min(first_click.y, second_click.y);
+      payload->screen_width = screen_width;
+      payload->screen_height = screen_height;
+
+      printf("%s: Enqueueing payload (%d).\n", __func__, payload->generation);
+      /* : [%d, %d, (%lf, %lf), (%lf, %lf), %d, %d]\n", */
+      /* __func__, */
+      /* payload->generation, payload->granularity, payload->fractal_depth,  */
+      /* payload->ll.x, payload->ll.y, payload->ur.x, payload->ur.y,  */
+      /* payload->screen_width, payload->screen_height); */
+
+      queue_enqueue(&payload_queue, payload);
+      payload = NULL;
+      sleep(1); // to send just one payload per interaction
+    }
   }
 
   pthread_exit(NULL);
@@ -87,7 +123,7 @@ void *render_thread_function () {
 
   // Placeholder: Currently printing random values that come from coordinator
   // Rendering function that takes response would be here instead
-  while(1) {
+  while(true) {
     response_t *response = (response_t *)queue_dequeue(&response_queue);
 
     printf("Dequeued response: [%d, %d, %d, %d, (%d, %d)]\n",
@@ -189,19 +225,22 @@ int main(int argc, char* argv[])
 
   /* raylib program goes here */
 
-  int screen_width = GetScreenWidth();
-  int screen_height = GetScreenHeight();
+  int screen_width = GetMonitorWidth(GetCurrentMonitor());
+  int screen_height = GetMonitorHeight(GetCurrentMonitor());
   
   InitWindow(screen_width, screen_height, "Fractal @ PCAD");
-  SetTargetFPS(60);            
-  while (!WindowShouldClose()) {
+  SetTargetFPS(60);
 
+  ToggleFullscreen();
+  while (!WindowShouldClose()) {
+    
     BeginDrawing();
 
     ClearBackground(RAYWHITE);
+
+    DrawText(TextFormat("screen size: %d, %d\n", GetMonitorWidth(GetCurrentMonitor()), GetMonitorHeight(GetCurrentMonitor())), 0, 0, 32, BLACK);
+    DrawText(TextFormat("screen size: %d, %d\n", GetScreenWidth(), GetScreenHeight()), 0, 100, 32, BLACK);
     
-    DrawText("Congrats! You created your first window!", 190, 200, 20, LIGHTGRAY);
-	    
     EndDrawing();
   
   }
