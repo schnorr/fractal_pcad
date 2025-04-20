@@ -166,11 +166,10 @@ void *net_thread_send_payload (void *arg)
       perror("Send failed. Killing thread...\n");
       free(payload);
       pthread_exit(NULL);
+    }else{
+      printf("(%d) %s: payload sent.\n", payload->generation, __func__);
+      free(payload);
     }
-
-    printf("Sent payload.\n");
-
-    free(payload);
   }
 
   pthread_exit(NULL);
@@ -211,11 +210,11 @@ void *net_thread_receive_response (void *arg)
       pthread_exit(NULL);
     }
 
-    printf("Received response.\n");
-    
     response_t *response = response_deserialize(&buffer);
     free(buffer); 
     buffer = NULL;
+
+    printf("(%d) %s: received response.\n", response->generation, __func__);
 
     queue_enqueue(&response_queue, response);
     response = NULL; // Transferred ownership to queue
