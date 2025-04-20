@@ -31,6 +31,7 @@ void *ui_thread_function () {
     int wait_seconds = (rand() % 6) + 5;
     sleep(wait_seconds);
 
+    // User interaction creates a new payload
     payload_t *payload = malloc(sizeof(payload_t));
     if (payload == NULL) {
       perror("malloc failed.\n");
