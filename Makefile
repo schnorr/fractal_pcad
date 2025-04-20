@@ -19,7 +19,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 
 grafica: $(filter-out $(COORDINATOR_OBJ), $(OBJS))
 	@mkdir -p $(BIN_DIR)
-	$(CC) $(CFLAGS) -o $(BIN_DIR)/grafica $^
+	$(CC) $(CFLAGS) -o $(BIN_DIR)/grafica $^ -lraylib -lm
 
 coordinator: $(filter-out $(GRAFICA_OBJ), $(OBJS))
 	@mkdir -p $(BIN_DIR)
