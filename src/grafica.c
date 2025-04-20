@@ -1,6 +1,7 @@
 #include "fractal.h"
 #include "connection.h"
 #include "queue.h"
+#include "raylib"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,6 +13,17 @@
 #include <pthread.h>
 #include <netdb.h> 
 #include <sys/types.h>
+
+
+#define max(a,b)				\
+({ __typeof__ (a) _a = (a);			\
+__typeof__ (b) _b = (b);			\
+_a > _b ? _a : _b; })
+
+#define min(a,b)				\
+({ __typeof__ (a) _a = (a);			\
+__typeof__ (b) _b = (b);			\
+_a < _b ? _a : _b; })
 
 #define MAX_QUEUE_SIZE 100 // Should probably be much higher
 
