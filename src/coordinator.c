@@ -204,7 +204,10 @@ int main(int argc, char* argv[])
   pthread_mutex_init(&newest_payload_mutex, NULL);
   pthread_cond_init(&new_payload, NULL);
   
-  pthread_t main_thread, compute_thread, payload_receive_thread, response_send_thread;
+  pthread_t main_thread = 0;
+  pthread_t compute_thread = 0;
+  pthread_t payload_receive_thread = 0;
+  pthread_t response_send_thread = 0;
 
   pthread_create(&main_thread, NULL, main_thread_function, NULL);
   pthread_create(&compute_thread, NULL, compute_create_blocks, NULL);
