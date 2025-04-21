@@ -106,6 +106,7 @@ void *main_thread_function()
 
     // Placeholder: Gets payload and generates random response after 5-10 secs delay
     payload_t *payload = (payload_t *)queue_dequeue(&payload_to_workers_queue);
+    int generation = payload->generation;
     free(payload); // simply free payload
     payload = NULL;
 
@@ -122,7 +123,7 @@ void *main_thread_function()
     }
 
     // random vals
-    response->generation = rand() % 100;
+    response->generation = generation;
     response->granularity = 2; // granularity 2 so that there's always 4 values
     response->ll.x = rand() % 100;
     response->ll.y = rand() % 100;
