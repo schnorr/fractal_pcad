@@ -79,10 +79,11 @@ void *compute_create_blocks()
       pthread_cond_wait(&new_payload, &newest_payload_mutex);
     }
 
+    // new payload, so clear obsolete payloads to workers
+    queue_clear(&payload_to_workers_queue);
+
     //payload consumer: get the payload, discretize in blocks
     //Call Ana Laura function
-
-    queue_clear(&payload_to_workers_queue); // new payload, so clear obsolete payloads to workers
 
     // Placeholder: simply passing along payload
     queue_enqueue(&payload_to_workers_queue, newest_payload);
