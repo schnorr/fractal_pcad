@@ -69,7 +69,11 @@ void *net_thread_receive_payload(void *arg)
 }
 
 /*
-  compute_create_blocks:
+  compute_create_blocks: after signaling, this function discretizes
+  the newest payload so we have numerous blocks to compute. The
+  "sub-blocks" will be queued in the =payload_to_workers_queue= so our
+  main thread (main_thread_function) can distribute them accordingly
+  to the workers.
 */
 void *compute_create_blocks()
 {
