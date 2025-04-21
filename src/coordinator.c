@@ -98,6 +98,9 @@ void *compute_create_blocks()
   pthread_exit(NULL);
 }
 
+/*
+  main_thread_function: distribute discretized payloads to our workers.
+*/
 void *main_thread_function()
 {
   while(1) {
