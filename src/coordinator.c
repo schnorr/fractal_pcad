@@ -49,10 +49,11 @@ void *net_thread_receive_payload(void *arg)
       pthread_exit(NULL);
     }
 
-    printf("Received payload: [%d, %d, %d, (%lf, %lf), (%lf, %lf), %d, %d]\n",
-           payload->generation, payload->granularity, payload->fractal_depth, 
-           payload->ll.x, payload->ll.y, payload->ur.x, payload->ur.y, 
-           payload->screen_width, payload->screen_height);
+    printf("(%d) %s: received payload.\n", payload->generation, __func__);
+	   /* : [%d, %d, %d, (%lf, %lf), (%lf, %lf), %d, %d]\n", */
+           /* payload->generation, payload->granularity, payload->fractal_depth,  */
+           /* payload->ll.x, payload->ll.y, payload->ur.x, payload->ur.y,  */
+           /* payload->screen_width, payload->screen_height); */
     
     pthread_mutex_lock(&newest_payload_mutex);
     // Checking if there's a previous payload that hasn't been used in compute_create_blocks yet
