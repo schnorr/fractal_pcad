@@ -23,6 +23,13 @@ static queue_t payload_to_workers_queue;
 
 static queue_t response_queue;
 
+/*
+  net_thread_receive_payload: the sole goal is to receive one payload
+  from the grafica client. Then, it updates the "newest_payload"
+  global variable to contain the latest work that should be
+  distributed to workers (once discretized). This action is carried
+  out by another thread, compute_create_blocks.
+*/
 void *net_thread_receive_payload(void *arg)
 {
   int connection = *(int *)arg;
@@ -60,6 +67,9 @@ void *net_thread_receive_payload(void *arg)
   pthread_exit(NULL);
 }
 
+/*
+  compute_create_blocks:
+*/
 void *compute_create_blocks()
 {
   while(1) {
