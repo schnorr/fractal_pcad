@@ -111,8 +111,6 @@ void *main_thread_function()
     // Placeholder: Gets payload and generates random response after 5-10 secs delay
     payload_t *payload = (payload_t *)queue_dequeue(&payload_to_workers_queue);
     int generation = payload->generation;
-    free(payload); // simply free payload
-    payload = NULL;
 
     response_t *response = malloc(sizeof(response_t));
     if (response == NULL) {
@@ -149,6 +147,9 @@ void *main_thread_function()
 
     queue_enqueue(&response_queue, response);
     response = NULL; // Transferred ownership to queue
+
+    free(payload); // simply free payload
+    payload = NULL;
   }
   //keep looking to the payload_to_workers queue
   //lock payload_to_workers
