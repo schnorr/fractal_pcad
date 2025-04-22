@@ -236,6 +236,8 @@ int main(int argc, char* argv[])
     return 1;
   }
 
+  srand(0);
+
   queue_init(&payload_queue, MAX_QUEUE_SIZE);
   queue_init(&response_queue, MAX_QUEUE_SIZE);
 
