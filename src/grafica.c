@@ -98,7 +98,7 @@ void *ui_thread_function () {
     if(interaction == true){
       interaction = false;
       
-      payload_t *payload = malloc(sizeof(payload_t));
+      payload_t *payload = calloc(1, sizeof(payload_t));
       if (payload == NULL) {
 	perror("malloc failed.\n");
 	pthread_exit(NULL);
