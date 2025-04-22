@@ -66,14 +66,15 @@ payload_t **discretize_payload (payload_t *origin, int *length)
   payload_t **ret = (payload_t**)calloc(*length, sizeof(payload_t*));
   int i, j, p = 0;
   for (i = 0; i < amount_x; i++){
-    fractal_coord_t fractal_current = origin->ll;
-    fractal_current.real += real_step * i;
 
-    screen_coord_t screen_current = origin->s_ll;
-    screen_current.x += x_step * i;
 
     for (j = 0; j < amount_y; j++){
+      fractal_coord_t fractal_current = origin->ll;
+      fractal_current.real += real_step * i;
       fractal_current.imag += imag_step * j;
+
+      screen_coord_t screen_current = origin->s_ll;
+      screen_current.x += x_step * i;
       screen_current.y += y_step * j;
 
       ret[p] = (payload_t*) calloc(1, sizeof(payload_t));
