@@ -42,16 +42,17 @@ void *ui_thread_function () {
     }
 
     payload->generation = generation++;
-    payload->granularity = 300;
+    payload->granularity = 10;
     payload->ll.real = -2.0;
     payload->ll.imag = -1.5;
     payload->ur.real =  2.0;
     payload->ur.imag =  1.5;
+    payload->fractal_depth = 2048*2;
 
     payload->s_ll.x = 0;
     payload->s_ll.y = 0;
-    payload->s_ur.x = 1200;
-    payload->s_ur.y = 600;
+    payload->s_ur.x = 1920;
+    payload->s_ur.y = 1080;
 
 #ifdef PAYLOAD_DEBUG
     payload_print(__func__, "enqueueing payload", payload);
