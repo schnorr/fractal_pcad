@@ -39,28 +39,22 @@ void *ui_thread_function () {
     int wait_seconds = (rand() % 6) + 5;
 
     // User interaction creates a new payload
-    payload_t *payload = malloc(sizeof(payload_t));
+    payload_t *payload = calloc(1, sizeof(payload_t));
     if (payload == NULL) {
       perror("malloc failed.\n");
       pthread_exit(NULL);
     }
 
     payload->generation = generation++;
-    payload->granularity = rand() % 100;
-    payload->fractal_depth = rand() % 100;
-    payload->ll.x = (float)(rand() % 100) / 100.0f;
-    payload->ll.y = (float)(rand() % 100) / 100.0f;
-    payload->ur.x = (float)(rand() % 100) / 100.0f;
-    payload->ur.y = (float)(rand() % 100) / 100.0f;
-    payload->screen_width = rand() % 1000;
-    payload->screen_height = rand() % 1000;
+    payload->granularity = 10;
+    payload->screen_width = 1920;
+    payload->screen_height = 1080;
 
-    printf("%s: Enqueueing payload (%d).\n", __func__, payload->generation);
-           /* : [%d, %d, (%lf, %lf), (%lf, %lf), %d, %d]\n", */
-	   /* __func__, */
-           /* payload->generation, payload->granularity, payload->fractal_depth,  */
-           /* payload->ll.x, payload->ll.y, payload->ur.x, payload->ur.y,  */
-           /* payload->screen_width, payload->screen_height); */
+    printf("(%d) %s: Enqueueing payload.\n", payload->generation, __func__);
+    printf("\t [%d, %d, (%lf, %lf), (%lf, %lf), %d, %d]\n",
+	   payload->granularity, payload->fractal_depth,
+	   payload->ll.x, payload->ll.y, payload->ur.x, payload->ur.y,
+	   payload->screen_width, payload->screen_height);
 
     queue_enqueue(&payload_queue, payload);
     payload = NULL;
@@ -81,13 +75,7 @@ void *render_thread_function () {
     printf("Dequeued response: [%d, %d, %d, %d, (%d, %d)]\n",
            response->generation, response->granularity, response->worker_id,
            response->max_worker_id, response->ll.x, response->ll.y);
-
-    printf("Values:" );
-    for (int i = 0; i < response->granularity * response->granularity; i++) {
-      printf(" %d", response->values[i]);
-    }
-    printf("\n");
-    
+   
     // Freeing response after using it
     free(response->values);
     free(response);
@@ -141,8 +129,6 @@ void *net_thread_receive_response (void *arg)
       pthread_exit(NULL);
     }
 
-    printf("Received response.\n");
-    
     response_t *response = response_deserialize(&buffer);
     free(buffer); 
     buffer = NULL;
