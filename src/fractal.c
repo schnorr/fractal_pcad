@@ -47,22 +47,51 @@ payload_t **discretize_payload (payload_t *origin, int *length)
   if (!origin || !length){
     return NULL;
   }
-  int amount_x = (origin->screen.width  + origin->granularity-1) / origin->granularity;
-  int amount_y = (origin->screen.height + origin->granularity-1) / origin->granularity;
+  int screen_width = origin->s_ur.x - origin->s_ll.x;
+  int screen_height = origin->s_ur.y - origin->s_ll.y;
+
+  int amount_x = (screen_width  + origin->granularity-1) / origin->granularity;
+  int amount_y = (screen_height + origin->granularity-1) / origin->granularity;
+  // This is the number of squared blocks we need to create
   *length = amount_x * amount_y;
+
+  /* Define the fractal space we need to cover */
+  double real_step = (origin->ur.real - origin->ll.real) / amount_x;
+  double imag_step = (origin->ur.imag - origin->ll.imag) / amount_y;
+
+  /* Define the (corresponding) screen space we need to cover */
+  int x_step = screen_width / amount_x;
+  int y_step = screen_height / amount_y;
 
   payload_t **ret = (payload_t**)calloc(*length, sizeof(payload_t*));
   int i, j, p = 0;
   for (i = 0; i < amount_x; i++){
+    fractal_coord_t fractal_current = origin->ll;
+    fractal_current.real += real_step * i;
+
+    screen_coord_t screen_current = origin->s_ll;
+    screen_current.x += x_step * i;
+
     for (j = 0; j < amount_y; j++){
+      fractal_current.imag += imag_step * j;
+      screen_current.y += y_step * j;
+
       ret[p] = (payload_t*) calloc(1, sizeof(payload_t));
       ret[p]->generation = origin->generation;
       ret[p]->granularity = origin->granularity;
       ret[p]->fractal_depth = origin->fractal_depth;
-      ret[p]->ll = origin->ll; // TODO
-      ret[p]->ur = origin->ur; // TODO
-      ret[p]->screen.width = origin->granularity;
-      ret[p]->screen.height = origin->granularity;
+
+      ret[p]->ll = fractal_current;
+      ret[p]->ur = fractal_current;
+      ret[p]->ur.real += real_step;
+      ret[p]->ur.imag += imag_step;
+
+      ret[p]->s_ll = screen_current;
+      ret[p]->s_ur = screen_current;
+      ret[p]->s_ur.x += x_step;
+      ret[p]->s_ur.y += y_step;
+
+      payload_print(__func__, "discretized payload", ret[p]);
 
       //next discretized payload
       p++;
