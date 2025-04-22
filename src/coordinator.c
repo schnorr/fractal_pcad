@@ -6,9 +6,11 @@
 #include <sys/socket.h>   
 #include <netinet/in.h>
 #include <pthread.h>
+#include <mpi.h>
 #include "fractal.h"
 #include "connection.h"
 #include "queue.h"
+#include "mpi_comm.h"
 
 #define MAX_QUEUE_SIZE 100 // Should probably be much higher
 
@@ -117,11 +119,30 @@ void *main_thread_function()
 
     // Get the payload (the queue-dequeue blocks this thread)
     payload_t *payload = (payload_t *)queue_dequeue(&payload_to_workers_queue);
-    payload_t p = *payload; // full copy
+
+    // after getting a payload to do, check which worker is available
+    int worker;
+    MPI_Recv(&worker, 1, MPI_INT,
+	     MPI_ANY_SOURCE, // receive request from any worker
+	     FRACTAL_MPI_PAYLOAD_REQUEST,
+	     MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
+    // send the work to this worker
+    mpi_payload_send (payload, worker);
+
+    // free the payload
     free(payload);
     payload = NULL;
 
-    response_t *response = create_response_for_payload (&p);
+    // verify who wants to send us a response
+    MPI_Recv(&worker, 1, MPI_INT,
+	     MPI_ANY_SOURCE, // receive request from any worker
+	     FRACTAL_MPI_RESPONSE_REQUEST,
+	     MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
+    // receive response from this worker
+    response_t *response = mpi_response_receive (worker);
+
 #ifdef RESPONSE_DEBUG
     response_print(__func__, "Enqueueing response", response);
 #endif
@@ -188,12 +209,18 @@ void *net_thread_send_response(void *arg)
   pthread_exit(NULL);
 }
 
-int main(int argc, char* argv[])
+int main_coordinator(int argc, char* argv[])
 {
+  int rank;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  int size;
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
   if (argc == 1) {
     printf("Missing arguments. Format: %s <port>\n", argv[0]);
     return 1;
   }
+  printf("%s: Coordinator (rank %d) with %d arguments\n", argv[0], rank, argc);
+  printf("%s: \t There are %d workers\n", argv[0], size-1);
 
   //Launch the paralellism mechanism!
   
@@ -229,6 +256,57 @@ int main(int argc, char* argv[])
   
   queue_destroy(&payload_to_workers_queue);
   queue_destroy(&response_queue);
-  
+  return 0;
+}
+
+int main_worker(int argc, char* argv[])
+{
+  int rank;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  printf("%s: Worker (rank %d) with %d arguments\n", argv[0], rank, argc);
+
+  // execute forever
+  while(1) {
+    // send our rank to the coordinator so it can send us jobs
+    MPI_Ssend(&rank, 1, MPI_INT,
+	      0, // to our coordinator (rank zero)
+	      FRACTAL_MPI_PAYLOAD_REQUEST,
+	      MPI_COMM_WORLD);
+
+    // receive the payload from the coordinator
+    payload_t *payload = mpi_payload_receive(0);
+
+    // compute the response
+    response_t *response = create_response_for_payload (payload);
+
+    // send our rank to the coordinator so it can wait for our response
+    MPI_Ssend(&rank, 1, MPI_INT,
+	      0, // to our coordinator (rank zero)
+	      FRACTAL_MPI_RESPONSE_REQUEST,
+	      MPI_COMM_WORLD);
+
+    // send the response back to the coordinator
+    mpi_response_send(response);
+
+    // free stuff for this round
+    free(response->values);
+    free(response);
+    free(payload);
+  }
+  return 0;
+}
+
+int main(int argc, char* argv[])
+{
+  int rank;
+  MPI_Init(&argc, &argv);
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+  if (rank == 0){
+    main_coordinator(argc, argv);
+  }else{
+    main_worker(argc, argv);
+  }
+  MPI_Finalize();
   return 0;
 }
