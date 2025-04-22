@@ -47,6 +47,11 @@ void *ui_thread_function () {
 
   // Placeholder: Currently simulating user input with random payloads every 5-10 seconds
   // Input handling function would be here instead
+<<<<<<< HEAD
+=======
+  while(1) {
+    int wait_seconds = (rand() % 6) + 5;
+>>>>>>> 436accc (go to sleep after sending the first payload (to make our simulation easier))
 
   double screen_width = 0.0f;
   double screen_height = 0.0f;
