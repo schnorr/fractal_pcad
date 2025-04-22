@@ -23,7 +23,7 @@ typedef struct {
 /* the payload sent to the coordinator at every user interaction */
 typedef struct {
   int generation; // generation of the user interaction
-  int granularity; // size of the square blocks
+  int granularity; // size of the squared blocks
   int fractal_depth; // the depth of the fractal
   
   fractal_coordinate_t ll; // lower-left corner 
