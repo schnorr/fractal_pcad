@@ -94,11 +94,15 @@ void *compute_create_blocks()
 
     //payload consumer: get the payload, discretize in blocks
     //Call Ana Laura function
-
-    // Placeholder: simply passing along payload
-    queue_enqueue(&payload_to_workers_queue, newest_payload);
+    int length = 0, i;
+    payload_t **payload_vector = discretize_payload(newest_payload, &length);
+    for (i = 0; i < length; i++){
+      printf("(%d) %s: Enqueueing discretized payload %d\n", payload_vector[i]->generation, __func__, i);
+      queue_enqueue(&payload_to_workers_queue, payload_vector[i]);
+      payload_vector[i] = NULL; //transfer ownership to the queue
+    }
+    free(payload_vector); //no longer necessary as all members have been queued
     newest_payload = NULL; // Ownership transferred to queue
-
     pthread_mutex_unlock(&newest_payload_mutex);
   }
   pthread_exit(NULL);
