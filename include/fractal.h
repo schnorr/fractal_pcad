@@ -20,12 +20,6 @@ typedef struct {
   int y;
 } screen_coord_t;
 
-/* the screen dimension (in pixels */
-typedef struct {
-  int width;
-  int height;
-} screen_dim_t;
-
 /* the payload sent to the coordinator at every user interaction */
 typedef struct {
   int generation; // generation of the user interaction
@@ -35,8 +29,8 @@ typedef struct {
   fractal_coord_t ll; // lower-left corner
   fractal_coord_t ur; // upper-right corner
 
-  screen_coord_t origin; // the screen origin
-  screen_dim_t screen; // the screen dimensions
+  screen_coord_t s_ll; // the screen lower-left corner
+  screen_coord_t s_ur; // the screen upper-right corner
 } payload_t;
 
 /* the response obtained from the coordinator */
