@@ -46,9 +46,13 @@ void *ui_thread_function () {
     }
 
     payload->generation = generation++;
-    payload->granularity = 10;
+    payload->granularity = 300;
     payload->screen.width = 1920;
     payload->screen.height = 1080;
+    payload->ll.real = -2.0;
+    payload->ll.imag = -1.5;
+    payload->ur.real =  2.0;
+    payload->ur.imag =  1.5;
 
     printf("(%d) %s: Enqueueing payload.\n", payload->generation, __func__);
     printf("\t [%d, %d, (%lf, %lf), (%lf, %lf), %d, %d]\n",
