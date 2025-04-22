@@ -53,7 +53,7 @@ void *net_thread_receive_payload(void *arg)
     printf("\t[%d, %d, (%lf, %lf), (%lf, %lf), %d, %d]\n",
 	   payload->granularity, payload->fractal_depth,
            payload->ll.x, payload->ll.y, payload->ur.x, payload->ur.y,
-           payload->screen_width, payload->screen_height);
+           payload->screen.width, payload->screen.height);
     
     pthread_mutex_lock(&newest_payload_mutex);
     // Checking if there's a previous payload that hasn't been used in compute_create_blocks yet
@@ -87,7 +87,7 @@ void *compute_create_blocks()
     printf("\t[%d, %d, (%lf, %lf), (%lf, %lf), %d, %d]\n",
 	   newest_payload->granularity, newest_payload->fractal_depth,
            newest_payload->ll.x, newest_payload->ll.y, newest_payload->ur.x, newest_payload->ur.y,
-           newest_payload->screen_width, newest_payload->screen_height);
+           newest_payload->screen.width, newest_payload->screen.height);
 
     // new payload, so clear obsolete payloads to workers
     queue_clear(&payload_to_workers_queue);

@@ -47,8 +47,8 @@ payload_t **discretize_payload (payload_t *origin, int *length)
   if (!origin || !length){
     return NULL;
   }
-  int amount_x = (origin->screen_width  + origin->granularity-1) / origin->granularity;
-  int amount_y = (origin->screen_height + origin->granularity-1) / origin->granularity;
+  int amount_x = (origin->screen.width  + origin->granularity-1) / origin->granularity;
+  int amount_y = (origin->screen.height + origin->granularity-1) / origin->granularity;
   *length = amount_x * amount_y;
 
   payload_t **ret = (payload_t**)calloc(*length, sizeof(payload_t*));
@@ -61,8 +61,8 @@ payload_t **discretize_payload (payload_t *origin, int *length)
       ret[p]->fractal_depth = origin->fractal_depth;
       ret[p]->ll = origin->ll; // TODO
       ret[p]->ur = origin->ur; // TODO
-      ret[p]->screen_width = origin->granularity;
-      ret[p]->screen_height = origin->granularity;
+      ret[p]->screen.width = origin->granularity;
+      ret[p]->screen.height = origin->granularity;
 
       //next discretized payload
       p++;
@@ -84,7 +84,7 @@ response_t *create_response_for_payload (payload_t *payload)
   ret->ll.y = 0; // TODO
   ret->max_worker_id = 0; // TODO
   ret->worker_id = 0; // TODO
-  ret->values = calloc((payload->screen_width * payload->screen_height) * // payload size
+  ret->values = calloc((payload->screen.width * payload->screen.height) * // payload size
 		       3,  // RGB colors
 		       sizeof(unsigned short)); // space required for each signal
   return ret;

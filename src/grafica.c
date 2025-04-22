@@ -99,14 +99,14 @@ void *ui_thread_function () {
       payload->ll.y = (float) max(first_click.y, second_click.y); // in Raylib, origin (0, 0) is in the upper-right corner
       payload->ur.x = (float) max(first_click.x, second_click.x);
       payload->ur.y = (float) min(first_click.y, second_click.y);
-      payload->screen_width = screen_width;
-      payload->screen_height = screen_height;
+      payload->screen.width = screen_width;
+      payload->screen.height = screen_height;
 
       printf("(%d) %s: Enqueueing payload.\n", payload->generation, __func__);
       printf("\t [%d, %d, (%lf, %lf), (%lf, %lf), %d, %d]\n",
 	     payload->granularity, payload->fractal_depth,
 	     payload->ll.x, payload->ll.y, payload->ur.x, payload->ur.y,
-	     payload->screen_width, payload->screen_height);
+	     payload->screen.width, payload->screen.height);
 
       queue_enqueue(&payload_queue, payload);
       payload = NULL;
