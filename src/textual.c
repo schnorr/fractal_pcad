@@ -53,7 +53,9 @@ void *ui_thread_function () {
     payload->s_ur.x = 1200;
     payload->s_ur.y = 600;
 
+#ifdef PAYLOAD_DEBUG
     payload_print(__func__, "enqueueing payload", payload);
+#endif
 
     queue_enqueue(&payload_queue, payload);
     payload = NULL;
@@ -71,8 +73,10 @@ void *render_thread_function () {
   while(1) {
     response_t *response = (response_t *)queue_dequeue(&response_queue);
 
+#ifdef RESPONSE_DEBUG
     response_print(__func__, "Dequeued response", response);
-   
+#endif
+
     // Freeing response after using it
     free(response->values);
     free(response);
@@ -93,7 +97,9 @@ void *net_thread_send_payload (void *arg)
       pthread_exit(NULL);
     }
 
+#ifdef PAYLOAD_DEBUG
     printf("Sent payload.\n");
+#endif
 
     free(payload);
   }
