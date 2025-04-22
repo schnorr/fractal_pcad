@@ -1,7 +1,3 @@
-#include "fractal.h"
-#include "connection.h"
-#include "queue.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -10,6 +6,9 @@
 #include <sys/socket.h>   
 #include <netinet/in.h>
 #include <pthread.h>
+#include "fractal.h"
+#include "connection.h"
+#include "queue.h"
 
 #define MAX_QUEUE_SIZE 100 // Should probably be much higher
 
