@@ -45,15 +45,23 @@ void *ui_thread_function () {
 
   //This action is guided by the user
 
+  static fractal_coord_t actual_ll = {-2, 0};
+  static fractal_coord_t actual_ur = {2, 0};
+
+  double pixel_coord_ratio = 0;
+
   // Placeholder: Currently simulating user input with random payloads every 5-10 seconds
   // Input handling function would be here instead
 
   double screen_width = 0.0f;
   double screen_height = 0.0f;
   
-  Vector2 first_click = {0, 0};
-  Vector2 second_click = {0, 0};
+  Vector2 first_click_screen = {0, 0};
+  Vector2 second_click_screen = {0, 0};
 
+  fractal_coord_t first_click_fractal = {0, 0};
+  fractal_coord_t second_click_fractal = {0, 0};
+    
   bool interaction = false; 
   bool initial = true;
   
@@ -63,23 +71,27 @@ void *ui_thread_function () {
       screen_width = (double)GetMonitorWidth(GetCurrentMonitor());
       screen_height = (double)GetMonitorHeight(GetCurrentMonitor());
 
-      second_click.x = screen_width;
-      second_click.y = screen_height;
+      second_click_screen.x = screen_width;
+      second_click_screen.y = screen_height;
 
+      pixel_coord_ratio = (actual_ur.real - actual_ll.real)/screen_width;
+      actual_ur.imag = ((actual_ur.real - actual_ll.real) * (screen_height/screen_width))/2;
+      actual_ll.imag = actual_ur.imag * -1;
+      
       initial = false;
       interaction = true;
     }
     
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ 
-      first_click.x = GetMouseX();
-      first_click.y = GetMouseY();
+      first_click_screen.x = GetMouseX();
+      first_click_screen.y = GetMouseY();
     }
 
     if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT) // User interaction creates a new payload
-	&& GetMouseX() != first_click.x){ // If mouse has moved from last click
+	&& GetMouseX() != first_click_screen.x){ // If mouse has moved from last click_screen
      
-      second_click.x = GetMouseX();
-      second_click.y = GetMouseY();
+      second_click_screen.x = GetMouseX();
+      second_click_screen.y = GetMouseY();
       interaction = true;
     }
 
@@ -92,14 +104,25 @@ void *ui_thread_function () {
 	pthread_exit(NULL);
       }
 
+
+      /* ratio from pixels to coordinates based on the x axis */
+      pixel_coord_ratio = (actual_ur.real - actual_ll.real)/screen_width;
+
+      /* Transforming from screen coordinates to fractal coordinates */
+      first_click_fractal.real = (first_click_screen.x)*pixel_coord_ratio + actual_ll.real;
+      first_click_fractal.imag = (first_click_screen.y)*pixel_coord_ratio + actual_ll.imag;
+
+      second_click_fractal.real = (second_click_screen.x)*pixel_coord_ratio + actual_ll.real;      
+      second_click_fractal.imag = (second_click_screen.y)*pixel_coord_ratio + actual_ll.imag;
+      
       payload->generation = generation++;
       payload->granularity = 10; // placeholder values
       payload->fractal_depth = 255; // <-/
 
-      payload->ll.real = (float) min(first_click.x, second_click.x); 
-      payload->ll.imag = (float) max(first_click.y, second_click.y); // in Raylib, origin (0, 0) is in the upper-right corner
-      payload->ur.real = (float) max(first_click.x, second_click.x);
-      payload->ur.imag = (float) min(first_click.y, second_click.y);
+      payload->ll.real = (float) min(first_click_fractal.real, second_click_fractal.real); 
+      payload->ll.imag = (float) min(first_click_fractal.imag, second_click_fractal.imag); 
+      payload->ur.real = (float) max(first_click_fractal.real, second_click_fractal.real);
+      payload->ur.imag = (float) max(first_click_fractal.imag, second_click_fractal.imag);
 
       payload->s_ll.x = 0;
       payload->s_ll.y = screen_height;
@@ -107,10 +130,10 @@ void *ui_thread_function () {
       payload->s_ur.y = 0;
 
       printf("(%d) %s: Enqueueing payload.\n", payload->generation, __func__);
-      /* printf("\t [%d, %d, (%lf, %lf), (%lf, %lf), %d, %d]\n", */
-      /* 	     payload->granularity, payload->fractal_depth, */
-      /* 	     payload->ll.x, payload->ll.y, payload->ur.x, payload->ur.y, */
-      /* 	     payload->screen.width, payload->screen.height); */
+      printf("\t [%d, %d, (%lf, %lf), (%lf, %lf), %d, %d]\n",
+	     payload->granularity, payload->fractal_depth,
+	     payload->ll.real, payload->ll.imag, payload->ur.real, payload->ur.imag,
+	     payload->s_ll.x, payload->s_ll.y);
 
       queue_enqueue(&payload_queue, payload);
       payload = NULL;
