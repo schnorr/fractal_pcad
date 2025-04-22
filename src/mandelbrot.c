@@ -9,6 +9,5 @@ int mandelbrot(double real, double imag, int max_depth) {
     z = z * z + c;
     iter++;
   }
-  printf("real %f imag %f -> %d\n", real, imag, iter);
   return iter;
 }
