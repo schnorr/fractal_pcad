@@ -83,6 +83,12 @@ void *compute_create_blocks()
       pthread_cond_wait(&new_payload, &newest_payload_mutex);
     }
 
+    printf("(%d) %s: received newest_payload.\n", newest_payload->generation, __func__);
+    printf("\t[%d, %d, (%lf, %lf), (%lf, %lf), %d, %d]\n",
+	   newest_payload->granularity, newest_payload->fractal_depth,
+           newest_payload->ll.x, newest_payload->ll.y, newest_payload->ur.x, newest_payload->ur.y,
+           newest_payload->screen_width, newest_payload->screen_height);
+
     // new payload, so clear obsolete payloads to workers
     queue_clear(&payload_to_workers_queue);
 
