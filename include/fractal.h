@@ -35,6 +35,7 @@ typedef struct {
   fractal_coord_t ll; // lower-left corner
   fractal_coord_t ur; // upper-right corner
 
+  screen_coord_t origin; // the screen origin
   screen_dim_t screen; // the screen dimensions
 } payload_t;
 
