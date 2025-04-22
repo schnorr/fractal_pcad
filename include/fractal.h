@@ -10,8 +10,8 @@
 
 /* a fractal coordinate */
 typedef struct {
-  float x;
-  float y;
+  double real;
+  double imag;
 } fractal_coord_t;
 
 /* a screen coordinate (in pixels) */

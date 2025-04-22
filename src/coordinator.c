@@ -52,7 +52,7 @@ void *net_thread_receive_payload(void *arg)
     printf("(%d) %s: received payload.\n", payload->generation, __func__);
     printf("\t[%d, %d, (%lf, %lf), (%lf, %lf), %d, %d]\n",
 	   payload->granularity, payload->fractal_depth,
-           payload->ll.x, payload->ll.y, payload->ur.x, payload->ur.y,
+           payload->ll.real, payload->ll.imag, payload->ur.real, payload->ur.imag,
            payload->screen.width, payload->screen.height);
     
     pthread_mutex_lock(&newest_payload_mutex);
@@ -86,7 +86,7 @@ void *compute_create_blocks()
     printf("(%d) %s: received newest_payload.\n", newest_payload->generation, __func__);
     printf("\t[%d, %d, (%lf, %lf), (%lf, %lf), %d, %d]\n",
 	   newest_payload->granularity, newest_payload->fractal_depth,
-           newest_payload->ll.x, newest_payload->ll.y, newest_payload->ur.x, newest_payload->ur.y,
+           newest_payload->ll.real, newest_payload->ll.imag, newest_payload->ur.real, newest_payload->ur.imag,
            newest_payload->screen.width, newest_payload->screen.height);
 
     // new payload, so clear obsolete payloads to workers
