@@ -222,6 +222,8 @@ void *net_thread_receive_response (void *arg)
     buffer = NULL;
 
     printf("(%d) %s: received response.\n", response->generation, __func__);
+    printf("\t[%d, %d]\n",
+	   response->granularity, response->worker_id);
 
     queue_enqueue(&response_queue, response);
     response = NULL; // Transferred ownership to queue
