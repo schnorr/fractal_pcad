@@ -68,8 +68,8 @@ void *ui_thread_function () {
   while(true) {
     
     if(initial && IsWindowReady()){ // If window is ready, send a intial payload
-      screen_width = (double)GetMonitorWidth(GetCurrentMonitor());
-      screen_height = (double)GetMonitorHeight(GetCurrentMonitor());
+      screen_width = (double)GetScreenWidth();
+      screen_height = (double)GetScreenHeight();
 
       second_click_screen.x = screen_width;
       second_click_screen.y = screen_height;
