@@ -32,11 +32,42 @@ void queue_enqueue(queue_t *q, void *item) {
     pthread_mutex_unlock(&q->mutex);
 }
 
+int queue_try_enqueue(queue_t *q, void *item) {
+    pthread_mutex_lock(&q->mutex);
+
+    if ((q->back + 1) % q->buffer_size == q->front) { // Queue at max, return 0
+        pthread_mutex_unlock(&q->mutex);
+        return 0;
+    }
+
+    q->queue[q->back] = item; // shallow copy
+    q->back = (q->back + 1) % q->buffer_size;
+    pthread_cond_signal(&q->not_empty);
+    pthread_mutex_unlock(&q->mutex);
+    return 1;
+}
+
 void* queue_dequeue(queue_t *q) {
     pthread_mutex_lock(&q->mutex);
 
     while (q->front == q->back) { // Queue empty, wait for enqueue
         pthread_cond_wait(&q->not_empty, &q->mutex);
+    }
+
+    void *item = q->queue[q->front];
+    q->front = (q->front + 1) % q->buffer_size;
+    pthread_cond_signal(&q->not_full);
+    pthread_mutex_unlock(&q->mutex);
+
+    return item;
+}
+
+void* queue_try_dequeue(queue_t *q) {
+    pthread_mutex_lock(&q->mutex);
+
+    if (q->front == q->back) { // Queue empty, return NULL
+        pthread_mutex_unlock(&q->mutex);
+        return NULL;
     }
 
     void *item = q->queue[q->front];
@@ -66,10 +97,10 @@ void queue_clear(queue_t *q) {
         q->queue[q->front] = NULL;
         q->front = (q->front + 1) % q->buffer_size;
     }
-    
+
     q->front = 0;
     q->back = 0;
-    pthread_cond_signal(&q->not_full);
+    pthread_cond_broadcast(&q->not_full); // Broadcast to all waiting threads
     pthread_mutex_unlock(&q->mutex);
 }
 
