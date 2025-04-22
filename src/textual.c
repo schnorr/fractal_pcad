@@ -54,8 +54,8 @@ void *ui_thread_function () {
 
     payload->s_ll.x = 0;
     payload->s_ll.y = 0;
-    payload->s_ur.x = 1980;
-    payload->s_ur.y = 1080;
+    payload->s_ur.x = 1200;
+    payload->s_ur.y = 600;
 
     payload_print(__func__, "enqueueing payload", payload);
 
