@@ -13,9 +13,10 @@ typedef struct queue {
   pthread_mutex_t mutex;
   pthread_cond_t not_empty;
   pthread_cond_t not_full;
+  void (*free_function)(void *); // destructor for items.
 } queue_t;
 
-void queue_init(queue_t *q, size_t capacity);
+void queue_init(queue_t *q, size_t capacity, void (*free_function)(void *));
 /* Blocking enqueue. Thread will be signaled when it can enqueue. */
 void queue_enqueue(queue_t *q, void *item);
 /* Non-blocking enqueue. Returns 1 on success, 0 on failure. */
@@ -25,10 +26,6 @@ void* queue_dequeue(queue_t *q);
 /* Non-blocking dequeue. Returns NULL on failure. */
 void* queue_try_dequeue(queue_t *q);
 size_t queue_size(queue_t *q);
-
-/* TODO: currently, clear() and destroy() below can leak memory if queue contains pointers to 
-   dynamically allocated data. Not necessarily an issue, as we're only clearing a queue with 
-   payloads at the moment. Maybe solved by passing a cleanup function? */
 void queue_clear(queue_t *q);
 void queue_destroy(queue_t *q);
 

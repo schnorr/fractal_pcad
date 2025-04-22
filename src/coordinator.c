@@ -230,8 +230,8 @@ int main_coordinator(int argc, char* argv[])
   int connection = accept(socket, (struct sockaddr *)&client_addr, &client_len);
   printf("Accepted connection.\n");
 
-  queue_init(&payload_to_workers_queue, MAX_QUEUE_SIZE);
-  queue_init(&response_queue, MAX_QUEUE_SIZE);
+  queue_init(&payload_to_workers_queue, MAX_QUEUE_SIZE, free);
+  queue_init(&response_queue, MAX_QUEUE_SIZE, free_response);
   pthread_mutex_init(&newest_payload_mutex, NULL);
   pthread_cond_init(&new_payload, NULL);
   

@@ -49,6 +49,8 @@ size_t response_serialize(response_t *response, uint8_t **buffer);
 /* deserializes buffer into response object. Must free later. */
 response_t* response_deserialize(uint8_t **data);
 
+void free_response(void* ptr); // custom free function for use in queue
+
 /* discretized a payload in several pieces, block-wise */
 payload_t **discretize_payload (payload_t *origin, int *length);
 

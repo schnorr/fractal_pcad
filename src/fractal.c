@@ -42,6 +42,12 @@ response_t* response_deserialize(uint8_t **data){
     return response;
 }
 
+void free_response(void* ptr) {
+  response_t *response = (response_t*) ptr; 
+  free(response->values);
+  free(response);
+}
+
 payload_t **discretize_payload (payload_t *origin, int *length)
 {
   if (!origin || !length){

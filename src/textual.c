@@ -150,8 +150,8 @@ int main(int argc, char* argv[])
     return 1;
   }
 
-  queue_init(&payload_queue, MAX_QUEUE_SIZE);
-  queue_init(&response_queue, MAX_QUEUE_SIZE);
+  queue_init(&payload_queue, MAX_QUEUE_SIZE, free);
+  queue_init(&response_queue, MAX_QUEUE_SIZE, free_response);
 
   int connection = open_connection(argv[1], atoi(argv[2]));
 

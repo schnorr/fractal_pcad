@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void queue_init(queue_t *q, size_t capacity) {
+void queue_init(queue_t *q, size_t capacity, void (*free_function)(void *)) {
     // Extra slot needed to distinguish full and empty queue, allowing for capacity 1 queues
     q->buffer_size = capacity + 1;
     q->queue = malloc(sizeof(void*) * q->buffer_size);
@@ -17,6 +17,7 @@ void queue_init(queue_t *q, size_t capacity) {
     pthread_mutex_init(&q->mutex, NULL);
     pthread_cond_init(&q->not_empty, NULL);
     pthread_cond_init(&q->not_full, NULL);
+    q->free_function = free_function;
 }
 
 void queue_enqueue(queue_t *q, void *item) {
@@ -93,7 +94,9 @@ void queue_clear(queue_t *q) {
     // from a previous dequeue    
     while (q->front != q->back) {
         void *item = q->queue[q->front];
-        free(item);   
+        if (q->free_function){
+            q->free_function(item); // Free items using function
+        }
         q->queue[q->front] = NULL;
         q->front = (q->front + 1) % q->buffer_size;
     }
@@ -105,6 +108,7 @@ void queue_clear(queue_t *q) {
 }
 
 void queue_destroy(queue_t *q) {
+    queue_clear(q);
     free(q->queue);
     pthread_mutex_destroy(&q->mutex);
     pthread_cond_destroy(&q->not_empty);
