@@ -31,7 +31,7 @@ grafica: $(filter-out $(COORDINATOR_OBJ) $(TEXTUAL_OBJ), $(OBJS))
 
 coordinator: $(filter-out $(GRAFICA_OBJ) $(TEXTUAL_OBJ), $(OBJS))
 	@mkdir -p $(BIN_DIR)
-	$(CC) $(CFLAGS) -o $(BIN_DIR)/coordinator $^
+	$(CC) $(CFLAGS) -o $(BIN_DIR)/coordinator $^ -lm
 
 clean:
 	rm -rf $(OBJ_DIR) $(BIN_DIR)
