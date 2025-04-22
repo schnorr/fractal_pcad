@@ -4,13 +4,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void queue_init(queue_t *q, size_t max_items) {
-    q->queue = malloc(sizeof(void*) * max_items);
+void queue_init(queue_t *q, size_t capacity) {
+    // Extra slot needed to distinguish full and empty queue, allowing for capacity 1 queues
+    q->buffer_size = capacity + 1;
+    q->queue = malloc(sizeof(void*) * q->buffer_size);
     if (q->queue == NULL) {
         perror("malloc failed.");
         exit(1);
     }
-    q->max_items = max_items;
     q->front = 0;
     q->back = 0;
     pthread_mutex_init(&q->mutex, NULL);
@@ -21,12 +22,12 @@ void queue_init(queue_t *q, size_t max_items) {
 void queue_enqueue(queue_t *q, void *item) {
     pthread_mutex_lock(&q->mutex);
 
-    while ((q->back + 1) % q->max_items == q->front) { // Queue at max, wait for dequeue
+    while ((q->back + 1) % q->buffer_size == q->front) { // Queue at max, wait for dequeue
         pthread_cond_wait(&q->not_full, &q->mutex);
     }
 
     q->queue[q->back] = item; // shallow copy
-    q->back = (q->back + 1) % q->max_items;
+    q->back = (q->back + 1) % q->buffer_size;
     pthread_cond_signal(&q->not_empty);
     pthread_mutex_unlock(&q->mutex);
 }
@@ -39,7 +40,7 @@ void* queue_dequeue(queue_t *q) {
     }
 
     void *item = q->queue[q->front];
-    q->front = (q->front + 1) % q->max_items;
+    q->front = (q->front + 1) % q->buffer_size;
     pthread_cond_signal(&q->not_full);
     pthread_mutex_unlock(&q->mutex);
 
@@ -48,7 +49,7 @@ void* queue_dequeue(queue_t *q) {
 
 size_t queue_size(queue_t *q) {
     pthread_mutex_lock(&q->mutex);
-    size_t size = (q->back - q->front + q->max_items) % q->max_items;
+    size_t size = (q->back - q->front + q->buffer_size) % q->buffer_size;
     pthread_mutex_unlock(&q->mutex);
     return size;
 }
@@ -63,7 +64,7 @@ void queue_clear(queue_t *q) {
         void *item = q->queue[q->front];
         free(item);   
         q->queue[q->front] = NULL;
-        q->front = (q->front + 1) % q->max_items;
+        q->front = (q->front + 1) % q->buffer_size;
     }
 
     q->front = 0;
