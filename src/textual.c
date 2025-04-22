@@ -18,10 +18,6 @@
 static queue_t payload_queue = {0};
 static queue_t response_queue = {0};
 
-// Currently sending random packets then ending threads.
-
-// Main thread manages the window and user interaction
-
 /*
   ui_thread_function: this function is a placeholder
   to simulate user interaction. Every time a user selects
