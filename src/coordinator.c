@@ -49,7 +49,7 @@ void *net_thread_receive_payload(void *arg)
       pthread_exit(NULL);
     }
 
-#define PAYLOAD_DEBUG
+#ifdef PAYLOAD_DEBUG
     payload_print(__func__, "received payload", payload);
 #endif
 
