@@ -1,8 +1,7 @@
-#include "fractal.h"
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "fractal.h"
 
 size_t response_serialize(response_t *response, uint8_t **buffer){
     size_t num_values = response->payload.granularity * response->payload.granularity;
