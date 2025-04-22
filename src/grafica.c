@@ -160,17 +160,7 @@ void *render_thread_function () {
   while(true) {
     response_t *response = (response_t *)queue_dequeue(&response_queue);
 
-    /* printf("(%d) %s: dequeued response.\n", response->generation, __func__);   */
-           /* : [%d, %d, %d, %d, (%d, %d)]\n", */
-           /* response->generation, response->granularity, response->worker_id, */
-           /* response->max_worker_id, response->ll.x, response->ll.y); */
-
-    // Do the drawing in the canvas using the response coordinates
-    /* printf("Values:" ); */
-    /* for (int i = 0; i < response->granularity * response->granularity; i++) { */
-    /*   printf(" %d", response->values[i]); */
-    /* } */
-    /* printf("\n"); */
+    response_print(__func__, "dequeued response", response);
     
     // Freeing response after using it
     free(response->values);
