@@ -7,13 +7,13 @@
 /* queue is generic, so receives and returns void*. memory management has to be done on 
    caller, with a malloc before enqueue and free after dequeue.*/
 typedef struct queue {
-    void **queue;
-    size_t buffer_size; // buffer size is capacity + 1
-    size_t front;
-    size_t back;
-    pthread_mutex_t mutex;
-    pthread_cond_t not_empty;
-    pthread_cond_t not_full;
+  void **queue;
+  size_t buffer_size; // buffer size is capacity + 1
+  size_t front;
+  size_t back;
+  pthread_mutex_t mutex;
+  pthread_cond_t not_empty;
+  pthread_cond_t not_full;
 } queue_t;
 
 void queue_init(queue_t *q, size_t capacity);

@@ -66,9 +66,10 @@ void queue_clear(queue_t *q) {
         q->queue[q->front] = NULL;
         q->front = (q->front + 1) % q->buffer_size;
     }
-
+    
     q->front = 0;
     q->back = 0;
+    pthread_cond_signal(&q->not_full);
     pthread_mutex_unlock(&q->mutex);
 }
 
