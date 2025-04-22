@@ -173,6 +173,7 @@ void *net_thread_send_response(void *arg)
   int connection = *(int *)arg;
   while(1) {
     response_t *response = (response_t *)queue_dequeue(&response_queue);
+    printf("(%d) %s: preparating for sending the response.\n", response->generation, __func__);
 
     uint8_t *buffer;
     // Serialize the response so response->values is sent
@@ -196,7 +197,7 @@ void *net_thread_send_response(void *arg)
       pthread_exit(NULL);
     }
 
-    printf("Sent response.\n");
+    printf("(%d) %s: response sent.\n", response->generation, __func__);
 
     free(response->values);
     free(response);
