@@ -95,18 +95,22 @@ void *ui_thread_function () {
       payload->generation = generation++;
       payload->granularity = 10; // placeholder values
       payload->fractal_depth = 255; // <-/
-      payload->ll.x = (float) min(first_click.x, second_click.x); 
-      payload->ll.y = (float) max(first_click.y, second_click.y); // in Raylib, origin (0, 0) is in the upper-right corner
-      payload->ur.x = (float) max(first_click.x, second_click.x);
-      payload->ur.y = (float) min(first_click.y, second_click.y);
-      payload->screen.width = screen_width;
-      payload->screen.height = screen_height;
+
+      payload->ll.real = (float) min(first_click.x, second_click.x); 
+      payload->ll.imag = (float) max(first_click.y, second_click.y); // in Raylib, origin (0, 0) is in the upper-right corner
+      payload->ur.real = (float) max(first_click.x, second_click.x);
+      payload->ur.imag = (float) min(first_click.y, second_click.y);
+
+      payload->s_ll.x = 0;
+      payload->s_ll.y = screen_height;
+      payload->s_ur.x = screen_width;
+      payload->s_ur.y = 0;
 
       printf("(%d) %s: Enqueueing payload.\n", payload->generation, __func__);
-      printf("\t [%d, %d, (%lf, %lf), (%lf, %lf), %d, %d]\n",
-	     payload->granularity, payload->fractal_depth,
-	     payload->ll.x, payload->ll.y, payload->ur.x, payload->ur.y,
-	     payload->screen.width, payload->screen.height);
+      /* printf("\t [%d, %d, (%lf, %lf), (%lf, %lf), %d, %d]\n", */
+      /* 	     payload->granularity, payload->fractal_depth, */
+      /* 	     payload->ll.x, payload->ll.y, payload->ur.x, payload->ur.y, */
+      /* 	     payload->screen.width, payload->screen.height); */
 
       queue_enqueue(&payload_queue, payload);
       payload = NULL;
@@ -133,7 +137,7 @@ void *render_thread_function () {
   while(true) {
     response_t *response = (response_t *)queue_dequeue(&response_queue);
 
-    printf("(%d) %s: dequeued response.\n", response->generation, __func__);
+    /* printf("(%d) %s: dequeued response.\n", response->generation, __func__);   */
            /* : [%d, %d, %d, %d, (%d, %d)]\n", */
            /* response->generation, response->granularity, response->worker_id, */
            /* response->max_worker_id, response->ll.x, response->ll.y); */
@@ -215,9 +219,9 @@ void *net_thread_receive_response (void *arg)
     free(buffer); 
     buffer = NULL;
 
-    printf("(%d) %s: received response.\n", response->generation, __func__);
-    printf("\t[%d, %d]\n",
-	   response->granularity, response->worker_id);
+    /* printf("(%d) %s: received response.\n", response->generation, __func__); */
+    /* printf("\t[%d, %d]\n", */
+    /* 	   response->granularity, response->worker_id); */
 
     queue_enqueue(&response_queue, response);
     response = NULL; // Transferred ownership to queue
