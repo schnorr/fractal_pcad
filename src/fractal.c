@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "fractal.h"
+#include "mandelbrot.h"
 
 size_t response_serialize(response_t *response, uint8_t **buffer){
     size_t num_values = response->payload.granularity * response->payload.granularity;
@@ -101,8 +102,10 @@ payload_t **discretize_payload (payload_t *origin, int *length)
 
 response_t *create_response_for_payload (payload_t *payload)
 {
+  int i, j;
+
   if (!payload) return NULL;
-  response_t *ret = malloc(sizeof(response_t));
+  response_t *ret = calloc(1, sizeof(response_t));
   if (!ret) {
     return NULL;
   }
@@ -112,9 +115,29 @@ response_t *create_response_for_payload (payload_t *payload)
   int screen_width = payload->s_ur.x - payload->s_ll.x;
   int screen_height = payload->s_ur.y - payload->s_ll.y;
 
-  ret->values = calloc((screen_width * screen_height) * // payload size
-		       3,  // RGB colors
-		       sizeof(unsigned short)); // space required for each signal
+  /* Define the fractal space we need to cover */
+  double real_step = (payload->ur.real - payload->ll.real) / screen_width;
+  double imag_step = (payload->ur.imag - payload->ll.imag) / screen_height;
+
+  ret->values = calloc((screen_width * screen_height), // payload size
+		       sizeof(int)); // space required for each signal
+
+  // TODO: sequencial solution for now
+  //  payload_print(__func__, "compute", payload);
+  int r = 0;
+  for (i = 0; i < screen_width; i++){
+    for (j = 0; j < screen_height; j++){
+      fractal_coord_t fractal_current = payload->ll;
+      fractal_current.real += real_step * i;
+      fractal_current.imag += imag_step * j;
+
+      ret->values[r] =
+	mandelbrot (fractal_current.real,
+		    fractal_current.imag,
+		    ret->payload.fractal_depth);
+      r++;
+    }
+  }
   return ret;
 }
 
