@@ -2,6 +2,7 @@
 RAYLIB=/usr
 
 CC = gcc
+MPICC = mpicc
 CFLAGS = -I$(RAYLIB)/include -Wall -Wextra -Iinclude -pthread -g -fsanitize=address
 
 SRC_DIR = src
@@ -19,7 +20,7 @@ all: grafica coordinator textual
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	@mkdir -p $(OBJ_DIR)
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(MPICC) $(CFLAGS) -c $< -o $@
 
 textual: $(filter-out $(COORDINATOR_OBJ) $(GRAFICA_OBJ), $(OBJS))
 	@mkdir -p $(BIN_DIR)
@@ -31,7 +32,7 @@ grafica: $(filter-out $(COORDINATOR_OBJ) $(TEXTUAL_OBJ), $(OBJS))
 
 coordinator: $(filter-out $(GRAFICA_OBJ) $(TEXTUAL_OBJ), $(OBJS))
 	@mkdir -p $(BIN_DIR)
-	$(CC) $(CFLAGS) -o $(BIN_DIR)/coordinator $^ -lm
+	$(MPICC) $(CFLAGS) -o $(BIN_DIR)/coordinator $^ -lm
 
 clean:
 	rm -rf $(OBJ_DIR) $(BIN_DIR)
