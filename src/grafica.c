@@ -45,8 +45,8 @@ void *ui_thread_function () {
 
   //This action is guided by the user
 
-  static fractal_coord_t actual_ll = {-2, 0};
-  static fractal_coord_t actual_ur = {2, 0};
+  static fractal_coord_t actual_ll = {-2, -1.5};
+  static fractal_coord_t actual_ur = {2, 1.5};
 
   double pixel_coord_ratio = 0;
 
