@@ -104,11 +104,11 @@ void *compute_create_blocks()
 void *main_thread_function()
 {
   while(1) {
-    // Might have to rethink - queue_dequeue() currently locks
+    // Might have to rethink - queue-dequeue() currently locks
     // thread. If this thread needs to wait for worker answers, maybe
     // a queue_peek() that doesn't block thread would be appropriate?
 
-    // Placeholder: Gets payload and generates random response after 5-10 secs delay
+    // Get the payload (the queue-dequeue blocks this thread)
     payload_t *payload = (payload_t *)queue_dequeue(&payload_to_workers_queue);
     int generation = payload->generation;
 
