@@ -89,3 +89,15 @@ response_t *create_response_for_payload (payload_t *payload)
 		       sizeof(unsigned short)); // space required for each signal
   return ret;
 }
+
+void payload_print (const char *func, const char *message, const payload_t *p)
+{
+  printf("(%d) %s: %s.\n", p->generation, func, message);
+  printf("\t[%d, %d, f_ll(%6.3lf, %6.3lf) -> f_ur(%6.3lf, %6.3lf)]\n"
+	 "\t[        s_ll(%6d, %6d) -> s_ur(%6d, %6d)]\n",
+	 p->granularity, p->fractal_depth,
+	 p->ll.real, p->ll.imag,
+	 p->ur.real, p->ur.imag,
+	 p->s_ll.x, p->s_ll.y,
+	 p->s_ur.x, p->s_ur.y);
+}

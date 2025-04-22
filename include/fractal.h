@@ -56,4 +56,7 @@ payload_t **discretize_payload (payload_t *origin, int *length);
 
 /* encapsulate a response for a given payload */
 response_t *create_response_for_payload (payload_t *payload);
+
+/* print a payload */
+void payload_print (const char *func, const char *message, const payload_t *p);
 #endif
