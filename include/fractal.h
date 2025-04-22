@@ -20,6 +20,12 @@ typedef struct {
   int y;
 } screen_coord_t;
 
+/* the screen dimension (in pixels */
+typedef struct {
+  int width;
+  int height;
+} screen_dim_t;
+
 /* the payload sent to the coordinator at every user interaction */
 typedef struct {
   int generation; // generation of the user interaction
