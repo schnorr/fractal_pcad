@@ -84,7 +84,10 @@ response_t *create_response_for_payload (payload_t *payload)
   ret->ll.y = 0; // TODO
   ret->max_worker_id = 0; // TODO
   ret->worker_id = 0; // TODO
-  ret->values = calloc((payload->screen.width * payload->screen.height) * // payload size
+  int screen_width = payload->s_ur.x - payload->s_ll.x;
+  int screen_height = payload->s_ur.y - payload->s_ll.y;
+
+  ret->values = calloc((screen_width * screen_height) * // payload size
 		       3,  // RGB colors
 		       sizeof(unsigned short)); // space required for each signal
   return ret;
