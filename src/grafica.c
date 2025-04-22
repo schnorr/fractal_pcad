@@ -125,9 +125,9 @@ void *ui_thread_function () {
       payload->ur.imag = (float) max(first_click_fractal.imag, second_click_fractal.imag);
 
       payload->s_ll.x = 0;
-      payload->s_ll.y = screen_height;
+      payload->s_ll.y = 0;
       payload->s_ur.x = screen_width;
-      payload->s_ur.y = 0;
+      payload->s_ur.y = screen_height;
 
       printf("(%d) %s: Enqueueing payload.\n", payload->generation, __func__);
       printf("\t [%d, %d, (%lf, %lf), (%lf, %lf), %d, %d]\n",
