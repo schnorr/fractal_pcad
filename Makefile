@@ -1,5 +1,8 @@
+# your raylib location here
+RAYLIB=/usr
+
 CC = gcc
-CFLAGS = -Wall -Wextra -Iinclude -pthread -g -fsanitize=address
+CFLAGS = -I$(RAYLIB)/include -Wall -Wextra -Iinclude -pthread -g -fsanitize=address
 
 SRC_DIR = src
 OBJ_DIR = obj
@@ -19,7 +22,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 
 grafica: $(filter-out $(COORDINATOR_OBJ), $(OBJS))
 	@mkdir -p $(BIN_DIR)
-	$(CC) $(CFLAGS) -o $(BIN_DIR)/grafica $^ -lraylib -lm
+	$(CC) $(CFLAGS) -o $(BIN_DIR)/grafica $^ -L$(RAYLIB)/lib/ -Wl,-rpath,$(RAYLIB)/lib -lraylib -lm
 
 coordinator: $(filter-out $(GRAFICA_OBJ), $(OBJS))
 	@mkdir -p $(BIN_DIR)
