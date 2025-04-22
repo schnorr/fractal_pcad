@@ -120,46 +120,16 @@ void *main_thread_function()
 
     // Get the payload (the queue-dequeue blocks this thread)
     payload_t *payload = (payload_t *)queue_dequeue(&payload_to_workers_queue);
-    int generation = payload->generation;
+    payload_t p = *payload; // full copy
+    free(payload);
+    payload = NULL;
 
-    response_t *response = malloc(sizeof(response_t));
-    if (response == NULL) {
-      perror("malloc failed.\n");
-      pthread_exit(NULL);
-    }
-
-    response->values = malloc(sizeof(int) * 4);
-    if (response->values == NULL) {
-      perror("malloc failed.\n");
-      pthread_exit(NULL);
-    }
-
-    // random vals
-    response->generation = generation;
-    response->granularity = 2; // granularity 2 so that there's always 4 values
-    response->ll.x = rand() % 100;
-    response->ll.y = rand() % 100;
-    response->max_worker_id = rand() % 100;
-    response->worker_id = rand() % 100;
-    response->values[0] = rand() % 100;
-    response->values[1] = rand() % 100;
-    response->values[2] = rand() % 100;
-    response->values[3] = rand() % 100;
-
+    response_t *response = create_response_for_payload (&p);
     printf("Enqueueing response: [%d, %d, %d, %d, (%d, %d)]\n",
            response->generation, response->granularity, response->worker_id,
            response->max_worker_id, response->ll.x, response->ll.y);
-    printf("Values:" );
-    for (int i = 0; i < response->granularity * response->granularity; i++) {
-      printf(" %d", response->values[i]);
-    }
-    printf("\n");
-
     queue_enqueue(&response_queue, response);
     response = NULL; // Transferred ownership to queue
-
-    free(payload); // simply free payload
-    payload = NULL;
   }
   //keep looking to the payload_to_workers queue
   //lock payload_to_workers
