@@ -270,7 +270,7 @@ int main(int argc, char* argv[])
   InitWindow(screen_width, screen_height, "Fractal @ PCAD");
   SetTargetFPS(60);
 
-  ToggleFullscreen();
+  //  ToggleFullscreen();
   while (!WindowShouldClose()) {
     
     BeginDrawing();
