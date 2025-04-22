@@ -117,9 +117,7 @@ void *main_thread_function()
     payload = NULL;
 
     response_t *response = create_response_for_payload (&p);
-    printf("Enqueueing response: [%d, %d, %d, %d, (%d, %d)]\n",
-           response->generation, response->granularity, response->worker_id,
-           response->max_worker_id, response->ll.x, response->ll.y);
+    response_print(__func__, "Enqueueing response", response);
     queue_enqueue(&response_queue, response);
     response = NULL; // Transferred ownership to queue
   }
@@ -145,7 +143,7 @@ void *net_thread_send_response(void *arg)
   int connection = *(int *)arg;
   while(1) {
     response_t *response = (response_t *)queue_dequeue(&response_queue);
-    printf("(%d) %s: preparating for sending the response.\n", response->generation, __func__);
+    response_print(__func__, "preparating for sending the response", response);
 
     uint8_t *buffer;
     // Serialize the response so response->values is sent
@@ -169,7 +167,7 @@ void *net_thread_send_response(void *arg)
       pthread_exit(NULL);
     }
 
-    printf("(%d) %s: response sent.\n", response->generation, __func__);
+    response_print(__func__, "response sent", response);
 
     free(response->values);
     free(response);

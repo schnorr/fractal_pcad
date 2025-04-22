@@ -35,12 +35,9 @@ typedef struct {
 
 /* the response obtained from the coordinator */
 typedef struct {
-  int generation;
-  int granularity;
+  payload_t payload; // the origin of this response
   int worker_id; // between [0, n-1]
   int max_worker_id; // maximum is n-1, n is the number of workers
-  
-  screen_coord_t ll;
   int *values; // there are granularity * granularity elements
 } response_t;
 
@@ -59,4 +56,7 @@ response_t *create_response_for_payload (payload_t *payload);
 
 /* print a payload */
 void payload_print (const char *func, const char *message, const payload_t *p);
+
+/* print a response */
+void response_print (const char *func, const char *message, const response_t *p);
 #endif

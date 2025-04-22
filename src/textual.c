@@ -75,9 +75,7 @@ void *render_thread_function () {
   while(1) {
     response_t *response = (response_t *)queue_dequeue(&response_queue);
 
-    printf("Dequeued response: [%d, %d, %d, %d, (%d, %d)]\n",
-           response->generation, response->granularity, response->worker_id,
-           response->max_worker_id, response->ll.x, response->ll.y);
+    response_print(__func__, "Dequeued response", response);
    
     // Freeing response after using it
     free(response->values);

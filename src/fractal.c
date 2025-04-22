@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 size_t response_serialize(response_t *response, uint8_t **buffer){
-    size_t num_values = response->granularity * response->granularity;
+    size_t num_values = response->payload.granularity * response->payload.granularity;
     size_t size_values = sizeof(int) * num_values;
     size_t buffer_size = sizeof(response_t) + size_values;
 
@@ -29,7 +29,7 @@ response_t* response_deserialize(uint8_t **data){
     }
     
     memcpy(response, *data, sizeof(response_t)); // Copy base response (pointer is garbage)
-    size_t num_values = response->granularity * response->granularity;
+    size_t num_values = response->payload.granularity * response->payload.granularity;
     size_t size_values = sizeof(int) * num_values;
 
     response->values = malloc(size_values); // Overwrite garbage pointer
@@ -107,10 +107,7 @@ response_t *create_response_for_payload (payload_t *payload)
   if (!ret) {
     return NULL;
   }
-  ret->generation = payload->generation;
-  ret->granularity = payload->granularity;
-  ret->ll.x = 0; // TODO
-  ret->ll.y = 0; // TODO
+  ret->payload = *payload;
   ret->max_worker_id = 0; // TODO
   ret->worker_id = 0; // TODO
   int screen_width = payload->s_ur.x - payload->s_ll.x;
@@ -132,4 +129,9 @@ void payload_print (const char *func, const char *message, const payload_t *p)
 	 p->ur.real, p->ur.imag,
 	 p->s_ll.x, p->s_ll.y,
 	 p->s_ur.x, p->s_ur.y);
+}
+
+void response_print (const char *func, const char *message, const response_t *r)
+{
+  payload_print(func, message, &r->payload);
 }
