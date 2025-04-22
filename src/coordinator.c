@@ -49,12 +49,8 @@ void *net_thread_receive_payload(void *arg)
       pthread_exit(NULL);
     }
 
-    printf("(%d) %s: received payload.\n", payload->generation, __func__);
-    printf("\t[%d, %d, (%lf, %lf), (%lf, %lf), %d, %d]\n",
-	   payload->granularity, payload->fractal_depth,
-           payload->ll.real, payload->ll.imag, payload->ur.real, payload->ur.imag,
-           payload->screen.width, payload->screen.height);
-    
+    payload_print(__func__, "received payload", payload);
+
     pthread_mutex_lock(&newest_payload_mutex);
     // Checking if there's a previous payload that hasn't been used in compute_create_blocks yet
     if (newest_payload != NULL) {
@@ -83,11 +79,7 @@ void *compute_create_blocks()
       pthread_cond_wait(&new_payload, &newest_payload_mutex);
     }
 
-    printf("(%d) %s: received newest_payload.\n", newest_payload->generation, __func__);
-    printf("\t[%d, %d, (%lf, %lf), (%lf, %lf), %d, %d]\n",
-	   newest_payload->granularity, newest_payload->fractal_depth,
-           newest_payload->ll.real, newest_payload->ll.imag, newest_payload->ur.real, newest_payload->ur.imag,
-           newest_payload->screen.width, newest_payload->screen.height);
+    payload_print(__func__, "received newest_payload", newest_payload);
 
     // new payload, so clear obsolete payloads to workers
     queue_clear(&payload_to_workers_queue);
