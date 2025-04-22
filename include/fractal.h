@@ -50,4 +50,9 @@ size_t response_serialize(response_t *response, uint8_t **buffer);
 /* deserializes buffer into response object. Must free later. */
 response_t* response_deserialize(uint8_t **data);
 
+/* discretized a payload in several pieces, block-wise */
+payload_t **discretize_payload (payload_t *origin, int *length);
+
+/* encapsulate a response for a given payload */
+response_t *create_response_for_payload (payload_t *payload);
 #endif
