@@ -268,8 +268,8 @@ int main(int argc, char* argv[])
 
   /* raylib program goes here */
 
-  int screen_width = GetMonitorWidth(GetCurrentMonitor());
-  int screen_height = GetMonitorHeight(GetCurrentMonitor());
+  int screen_width = 640;//GetMonitorWidth(GetCurrentMonitor());
+  int screen_height = 480;//GetMonitorHeight(GetCurrentMonitor());
   
   InitWindow(screen_width, screen_height, "Fractal @ PCAD");
   SetTargetFPS(60);
