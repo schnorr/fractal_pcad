@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -Iinclude -pthread
+CFLAGS = -Wall -Wextra -Iinclude -pthread -g -fsanitize=address
 
 SRC_DIR = src
 OBJ_DIR = obj
