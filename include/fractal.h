@@ -12,13 +12,13 @@
 typedef struct {
   float x;
   float y;
-} fractal_coordinate_t;
+} fractal_coord_t;
 
 /* a screen coordinate (in pixels) */
 typedef struct {
   int x;
   int y;
-} screen_coordinate_t;
+} screen_coord_t;
 
 /* the payload sent to the coordinator at every user interaction */
 typedef struct {
@@ -26,8 +26,8 @@ typedef struct {
   int granularity; // size of the squared blocks
   int fractal_depth; // the depth of the fractal
   
-  fractal_coordinate_t ll; // lower-left corner 
-  fractal_coordinate_t ur; // upper-right corner
+  fractal_coord_t ll; // lower-left corner
+  fractal_coord_t ur; // upper-right corner
   int screen_width;
   int screen_height;
 } payload_t;
@@ -39,7 +39,7 @@ typedef struct {
   int worker_id; // between [0, n-1]
   int max_worker_id; // maximum is n-1, n is the number of workers
   
-  screen_coordinate_t ll;
+  screen_coord_t ll;
   int *values; // there are granularity * granularity elements
 } response_t;
 
