@@ -60,14 +60,12 @@ payload_t **discretize_payload (payload_t *origin, int *length)
   double imag_step = (origin->ur.imag - origin->ll.imag) / amount_y;
 
   /* Define the (corresponding) screen space we need to cover */
-  int x_step = screen_width / amount_x;
-  int y_step = screen_height / amount_y;
+  int x_step = origin->granularity;
+  int y_step = origin->granularity;
 
   payload_t **ret = (payload_t**)calloc(*length, sizeof(payload_t*));
   int i, j, p = 0;
   for (i = 0; i < amount_x; i++){
-
-
     for (j = 0; j < amount_y; j++){
       fractal_coord_t fractal_current = origin->ll;
       fractal_current.real += real_step * i;
