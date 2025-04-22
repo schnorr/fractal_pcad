@@ -49,7 +49,9 @@ void *net_thread_receive_payload(void *arg)
       pthread_exit(NULL);
     }
 
+#define PAYLOAD_DEBUG
     payload_print(__func__, "received payload", payload);
+#endif
 
     pthread_mutex_lock(&newest_payload_mutex);
     // Checking if there's a previous payload that hasn't been used in compute_create_blocks yet
@@ -79,7 +81,9 @@ void *compute_create_blocks()
       pthread_cond_wait(&new_payload, &newest_payload_mutex);
     }
 
+#ifdef PAYLOAD_DEBUG
     payload_print(__func__, "received newest_payload", newest_payload);
+#endif
 
     // new payload, so clear obsolete payloads to workers
     queue_clear(&payload_to_workers_queue);
@@ -89,7 +93,9 @@ void *compute_create_blocks()
     int length = 0, i;
     payload_t **payload_vector = discretize_payload(newest_payload, &length);
     for (i = 0; i < length; i++){
+#ifdef PAYLOAD_DEBUG
       printf("(%d) %s: Enqueueing discretized payload %d\n", payload_vector[i]->generation, __func__, i);
+#endif
       queue_enqueue(&payload_to_workers_queue, payload_vector[i]);
       payload_vector[i] = NULL; //transfer ownership to the queue
     }
@@ -117,7 +123,9 @@ void *main_thread_function()
     payload = NULL;
 
     response_t *response = create_response_for_payload (&p);
+#ifdef RESPONSE_DEBUG
     response_print(__func__, "Enqueueing response", response);
+#endif
     queue_enqueue(&response_queue, response);
     response = NULL; // Transferred ownership to queue
   }
@@ -143,7 +151,9 @@ void *net_thread_send_response(void *arg)
   int connection = *(int *)arg;
   while(1) {
     response_t *response = (response_t *)queue_dequeue(&response_queue);
+#ifdef RESPONSE_DEBUG
     response_print(__func__, "preparating for sending the response", response);
+#endif
 
     uint8_t *buffer;
     // Serialize the response so response->values is sent
@@ -167,7 +177,9 @@ void *net_thread_send_response(void *arg)
       pthread_exit(NULL);
     }
 
+#ifdef RESPONSE_DEBUG
     response_print(__func__, "response sent", response);
+#endif
 
     free(response->values);
     free(response);

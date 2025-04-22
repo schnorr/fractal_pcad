@@ -90,7 +90,9 @@ payload_t **discretize_payload (payload_t *origin, int *length)
       ret[p]->s_ur.x += x_step;
       ret[p]->s_ur.y += y_step;
 
+#ifdef PAYLOAD_DEBUG
       payload_print(__func__, "discretized payload", ret[p]);
+#endif
 
       //next discretized payload
       p++;
