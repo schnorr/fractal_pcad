@@ -24,15 +24,15 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 
 textual: $(filter-out $(COORDINATOR_OBJ) $(GRAFICA_OBJ), $(OBJS))
 	@mkdir -p $(BIN_DIR)
-	$(CC) $(CFLAGS) -o $(BIN_DIR)/textual $^ -lm
+	$(CC) $(CFLAGS) -o $(BIN_DIR)/textual $^ -lm -lmpi
 
 grafica: $(filter-out $(COORDINATOR_OBJ) $(TEXTUAL_OBJ), $(OBJS))
 	@mkdir -p $(BIN_DIR)
-	$(CC) $(CFLAGS) -o $(BIN_DIR)/grafica $^ -L$(RAYLIB)/lib/ -Wl,-rpath,$(RAYLIB)/lib -lraylib -lm
+	$(CC) $(CFLAGS) -o $(BIN_DIR)/grafica $^ -L$(RAYLIB)/lib/ -Wl,-rpath,$(RAYLIB)/lib -lraylib -lm -lmpi
 
 coordinator: $(filter-out $(GRAFICA_OBJ) $(TEXTUAL_OBJ), $(OBJS))
 	@mkdir -p $(BIN_DIR)
-	$(MPICC) $(CFLAGS) -o $(BIN_DIR)/coordinator $^ -lm
+	$(MPICC) $(CFLAGS) -o $(BIN_DIR)/coordinator $^ -lm -lmpi
 
 clean:
 	rm -rf $(OBJ_DIR) $(BIN_DIR)
