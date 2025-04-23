@@ -153,15 +153,27 @@ void *render_thread_function () {
 
   // Placeholder: Currently printing random values that come from coordinator
   // Rendering function that takes response would be here instead
+  BeginDrawing();
   while(true) {
     response_t *response = (response_t *)queue_dequeue(&response_queue);
 
-    response_print(__func__, "dequeued response", response);
-    
+    //response_print(__func__, "dequeued response", response);
+    int p = 0;
+    for (int i = response->payload.s_ll.x; i < response->payload.s_ur.x; i++){
+      for (int j = response->payload.s_ll.y; j < response->payload.s_ur.y; j++){
+	struct Color color = { response->values[p],
+			       response->values[p],
+			       response->values[p],
+			       255};
+	DrawPixel(i, j, color);
+	p++;
+      }
+    }
     // Freeing response after using it
     free(response->values);
     free(response);
   }
+  EndDrawing();
 
   pthread_exit(NULL);
 }
