@@ -66,7 +66,6 @@ void *ui_thread_function () {
   bool initial = true;
   
   while(true) {
-    
     if(initial && IsWindowReady()){ // If window is ready, send a intial payload
       screen_width = (double)GetScreenWidth();
       screen_height = (double)GetScreenHeight();
@@ -257,6 +256,17 @@ int main(int argc, char* argv[])
     return 1;
   }
 
+  /* raylib program goes here */
+
+  int screen_width = 640;//GetMonitorWidth(GetCurrentMonitor());
+  int screen_height = 480;//GetMonitorHeight(GetCurrentMonitor());
+
+  InitWindow(screen_width, screen_height, "Fractal @ PCAD");
+  SetTargetFPS(60);
+  BeginDrawing();
+  ClearBackground(RAYWHITE);
+  EndDrawing();
+
   srand(0);
 
   queue_init(&payload_queue, MAX_QUEUE_SIZE, free);
@@ -274,26 +284,10 @@ int main(int argc, char* argv[])
   pthread_create(&payload_thread, NULL, net_thread_send_payload, &connection);
   pthread_create(&response_thread, NULL, net_thread_receive_response, &connection);
 
-  /* raylib program goes here */
-
-  int screen_width = 640;//GetMonitorWidth(GetCurrentMonitor());
-  int screen_height = 480;//GetMonitorHeight(GetCurrentMonitor());
-  
-  InitWindow(screen_width, screen_height, "Fractal @ PCAD");
-  SetTargetFPS(60);
-
   //  ToggleFullscreen();
   while (!WindowShouldClose()) {
-    
     BeginDrawing();
-
-    ClearBackground(RAYWHITE);
-
-    DrawText(TextFormat("screen size: %d, %d\n", GetMonitorWidth(GetCurrentMonitor()), GetMonitorHeight(GetCurrentMonitor())), 0, 0, 32, BLACK);
-    DrawText(TextFormat("screen size: %d, %d\n", GetScreenWidth(), GetScreenHeight()), 0, 100, 32, BLACK);
-    
     EndDrawing();
-  
   }
   
   pthread_join(ui_thread, NULL);
