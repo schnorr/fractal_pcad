@@ -3,11 +3,7 @@
 
 #include <stdint.h>
 #include <stdlib.h>
-
-/* bool definition for better legibility */
-#define bool int
-#define true 1
-#define false 0
+#include <stdbool.h>
 
 /* a fractal coordinate */
 typedef struct {

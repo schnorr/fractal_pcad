@@ -1,8 +1,3 @@
-#include "fractal.h"
-#include "connection.h"
-#include "queue.h"
-#include "colors.h"
-
 #include <raylib.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,6 +9,15 @@
 #include <pthread.h>
 #include <netdb.h> 
 #include <sys/types.h>
+#include <signal.h>
+#include <stdatomic.h>
+
+#include "fractal.h"
+#include "connection.h"
+#include "queue.h"
+#include "colors.h"
+
+atomic_int shutdown_requested;
 
 // We need a multi-threaded Raylib app, where one thread handles
 // rendering, and another handles the UI or logic.  Shared pixel
@@ -41,9 +45,23 @@ static queue_t response_queue = {0};
 bool g_selecting = false;
 Vector2 g_box_first_point = {0, 0};
 
+<<<<<<< HEAD
 bool g_use_pallete_colors = true;
 
 // Currently sending random packets then ending threads.
+=======
+/* Shutdown function. Shuts down the TCP connection and unblocks all queues.*/
+void request_shutdown(int connection){
+  // Atomic exchange tests the variable and sets it atomically
+  if (atomic_exchange(&shutdown_requested, 1) == 1){
+    return; // If already shutting down
+  }
+  printf("Shutdown requested.\n");
+  shutdown(connection, SHUT_RDWR); 
+  queue_shutdown(&payload_queue);
+  queue_shutdown(&response_queue);
+}
+>>>>>>> 3750c84b8ecfc8179489c81d9aca1e6a93938a0d
 
 // Main thread manages the window and user interaction
 
@@ -79,7 +97,7 @@ void *ui_thread_function () {
   bool interaction = false; 
   bool initial = true;
   
-  while(true) {
+  while(!atomic_load(&shutdown_requested)) {
     if(initial && IsWindowReady()){ // If window is ready, send a intial payload
       screen_width = (double)GetScreenWidth();
       screen_height = (double)GetScreenHeight();
@@ -129,7 +147,7 @@ void *ui_thread_function () {
       
       payload_t *payload = calloc(1, sizeof(payload_t));
       if (payload == NULL) {
-	perror("malloc failed.\n");
+	fprintf(stderr, "malloc failed.\n");
 	pthread_exit(NULL);
       }
 
@@ -184,8 +202,9 @@ void *render_thread_function () {
 
   // Placeholder: Currently printing random values that come from coordinator
   // Rendering function that takes response would be here instead
-  while(true) {
+  while(!atomic_load(&shutdown_requested)) {
     response_t *response = (response_t *)queue_dequeue(&response_queue);
+    if (response == NULL) break; // Queue shutdown
 
     //    response_print(__func__, "dequeued response", response);
     pthread_mutex_lock(&pixelMutex); //lock
@@ -229,11 +248,12 @@ void *render_thread_function () {
 void *net_thread_send_payload (void *arg)
 {
   int connection = *(int *)arg;
-  while(1) {
+  while(!atomic_load(&shutdown_requested)) {
     payload_t *payload = (payload_t *)queue_dequeue(&payload_queue);
+    if (payload == NULL) break; // Queue shutdown
     
     if (send(connection, payload, sizeof(*payload), 0) <= 0) {
-      perror("Send failed. Killing thread...\n");
+      fprintf(stderr, "Send failed. Killing thread...\n");
       free(payload);
       pthread_exit(NULL);
     }else{
@@ -258,24 +278,24 @@ void *net_thread_send_payload (void *arg)
 void *net_thread_receive_response (void *arg)
 {
   int connection = *(int *)arg;
-  while(1){
+  while(!atomic_load(&shutdown_requested)){
     size_t response_size;
 
     // Receive size of response. Done since response can be arbitrarily large due to *values
     if (recv_all(connection, &response_size, sizeof(response_size), 0) <= 0) {
-      perror("Receive failed. Killing thread...\n");
+      fprintf(stderr, "Receive failed. Killing thread...\n");
       pthread_exit(NULL);
     }
 
     uint8_t *buffer = malloc(response_size);
     if (buffer == NULL) {
-      perror("malloc failed.\n");
+      fprintf(stderr, "malloc failed.\n");
       pthread_exit(NULL);
     }
 
     // Receive actual response, put in buffer
     if (recv_all(connection, buffer, response_size, 0) <= 0) {
-      perror("Receive failed. Killing thread...\n");
+      fprintf(stderr, "Receive failed. Killing thread...\n");
       free(buffer);
       pthread_exit(NULL);
     }
@@ -301,7 +321,8 @@ int main(int argc, char* argv[])
     return 1;
   }
 
-  /* raylib program goes here */
+  atomic_init(&shutdown_requested, 0);
+  signal(SIGPIPE, SIG_IGN); // Ignore SIGPIPE (failed send)
 
   int screen_width = 640;//GetMonitorWidth(GetCurrentMonitor());
   int screen_height = 480;//GetMonitorHeight(GetCurrentMonitor());
@@ -334,7 +355,7 @@ int main(int argc, char* argv[])
   pthread_create(&response_thread, NULL, net_thread_receive_response, &connection);
 
   //  ToggleFullscreen();
-  while (!WindowShouldClose()) {
+  while (!WindowShouldClose()) { // Closed with ESC or manually closing window
     // get the mutex so we can read safely from sharedPixels
     pthread_mutex_lock(&pixelMutex);
     UpdateTexture(texture, sharedPixels);
@@ -356,11 +377,20 @@ int main(int argc, char* argv[])
 
     EndDrawing();
   }
+
+  // Window closed, request shutdown
+  request_shutdown(connection);
   
   pthread_join(ui_thread, NULL);
   pthread_join(render_thread, NULL);
   pthread_join(payload_thread, NULL);
   pthread_join(response_thread, NULL);
+
+  UnloadTexture(texture);
+  UnloadImageColors(sharedPixels);
+  CloseWindow(); // Close OpenGL context 
+
+  pthread_mutex_destroy(&pixelMutex);
 
   close(connection);
 

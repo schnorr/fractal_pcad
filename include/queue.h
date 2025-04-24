@@ -14,19 +14,33 @@ typedef struct queue {
   pthread_cond_t not_empty;
   pthread_cond_t not_full;
   void (*free_function)(void *); // destructor for items.
+  int shutdown;
 } queue_t;
 
 void queue_init(queue_t *q, size_t capacity, void (*free_function)(void *));
-/* Blocking enqueue. Thread will be signaled when it can enqueue. */
+
+/* Blocking enqueue. Thread will be signaled when it can enqueue. 
+   Queue takes ownership of the pointer. */
 void queue_enqueue(queue_t *q, void *item);
-/* Non-blocking enqueue. Returns 1 on success, 0 on failure. */
+
+/* Non-blocking enqueue. Returns 1 on success, 0 on failure. 
+   Takes ownership of the pointer, provided the function returns 1.*/
 int queue_try_enqueue(queue_t *q, void *item);
-/* Blocking dequeue. Thread will be signaled when it can dequeue. */
+
+/* Blocking dequeue. Thread will be signaled when it can dequeue. 
+   Returns a NULL pointer on shutdown. */
 void* queue_dequeue(queue_t *q);
-/* Non-blocking dequeue. Returns NULL on failure. */
+
+/* Non-blocking dequeue. Returns NULL if queue is empty. */
 void* queue_try_dequeue(queue_t *q);
+
 size_t queue_size(queue_t *q);
 void queue_clear(queue_t *q);
 void queue_destroy(queue_t *q);
+
+/* Function intended to clean up the program when exiting. Once called, threads blocked at
+   enqueue/dequeue will be signaled and will return. Enqueuing threads will have their enqueued 
+   item cleaned up, and dequeuing threads will return NULL. */
+void queue_shutdown(queue_t *q);
 
 #endif 
