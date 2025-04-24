@@ -261,8 +261,9 @@ int main_coordinator(int argc, char* argv[])
 
 int main_worker(int argc, char* argv[])
 {
-  int rank;
+  int rank, size;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
   printf("%s: Worker (rank %d) with %d arguments\n", argv[0], rank, argc);
 
   // execute forever
@@ -278,6 +279,8 @@ int main_worker(int argc, char* argv[])
 
     // compute the response
     response_t *response = create_response_for_payload (payload);
+    response->max_worker_id = size;
+    response->worker_id = rank;
 
     // send our rank to the coordinator so it can wait for our response
     MPI_Ssend(&rank, 1, MPI_INT,
