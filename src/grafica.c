@@ -149,6 +149,8 @@ void *ui_thread_function () {
 */
 void *render_thread_function () {
   // This action is guided by the responses from the coordinator
+  int screen_width = GetScreenWidth();
+  int screen_height = GetScreenHeight();
 
   // Placeholder: Currently printing random values that come from coordinator
   // Rendering function that takes response would be here instead
