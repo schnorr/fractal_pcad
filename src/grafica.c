@@ -14,6 +14,13 @@
 #include <netdb.h> 
 #include <sys/types.h>
 
+// We need a multi-threaded Raylib app, where one thread handles
+// rendering, and another handles the UI or logic.  Shared pixel
+// buffer between the two threads (the render and the drawing).  To
+// avoid race conditions while one thread writes and the other reads
+// from the shared Color * buffer we use the pixelMutex.
+Color *sharedPixels = NULL;
+pthread_mutex_t pixelMutex;
 
 #define max(a,b)				\
 ({ __typeof__ (a) _a = (a);			\
@@ -116,7 +123,7 @@ void *ui_thread_function () {
       
       payload->generation = generation++;
       payload->granularity = 10; // placeholder values
-      payload->fractal_depth = 255; // <-/
+      payload->fractal_depth = 2550; // <-/
 
       payload->ll.real = (float) min(first_click_fractal.real, second_click_fractal.real); 
       payload->ll.imag = (float) min(first_click_fractal.imag, second_click_fractal.imag); 
@@ -154,28 +161,32 @@ void *render_thread_function () {
 
   // Placeholder: Currently printing random values that come from coordinator
   // Rendering function that takes response would be here instead
-  BeginDrawing();
   while(true) {
     response_t *response = (response_t *)queue_dequeue(&response_queue);
 
-    //response_print(__func__, "dequeued response", response);
+    response_print(__func__, "dequeued response", response);
+    pthread_mutex_lock(&pixelMutex); //lock
     int p = 0;
     for (int i = response->payload.s_ll.x; i < response->payload.s_ur.x; i++){
       for (int j = response->payload.s_ll.y; j < response->payload.s_ur.y; j++){
-	struct Color color = { response->values[p],
-			       response->values[p],
-			       response->values[p],
-			       255};
-	DrawPixel(i, j, color);
+	if (i <= screen_width && j <= screen_height) {
+	  // must find a better way to map response->values[p] to a color
+	  // the maximum value of response->values[p] is available at
+	  // response->payload.fractal_depth
+	  struct Color color = { response->values[p],
+				 response->values[p],
+				 response->values[p],
+				 255};
+	  sharedPixels[j * screen_width + i] = color;
+	}
 	p++;
       }
     }
+    pthread_mutex_unlock(&pixelMutex); //unlock
     // Freeing response after using it
     free(response->values);
     free(response);
   }
-  EndDrawing();
-
   pthread_exit(NULL);
 }
 
@@ -265,9 +276,13 @@ int main(int argc, char* argv[])
 
   InitWindow(screen_width, screen_height, "Fractal @ PCAD");
   SetTargetFPS(60);
-  BeginDrawing();
-  ClearBackground(RAYWHITE);
-  EndDrawing();
+
+  // create a CPU-side "image" that we can draw on top when needed
+  Image img = GenImageColor(screen_width, screen_height, RAYWHITE);
+  sharedPixels = LoadImageColors(img); //global
+  Texture2D texture = LoadTextureFromImage(img);
+  UnloadImage(img);
+  pthread_mutex_init(&pixelMutex, NULL);
 
   srand(0);
 
@@ -288,7 +303,15 @@ int main(int argc, char* argv[])
 
   //  ToggleFullscreen();
   while (!WindowShouldClose()) {
+    // get the mutex so we can read safely from sharedPixels
+    pthread_mutex_lock(&pixelMutex);
+    UpdateTexture(texture, sharedPixels);
+    pthread_mutex_unlock(&pixelMutex);
+
+    // do the drawing (only here we actually do the drawing)
     BeginDrawing();
+    ClearBackground(RAYWHITE);
+    DrawTexture(texture, 0, 0, WHITE);
     EndDrawing();
   }
   
