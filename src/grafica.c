@@ -164,7 +164,7 @@ void *render_thread_function () {
   while(true) {
     response_t *response = (response_t *)queue_dequeue(&response_queue);
 
-    response_print(__func__, "dequeued response", response);
+    //    response_print(__func__, "dequeued response", response);
     pthread_mutex_lock(&pixelMutex); //lock
     int p = 0;
     for (int i = response->payload.s_ll.x; i < response->payload.s_ur.x; i++){
@@ -173,10 +173,13 @@ void *render_thread_function () {
 	  // must find a better way to map response->values[p] to a color
 	  // the maximum value of response->values[p] is available at
 	  // response->payload.fractal_depth
-	  struct Color color = { response->values[p],
-				 response->values[p],
-				 response->values[p],
-				 255};
+	  //	  printf("%d %d\n", response->payload.fractal_depth,
+	  //		 response->values[p]);
+	  cor_t cor = get_color_viridis(response->values[p],
+					response->payload.fractal_depth);
+	  //	  cor = get_color_viridis(response->worker_id,
+	  //			  response->max_worker_id);
+	  struct Color color = { cor.r, cor.g, cor.b, 255};
 	  sharedPixels[j * screen_width + i] = color;
 	}
 	p++;
