@@ -1,7 +1,3 @@
-#include "fractal.h"
-#include "connection.h"
-#include "queue.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -12,11 +8,30 @@
 #include <pthread.h>
 #include <netdb.h> 
 #include <sys/types.h>
+#include <signal.h>
+#include <stdatomic.h>
+#include "fractal.h"
+#include "connection.h"
+#include "queue.h"
 
 #define MAX_QUEUE_SIZE 100 // Should probably be much higher
 
+atomic_int shutdown_requested;
+
 static queue_t payload_queue = {0};
 static queue_t response_queue = {0};
+
+/* Shutdown function. Shuts down the TCP connection and unblocks all queues.*/
+void request_shutdown(int connection){
+  // Atomic exchange tests the variable and sets it atomically
+  if (atomic_exchange(&shutdown_requested, 1) == 1){
+    return; // If already shutting down
+  }
+  printf("Shutdown requested.\n");
+  shutdown(connection, SHUT_RDWR); 
+  queue_shutdown(&payload_queue);
+  queue_shutdown(&response_queue);
+}
 
 /*
   ui_thread_function: this function is a placeholder
@@ -31,14 +46,14 @@ void *ui_thread_function () {
 
   // Placeholder: Currently simulating user input with random payloads every 5-10 seconds
   // Input handling function would be here instead
-  while(1) {
-    int wait_seconds = (rand() % 6) + 5;
+  while(!atomic_load(&shutdown_requested)) {
+    int wait_seconds = 0;//(rand() % 6) + 5;
 
     // User interaction creates a new payload
     payload_t *payload = calloc(1, sizeof(payload_t));
     if (payload == NULL) {
-      perror("malloc failed.\n");
-      pthread_exit(NULL);
+      fprintf(stderr, "malloc failed.\n");
+      break;
     }
 
     payload->generation = generation++;
@@ -71,8 +86,9 @@ void *render_thread_function () {
 
   // Placeholder: Currently printing random values that come from coordinator
   // Rendering function that takes response would be here instead
-  while(1) {
+  while(!atomic_load(&shutdown_requested)) {
     response_t *response = (response_t *)queue_dequeue(&response_queue);
+    if (response == NULL) break; // Queue returns null on shutdown
 
 #ifdef RESPONSE_DEBUG
     response_print(__func__, "Dequeued response", response);
@@ -89,13 +105,14 @@ void *render_thread_function () {
 void *net_thread_send_payload (void *arg)
 {
   int connection = *(int *)arg;
-  while(1) {
+  while(!atomic_load(&shutdown_requested)) {
     payload_t *payload = (payload_t *)queue_dequeue(&payload_queue);
+    if (payload == NULL) break; // Queue returns NULL on shutdown
     
     if (send(connection, payload, sizeof(*payload), 0) <= 0) {
-      perror("Send failed. Killing thread...\n");
+      fprintf(stderr, "Send failed. Killing thread...\n");
       free(payload);
-      pthread_exit(NULL);
+      break;
     }
 
 #ifdef PAYLOAD_DEBUG
@@ -111,26 +128,26 @@ void *net_thread_send_payload (void *arg)
 void *net_thread_receive_response (void *arg)
 {
   int connection = *(int *)arg;
-  while(1){
+  while(!atomic_load(&shutdown_requested)){
     size_t response_size;
 
     // Receive size of response. Done since response can be arbitrarily large due to *values
     if (recv_all(connection, &response_size, sizeof(response_size), 0) <= 0) {
-      perror("Receive failed. Killing thread...\n");
-      pthread_exit(NULL);
+      fprintf(stderr, "Receive failed. Killing thread...\n");
+      break;
     }
   
     uint8_t *buffer = malloc(response_size);
     if (buffer == NULL) {
-      perror("malloc failed.\n");
-      pthread_exit(NULL);
+      fprintf(stderr, "malloc failed.\n");
+      break;
     }
 
     // Receive actual response, put in buffer
     if (recv_all(connection, buffer, response_size, 0) <= 0) {
-      perror("Receive failed. Killing thread...\n");
+      fprintf(stderr, "Receive failed. Killing thread...\n");
       free(buffer);
-      pthread_exit(NULL);
+      break;
     }
 
     response_t *response = response_deserialize(&buffer);
@@ -150,6 +167,9 @@ int main(int argc, char* argv[])
     return 1;
   }
 
+  atomic_init(&shutdown_requested, 0);
+  signal(SIGPIPE, SIG_IGN); // Ignore SIGPIPE (failed send)
+
   queue_init(&payload_queue, MAX_QUEUE_SIZE, free);
   queue_init(&response_queue, MAX_QUEUE_SIZE, free_response);
 
@@ -165,7 +185,14 @@ int main(int argc, char* argv[])
   pthread_create(&payload_thread, NULL, net_thread_send_payload, &connection);
   pthread_create(&response_thread, NULL, net_thread_receive_response, &connection);
 
-  /* raylib program goes here */
+  char input[64];
+  while (!atomic_load(&shutdown_requested)){
+    fgets(input, sizeof(input), stdin);
+    input[strcspn(input, "\n")] = '\0';
+    if (strcmp(input, "quit") == 0 || strcmp(input, "exit") == 0) {
+      request_shutdown(connection);
+    }
+  }
 
   pthread_join(ui_thread, NULL);
   pthread_join(render_thread, NULL);
