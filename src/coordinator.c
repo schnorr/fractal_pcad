@@ -301,8 +301,14 @@ int main_worker(int argc, char* argv[])
 
 int main(int argc, char* argv[])
 {
+  int provided;
+  MPI_Init_thread(&argc, &argv, MPI_THREAD_MULTIPLE, &provided);
+  if (provided < MPI_THREAD_MULTIPLE) {
+    // Tratamento de erro: seu código pode não funcionar corretamente
+    printf("MPI implementation does not support MPI_THREAD_MULTIPLE\n");
+    MPI_Abort(MPI_COMM_WORLD, 1);
+  }
   int rank;
-  MPI_Init(&argc, &argv);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
   if (rank == 0){
