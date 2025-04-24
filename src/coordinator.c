@@ -108,9 +108,52 @@ void *compute_create_blocks()
 }
 
 /*
+  main_thread_mpi_recv: receive responses from our workers.
+*/
+void *main_thread_mpi_recv_responses ()
+{
+  while(1) {
+    // Might have to rethink - queue-dequeue() currently locks
+    // thread. If this thread needs to wait for worker answers, maybe
+    // a queue_peek() that doesn't block thread would be appropriate?
+
+    int worker;
+    {
+      // verify who wants to send us a response
+      MPI_Recv(&worker, 1, MPI_INT,
+	       MPI_ANY_SOURCE, // receive request from any worker
+	       FRACTAL_MPI_RESPONSE_REQUEST,
+	       MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+      // receive response from this worker
+      response_t *response = mpi_response_receive (worker);
+#ifdef RESPONSE_DEBUG
+      response_print(__func__, "Enqueueing response", response);
+#endif
+      queue_enqueue(&response_queue, response);
+      response = NULL; // Transferred ownership to queue
+    }
+  }
+  //keep looking to the payload_to_workers queue
+  //lock payload_to_workers
+  //consume payload_to_workers and distribute each payload
+  //to the queue of workers
+  //unlock
+
+  //wait for any worker to answer (mpi-test and if true, mpi-wait-any)
+  //lock response_queue
+  //while there is a response from a worker
+  //  - receive from the worker
+  //  - producer: put in that queue
+  //signal response-queue (net-thread-send-response)
+  //unlock
+
+  pthread_exit(NULL);
+}
+
+/*
   main_thread_function: distribute discretized payloads to our workers.
 */
-void *main_thread_function()
+void *main_thread_mpi_send_payloads ()
 {
   while(1) {
     // Might have to rethink - queue-dequeue() currently locks
@@ -135,23 +178,6 @@ void *main_thread_function()
       free(payload);
       payload = NULL;
     }
-
-    {
-      // verify who wants to send us a response
-      MPI_Recv(&worker, 1, MPI_INT,
-	       MPI_ANY_SOURCE, // receive request from any worker
-	       FRACTAL_MPI_RESPONSE_REQUEST,
-	       MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-      // receive response from this worker
-      response_t *response = mpi_response_receive (worker);
-#ifdef RESPONSE_DEBUG
-      response_print(__func__, "Enqueueing response", response);
-#endif
-      queue_enqueue(&response_queue, response);
-      response = NULL; // Transferred ownership to queue
-    }
-
-
   }
   //keep looking to the payload_to_workers queue
   //lock payload_to_workers
@@ -160,7 +186,7 @@ void *main_thread_function()
   //unlock
 
   //wait for any worker to answer (mpi-test and if true, mpi-wait-any)
-  //lock response_queue  
+  //lock response_queue
   //while there is a response from a worker
   //  - receive from the worker
   //  - producer: put in that queue
@@ -239,17 +265,20 @@ int main_coordinator(int argc, char* argv[])
   pthread_mutex_init(&newest_payload_mutex, NULL);
   pthread_cond_init(&new_payload, NULL);
   
-  pthread_t main_thread = 0;
+  pthread_t main_mpi_send = 0;
+  pthread_t main_mpi_recv = 0;
   pthread_t compute_thread = 0;
   pthread_t payload_receive_thread = 0;
   pthread_t response_send_thread = 0;
 
-  pthread_create(&main_thread, NULL, main_thread_function, NULL);
+  pthread_create(&main_mpi_send, NULL, main_thread_mpi_send_payloads, NULL);
+  pthread_create(&main_mpi_recv, NULL, main_thread_mpi_recv_responses, NULL);
   pthread_create(&compute_thread, NULL, compute_create_blocks, NULL);
   pthread_create(&payload_receive_thread, NULL, net_thread_receive_payload, &connection);
   pthread_create(&response_send_thread, NULL, net_thread_send_response, &connection);
 
-  pthread_join(main_thread, NULL);
+  pthread_join(main_mpi_send, NULL);
+  pthread_join(main_mpi_recv, NULL);
   pthread_join(compute_thread, NULL);
   pthread_join(payload_receive_thread, NULL);
   pthread_join(response_send_thread, NULL);
