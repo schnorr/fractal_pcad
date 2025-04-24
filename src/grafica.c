@@ -41,6 +41,8 @@ static queue_t response_queue = {0};
 bool g_selecting = false;
 Vector2 g_box_first_point = {0, 0};
 
+bool g_use_pallete_colors = true;
+
 // Currently sending random packets then ending threads.
 
 // Main thread manages the window and user interaction
@@ -52,8 +54,9 @@ Vector2 g_box_first_point = {0, 0};
   payload_queue using the queue_enqueue function.
 */
 void *ui_thread_function () {
-  static int generation = 0;
 
+  static int generation = 0;
+  static int use_pallete_colors = true;
   //This action is guided by the user
 
   static fractal_coord_t actual_ll = {-2, -1.5};
@@ -91,8 +94,8 @@ void *ui_thread_function () {
       initial = false;
       interaction = true;
     }
-    
-    if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ 
+
+    if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ 
       first_click_screen.x = GetMouseX();
       first_click_screen.y = GetMouseY();
 
@@ -100,7 +103,7 @@ void *ui_thread_function () {
       g_selecting = true;
     }
 
-    if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT) // User interaction creates a new payload
+    if(IsMouseButtonReleased(MOUSE_BUTTON_LEFT) // User interaction creates a new payload
 	&& GetMouseX() != first_click_screen.x){ // If mouse has moved from last click_screen
      
       second_click_screen.x = GetMouseX();
@@ -110,8 +113,19 @@ void *ui_thread_function () {
       g_selecting = false;
     }
 
+    // Selecting the color for the next payload
+    if(IsKeyPressed(KEY_P)){ // Using color pallete defined in colors.h
+      use_pallete_colors = true;
+    }
+
+    if(IsKeyPressed(KEY_M)){
+      use_pallete_colors = false; // Using colors defined by function get_color in colors.c
+    }
+    
     if(interaction == true){
       interaction = false;
+
+      g_use_pallete_colors = use_pallete_colors; // Informing the selected color to the global variable so we can use in the render function
       
       payload_t *payload = calloc(1, sizeof(payload_t));
       if (payload == NULL) {
@@ -184,8 +198,14 @@ void *render_thread_function () {
 	  // response->payload.fractal_depth
 	  //	  printf("%d %d\n", response->payload.fractal_depth,
 	  //		 response->values[p]);
-	  cor_t cor = get_color(response->values[p],
-					response->payload.fractal_depth);
+	  cor_t cor = {0};
+	  if(g_use_pallete_colors){
+	    cor = get_color_viridis(response->values[p],
+					  response->payload.fractal_depth);
+	  } else {
+	    cor = get_color(response->values[p],
+				  response->payload.fractal_depth);
+	  }
 	  //	  cor = get_color_viridis(response->worker_id,
 	  //			  response->max_worker_id);
 	  struct Color color = { cor.r, cor.g, cor.b, 255};
