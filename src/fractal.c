@@ -170,14 +170,20 @@ void payload_print (const char *func, const char *message, const payload_t *p)
 	 p->s_ur.x, p->s_ur.y);
 }
 
-void response_print (const char *func, const char *message, const response_t *r)
+long long compute_total_load (const response_t *r)
 {
-  payload_print(func, message, &r->payload);
-  //compute cost of this response
   int number_of_values = r->payload.granularity * r->payload.granularity;
   long long total_cost = 0;
   for (int i = 0; i < number_of_values; i++){
     total_cost += r->values[i];
   }
+  return total_cost;
+}
+
+void response_print (const char *func, const char *message, const response_t *r)
+{
+  payload_print(func, message, &r->payload);
+  //compute cost of this response
+  long long total_cost = compute_total_load (r);
   printf("\tTotal cost: %lld\n", total_cost);
 }
