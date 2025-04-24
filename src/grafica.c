@@ -38,6 +38,9 @@ _a < _b ? _a : _b; })
 static queue_t payload_queue = {0};
 static queue_t response_queue = {0};
 
+bool g_selecting = false;
+Vector2 g_box_first_point = {0, 0};
+
 // Currently sending random packets then ending threads.
 
 // Main thread manages the window and user interaction
@@ -92,6 +95,9 @@ void *ui_thread_function () {
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ 
       first_click_screen.x = GetMouseX();
       first_click_screen.y = GetMouseY();
+
+      g_box_first_point = first_click_screen;
+      g_selecting = true;
     }
 
     if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT) // User interaction creates a new payload
@@ -100,6 +106,8 @@ void *ui_thread_function () {
       second_click_screen.x = GetMouseX();
       second_click_screen.y = GetMouseY();
       interaction = true;
+
+      g_selecting = false;
     }
 
     if(interaction == true){
@@ -176,7 +184,7 @@ void *render_thread_function () {
 	  // response->payload.fractal_depth
 	  //	  printf("%d %d\n", response->payload.fractal_depth,
 	  //		 response->values[p]);
-	  cor_t cor = get_color_viridis(response->values[p],
+	  cor_t cor = get_color(response->values[p],
 					response->payload.fractal_depth);
 	  //	  cor = get_color_viridis(response->worker_id,
 	  //			  response->max_worker_id);
@@ -316,6 +324,16 @@ int main(int argc, char* argv[])
     BeginDrawing();
     ClearBackground(RAYWHITE);
     DrawTexture(texture, 0, 0, WHITE);
+
+    if(g_selecting){
+
+      Vector2 mouse = GetMousePosition();
+      Vector2 box_origin = (Vector2){min(g_box_first_point.x, mouse.x), min(g_box_first_point.y, mouse.y)};
+      Vector2 attr = (Vector2){max(g_box_first_point.x, mouse.x) - box_origin.x, max(g_box_first_point.y, mouse.y) - box_origin.y};
+      
+      DrawRectangleV(box_origin, attr, (Color){1.0f, 1.0f, 255.0f, 100.0f});
+    }
+
     EndDrawing();
   }
   
