@@ -124,7 +124,7 @@ void *ui_thread_function () {
       
       payload->generation = generation++;
       payload->granularity = 10; // placeholder values
-      payload->fractal_depth = 255; // <-/
+      payload->fractal_depth = 2550; // <-/
 
       payload->ll.real = (float) min(first_click_fractal.real, second_click_fractal.real); 
       payload->ll.imag = (float) min(first_click_fractal.imag, second_click_fractal.imag); 
