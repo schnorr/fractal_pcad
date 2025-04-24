@@ -117,8 +117,6 @@ response_t *create_response_for_payload (payload_t *payload)
     return NULL;
   }
   ret->payload = *payload;
-  ret->max_worker_id = 0; // TODO
-  ret->worker_id = 0; // TODO
   int screen_width = payload->s_ur.x - payload->s_ll.x;
   int screen_height = payload->s_ur.y - payload->s_ll.y;
 
