@@ -12,7 +12,7 @@ BIN_DIR = bin
 SRCS := $(wildcard $(SRC_DIR)/*.c)
 OBJS := $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRCS))
 
-GRAFICA_OBJ := $(OBJ_DIR)/grafica.o
+GRAFICA_OBJ := $(OBJ_DIR)/grafica.o $(OBJ_DIR)/colors.o
 TEXTUAL_OBJ := $(OBJ_DIR)/textual.o
 COORDINATOR_OBJ := $(OBJ_DIR)/coordinator.o
 
