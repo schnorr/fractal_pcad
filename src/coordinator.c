@@ -117,37 +117,41 @@ void *main_thread_function()
     // thread. If this thread needs to wait for worker answers, maybe
     // a queue_peek() that doesn't block thread would be appropriate?
 
-    // Get the payload (the queue-dequeue blocks this thread)
-    payload_t *payload = (payload_t *)queue_dequeue(&payload_to_workers_queue);
-
-    // after getting a payload to do, check which worker is available
     int worker;
-    MPI_Recv(&worker, 1, MPI_INT,
-	     MPI_ANY_SOURCE, // receive request from any worker
-	     FRACTAL_MPI_PAYLOAD_REQUEST,
-	     MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    {
+      // Get the payload (the queue-dequeue blocks this thread)
+      payload_t *payload = (payload_t *)queue_dequeue(&payload_to_workers_queue);
 
-    // send the work to this worker
-    mpi_payload_send (payload, worker);
+      // after getting a payload to do, check which worker is available
+      MPI_Recv(&worker, 1, MPI_INT,
+	       MPI_ANY_SOURCE, // receive request from any worker
+	       FRACTAL_MPI_PAYLOAD_REQUEST,
+	       MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-    // free the payload
-    free(payload);
-    payload = NULL;
+      // send the work to this worker
+      mpi_payload_send (payload, worker);
 
-    // verify who wants to send us a response
-    MPI_Recv(&worker, 1, MPI_INT,
-	     MPI_ANY_SOURCE, // receive request from any worker
-	     FRACTAL_MPI_RESPONSE_REQUEST,
-	     MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+      // free the payload
+      free(payload);
+      payload = NULL;
+    }
 
-    // receive response from this worker
-    response_t *response = mpi_response_receive (worker);
-
+    {
+      // verify who wants to send us a response
+      MPI_Recv(&worker, 1, MPI_INT,
+	       MPI_ANY_SOURCE, // receive request from any worker
+	       FRACTAL_MPI_RESPONSE_REQUEST,
+	       MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+      // receive response from this worker
+      response_t *response = mpi_response_receive (worker);
 #ifdef RESPONSE_DEBUG
-    response_print(__func__, "Enqueueing response", response);
+      response_print(__func__, "Enqueueing response", response);
 #endif
-    queue_enqueue(&response_queue, response);
-    response = NULL; // Transferred ownership to queue
+      queue_enqueue(&response_queue, response);
+      response = NULL; // Transferred ownership to queue
+    }
+
+
   }
   //keep looking to the payload_to_workers queue
   //lock payload_to_workers
@@ -268,33 +272,38 @@ int main_worker(int argc, char* argv[])
 
   // execute forever
   while(1) {
-    // send our rank to the coordinator so it can send us jobs
-    MPI_Ssend(&rank, 1, MPI_INT,
-	      0, // to our coordinator (rank zero)
-	      FRACTAL_MPI_PAYLOAD_REQUEST,
-	      MPI_COMM_WORLD);
+    payload_t *payload = NULL;
+    {
+      // send our rank to the coordinator so it can send us jobs
+      MPI_Ssend(&rank, 1, MPI_INT,
+		0, // to our coordinator (rank zero)
+		FRACTAL_MPI_PAYLOAD_REQUEST,
+		MPI_COMM_WORLD);
 
-    // receive the payload from the coordinator
-    payload_t *payload = mpi_payload_receive(0);
+      // receive the payload from the coordinator
+      payload = mpi_payload_receive(0);
+    }
 
-    // compute the response
-    response_t *response = create_response_for_payload (payload);
-    response->max_worker_id = size;
-    response->worker_id = rank;
+    {
+      // compute the response
+      response_t *response = create_response_for_payload (payload);
+      response->max_worker_id = size;
+      response->worker_id = rank;
 
-    // send our rank to the coordinator so it can wait for our response
-    MPI_Ssend(&rank, 1, MPI_INT,
-	      0, // to our coordinator (rank zero)
-	      FRACTAL_MPI_RESPONSE_REQUEST,
-	      MPI_COMM_WORLD);
+      // send our rank to the coordinator so it can wait for our response
+      MPI_Ssend(&rank, 1, MPI_INT,
+		0, // to our coordinator (rank zero)
+		FRACTAL_MPI_RESPONSE_REQUEST,
+		MPI_COMM_WORLD);
 
-    // send the response back to the coordinator
-    mpi_response_send(response);
+      // send the response back to the coordinator
+      mpi_response_send(response);
 
-    // free stuff for this round
-    free(response->values);
-    free(response);
-    free(payload);
+      // free stuff for this round
+      free(response->values);
+      free(response);
+      free(payload);
+    }
   }
   return 0;
 }
