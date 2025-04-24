@@ -48,6 +48,17 @@ void free_response(void* ptr) {
   free(response);
 }
 
+// Função para embaralhar o vetor
+static void embaralhar(payload_t **vetor, int tamanho) {
+    for (int i = tamanho - 1; i > 0; i--) {
+        int j = rand() % (i + 1); // índice aleatório de 0 até i
+        // troca vetor[i] com vetor[j]
+        payload_t *temp = vetor[i];
+        vetor[i] = vetor[j];
+        vetor[j] = temp;
+    }
+}
+
 payload_t **discretize_payload (payload_t *origin, int *length)
 {
   if (!origin || !length){
@@ -104,6 +115,7 @@ payload_t **discretize_payload (payload_t *origin, int *length)
       p++;
     }
   }
+  embaralhar(ret, *length);
   return ret;
 }
 
