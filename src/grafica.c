@@ -45,7 +45,6 @@ static queue_t response_queue = {0};
 bool g_selecting = false;
 Vector2 g_box_first_point = {0, 0};
 
-<<<<<<< HEAD
 bool g_use_pallete_colors = true;
 
 // Currently sending random packets then ending threads.
@@ -61,7 +60,6 @@ void request_shutdown(int connection){
   queue_shutdown(&payload_queue);
   queue_shutdown(&response_queue);
 }
->>>>>>> 3750c84b8ecfc8179489c81d9aca1e6a93938a0d
 
 // Main thread manages the window and user interaction
 
