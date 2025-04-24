@@ -7,6 +7,7 @@
 #include <netinet/in.h>
 #include <pthread.h>
 #include <mpi.h>
+#include <sys/time.h>
 #include "fractal.h"
 #include "connection.h"
 #include "queue.h"
@@ -290,6 +291,12 @@ int main_coordinator(int argc, char* argv[])
   queue_destroy(&payload_to_workers_queue);
   queue_destroy(&response_queue);
   return 0;
+}
+
+double get_time_seconds() {
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
 }
 
 int main_worker(int argc, char* argv[])
