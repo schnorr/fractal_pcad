@@ -48,7 +48,7 @@ Vector2 g_box_first_point = {0, 0};
 bool g_use_pallete_colors = true;
 
 // Currently sending random packets then ending threads.
-=======
+
 /* Shutdown function. Shuts down the TCP connection and unblocks all queues.*/
 void request_shutdown(int connection){
   // Atomic exchange tests the variable and sets it atomically
