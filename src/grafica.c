@@ -213,8 +213,6 @@ void *render_thread_function () {
 	  // must find a better way to map response->values[p] to a color
 	  // the maximum value of response->values[p] is available at
 	  // response->payload.fractal_depth
-	  //	  printf("%d %d\n", response->payload.fractal_depth,
-	  //		 response->values[p]);
 	  cor_t cor = {0};
 	  if(g_use_pallete_colors){
 	    cor = get_color_viridis(response->values[p],
@@ -223,8 +221,6 @@ void *render_thread_function () {
 	    cor = get_color(response->values[p],
 				  response->payload.fractal_depth);
 	  }
-	  //	  cor = get_color_viridis(response->worker_id,
-	  //			  response->max_worker_id);
 	  struct Color color = { cor.r, cor.g, cor.b, 255};
 	  sharedPixels[j * screen_width + i] = color;
 	}
