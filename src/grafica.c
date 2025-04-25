@@ -209,7 +209,7 @@ void *render_thread_function () {
     int p = 0;
     for (int i = response->payload.s_ll.x; i < response->payload.s_ur.x; i++){
       for (int j = response->payload.s_ll.y; j < response->payload.s_ur.y; j++){
-	if (i <= screen_width && j <= screen_height) {
+	if (i < screen_width && j < screen_height) {
 	  // must find a better way to map response->values[p] to a color
 	  // the maximum value of response->values[p] is available at
 	  // response->payload.fractal_depth
