@@ -26,9 +26,11 @@ atomic_int shutdown_requested;
 // from the shared Color * buffer we use the pixelMutex.
 
 #define TOTAL_COLORS 3
-Color *g_mandelbrot_color = NULL;
 Color *g_pallete_color = NULL;
+Color *g_mandelbrot_color = NULL;
+Color *g_worker_color = NULL;
 Color *g_both_color = NULL; // mandelbrot with lower alpha + pallete
+bool g_show_workers = false;
 
 int g_actual_color = 0;
 
@@ -52,8 +54,6 @@ static queue_t response_queue = {0};
 bool g_selecting = false;
 Vector2 g_box_origin = {0, 0};
 Vector2 g_box_attr = {0, 0};
-
-bool g_use_pallete_colors = true;
 
 // Currently sending random packets then ending threads.
 
@@ -80,7 +80,6 @@ void request_shutdown(int connection){
 void *ui_thread_function () {
 
   static int generation = 0;
-  static int use_pallete_colors = true;
   //This action is guided by the user
 
   static fractal_coord_t actual_ll = {-2, -1.5};
@@ -150,7 +149,7 @@ void *ui_thread_function () {
 	 mouse.x < g_box_origin.x + g_box_attr.x && mouse.y < g_box_origin.y + g_box_attr.y){
 
 	float zoom = GetFrameTime()*GetMouseWheelMove();
-	WaitTime(0.0001);
+	WaitTime(0.001);
 	
 	g_box_attr.x = g_box_attr.x + zoom*screen_width;
 	g_box_attr.y = g_box_attr.y + zoom*screen_height;
@@ -190,11 +189,14 @@ void *ui_thread_function () {
       g_actual_color = (g_actual_color + 1 >= TOTAL_COLORS) ? 0 : g_actual_color + 1; // Using colors defined by function get_color in colors.c
       WaitTime(0.1);
     }
+    if(IsKeyPressed(KEY_W)){
+      g_show_workers = !g_show_workers;
+      WaitTime(0.1);
+    }
+    
     
     if(interaction == true){
       interaction = false;
-
-      g_use_pallete_colors = use_pallete_colors; // Informing the selected color to the global variable so we can use in the render function
       
       payload_t *payload = calloc(1, sizeof(payload_t));
       if (payload == NULL) {
@@ -215,7 +217,7 @@ void *ui_thread_function () {
       
       payload->generation = generation++;
       payload->granularity = 10; // placeholder values
-      payload->fractal_depth = 35500; // <-/
+      payload->fractal_depth = 1000; // <-/
 
       payload->ll.real = (float) min(first_point_fractal.real, second_point_fractal.real); 
       payload->ll.imag = (float) min(first_point_fractal.imag, second_point_fractal.imag); 
@@ -283,7 +285,13 @@ void *render_thread_function () {
 	    
 	    struct Color color = {cor.r, cor.g, cor.b, 255};
 	    g_mandelbrot_color[j * screen_width + i] = color;
-	  
+
+	    cor = get_color(response->worker_id,
+			    response->max_worker_id);
+
+	    color = (struct Color){cor.r, cor.g, cor.b, 255};
+	    g_worker_color[j * screen_width + i] = color;
+	    
 	    color = (struct Color){cor.r, cor.g, cor.b, 100};
 	    g_both_color[j * screen_width + i] = color;
 	    
@@ -389,10 +397,10 @@ int main(int argc, char* argv[])
   atomic_init(&shutdown_requested, 0);
   signal(SIGPIPE, SIG_IGN); // Ignore SIGPIPE (failed send)
 
-  /* int screen_width = 640;//GetMonitorWidth(GetCurrentMonitor()); */
-  /* int screen_height = 480;//GetMonitorHeight(GetCurrentMonitor()); */
-  int screen_width = 400;
-  int screen_height = 200;
+  int screen_width = 1000;
+  int screen_height = 800;
+  /* int screen_width = GetScreenWidth(); */
+  /* int screen_height = GetScreenHeight(); */
   
   InitWindow(screen_width, screen_height, "Fractal @ PCAD");
   //  InitWindow(GetScreenWidth(), GetScreenHeight(), "Fractal @ PCAD");
@@ -407,6 +415,11 @@ int main(int argc, char* argv[])
   img = GenImageColor(screen_width, screen_height, RAYWHITE);
   g_pallete_color = LoadImageColors(img); //global
   Texture2D texture_pallete = LoadTextureFromImage(img);
+  UnloadImage(img);
+
+  img = GenImageColor(screen_width, screen_height, RAYWHITE);
+  g_worker_color = LoadImageColors(img); //global
+  Texture2D texture_worker = LoadTextureFromImage(img);
   UnloadImage(img);
 
   img = GenImageColor(screen_width, screen_height, RAYWHITE);
@@ -439,6 +452,7 @@ int main(int argc, char* argv[])
     pthread_mutex_lock(&pixelMutex);
     UpdateTexture(texture_mandelbrot, g_mandelbrot_color);
     UpdateTexture(texture_pallete, g_pallete_color);
+    UpdateTexture(texture_worker, g_worker_color);
     UpdateTexture(texture_both, g_both_color);
     pthread_mutex_unlock(&pixelMutex);
 
@@ -446,12 +460,14 @@ int main(int argc, char* argv[])
     BeginDrawing();
     ClearBackground(RAYWHITE);
 
+    
     if(g_actual_color == 0)
       DrawTexture(texture_mandelbrot, 0, 0, WHITE);
     else if(g_actual_color == 1)
       DrawTexture(texture_pallete, 0, 0, WHITE);
-    else if(g_actual_color == 2){
-      DrawTexture(texture_pallete, 0, 0, WHITE);
+    else if(g_actual_color == 2)
+      DrawTexture(texture_worker, 0, 0, WHITE);
+    if(g_show_workers){
       DrawTexture(texture_both, 0, 0, WHITE);
     }
     
@@ -473,10 +489,12 @@ int main(int argc, char* argv[])
 
   UnloadTexture(texture_mandelbrot);
   UnloadTexture(texture_pallete);
+  UnloadTexture(texture_worker);
   UnloadTexture(texture_both);
   
   UnloadImageColors(g_mandelbrot_color);
   UnloadImageColors(g_pallete_color);
+  UnloadImageColors(g_worker_color);
   UnloadImageColors(g_both_color);
   CloseWindow(); // Close OpenGL context 
 
