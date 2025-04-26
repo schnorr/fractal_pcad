@@ -298,6 +298,7 @@ int main_coordinator(int argc, char* argv[])
 
     pthread_mutex_lock(&newest_payload_mutex);
     newest_payload = NULL;
+    latest_generation = 0;
     pthread_mutex_unlock(&newest_payload_mutex);
     queue_clear(&payload_to_workers_queue);
     queue_clear(&response_queue);
