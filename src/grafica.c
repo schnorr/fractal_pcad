@@ -94,10 +94,10 @@ void *ui_thread_function () {
   double pixel_coord_ratio = 0;
 
   Vector2 mouse = {0};
-  Vector2 first_click_screen = {0, 0};
+  Vector2 first_point_screen = {0, 0};
 
-  fractal_coord_t first_click_fractal = {0, 0};
-  fractal_coord_t second_click_fractal = {0, 0};
+  fractal_coord_t first_point_fractal = {0, 0};
+  fractal_coord_t second_point_fractal = {0, 0};
     
   bool interaction = false; 
   bool initial = true;
@@ -124,17 +124,19 @@ void *ui_thread_function () {
     }
 
     /* ENTER starts user interaction */
-    if(g_selecting && (IsKeyPressed(KEY_Z) || IsKeyPressed(KEY_ENTER))){
-      g_selecting = false;
-      interaction = true;
-      WaitTime(0.1);
-    }    
     if(!g_selecting && (IsKeyPressed(KEY_Z) || IsKeyPressed(KEY_ENTER))){
       g_selecting = true;
       g_box_origin = (Vector2) {screen_width/4, screen_height/4};
       g_box_attr = (Vector2) {screen_width/2, screen_height/2};
       WaitTime(0.1);
     }
+
+    if(g_selecting && (IsKeyPressed(KEY_Z) || IsKeyPressed(KEY_ENTER))){
+      g_selecting = false;
+      interaction = true;
+      WaitTime(0.1);
+    }    
+
     if(IsKeyPressed(KEY_BACKSPACE)){
       g_selecting = false;
     }
@@ -156,8 +158,8 @@ void *ui_thread_function () {
 	g_box_origin.y = g_box_origin.y - zoom*screen_height/2;
 
 	if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
-	  first_click_screen.x = GetMouseX();
-	  first_click_screen.y = GetMouseY();
+	  first_point_screen.x = GetMouseX();
+	  first_point_screen.y = GetMouseY();
 	  clicked = true;
 	}
 	
@@ -167,18 +169,18 @@ void *ui_thread_function () {
       
       if(clicked && IsMouseButtonDown(MOUSE_BUTTON_LEFT)){ 
 
-	  Vector2 distance = (Vector2) {g_box_origin.x - first_click_screen.x, g_box_origin.y - first_click_screen.y};
+	  Vector2 distance = (Vector2) {g_box_origin.x - first_point_screen.x, g_box_origin.y - first_point_screen.y};
 	
                                                          	  /* mouse delta */
-	  g_box_origin.x = max(-100, mouse.x + distance.x + (mouse.x - first_click_screen.x)*GetFrameTime());
-	  g_box_origin.y = max(-100, mouse.y + distance.y + (mouse.y - first_click_screen.y)*GetFrameTime());
+	  g_box_origin.x = max(0, mouse.x + distance.x + (mouse.x - first_point_screen.x)*GetFrameTime());
+	  g_box_origin.y = max(0, mouse.y + distance.y + (mouse.y - first_point_screen.y)*GetFrameTime());
 
 	
-	  g_box_origin.x = min(g_box_origin.x, screen_width - g_box_attr.x + 100);
-	  g_box_origin.y = min(g_box_origin.y, screen_height - g_box_attr.y + 100);
+	  g_box_origin.x = min(g_box_origin.x, screen_width - g_box_attr.x);
+	  g_box_origin.y = min(g_box_origin.y, screen_height - g_box_attr.y);
 	
-	  first_click_screen.x = mouse.x;
-	  first_click_screen.y = mouse.y;
+	  first_point_screen.x = mouse.x;
+	  first_point_screen.y = mouse.y;
       
       }
     }    
@@ -205,21 +207,24 @@ void *ui_thread_function () {
       pixel_coord_ratio = (actual_ur.real - actual_ll.real)/screen_width;
 
       /* Transforming from screen coordinates to fractal coordinates */
-      first_click_fractal.real = (g_box_origin.x)*pixel_coord_ratio + actual_ll.real;
-      first_click_fractal.imag = (g_box_origin.y)*pixel_coord_ratio + actual_ll.imag;
+      first_point_fractal.real = (g_box_origin.x)*pixel_coord_ratio + actual_ll.real;
+      first_point_fractal.imag = (g_box_origin.y)*pixel_coord_ratio + actual_ll.imag;
 
-      second_click_fractal.real = (g_box_origin.x + g_box_attr.x)*pixel_coord_ratio + actual_ll.real;
-      second_click_fractal.imag = (g_box_origin.y + g_box_attr.y)*pixel_coord_ratio + actual_ll.imag;
+      second_point_fractal.real = (g_box_origin.x + g_box_attr.x)*pixel_coord_ratio + actual_ll.real;
+      second_point_fractal.imag = (g_box_origin.y + g_box_attr.y)*pixel_coord_ratio + actual_ll.imag;
       
       payload->generation = generation++;
       payload->granularity = 10; // placeholder values
       payload->fractal_depth = 35500; // <-/
 
-      payload->ll.real = (float) min(first_click_fractal.real, second_click_fractal.real); 
-      payload->ll.imag = (float) min(first_click_fractal.imag, second_click_fractal.imag); 
-      payload->ur.real = (float) max(first_click_fractal.real, second_click_fractal.real);
-      payload->ur.imag = (float) max(first_click_fractal.imag, second_click_fractal.imag);
+      payload->ll.real = (float) min(first_point_fractal.real, second_point_fractal.real); 
+      payload->ll.imag = (float) min(first_point_fractal.imag, second_point_fractal.imag); 
+      payload->ur.real = (float) max(first_point_fractal.real, second_point_fractal.real);
+      payload->ur.imag = (float) max(first_point_fractal.imag, second_point_fractal.imag);
 
+      actual_ll = payload->ll;
+      actual_ur = payload->ur;
+      
       payload->s_ll.x = 0;
       payload->s_ll.y = 0;
       payload->s_ur.x = screen_width;
@@ -384,9 +389,11 @@ int main(int argc, char* argv[])
   atomic_init(&shutdown_requested, 0);
   signal(SIGPIPE, SIG_IGN); // Ignore SIGPIPE (failed send)
 
-  int screen_width = 640;//GetMonitorWidth(GetCurrentMonitor());
-  int screen_height = 480;//GetMonitorHeight(GetCurrentMonitor());
-
+  /* int screen_width = 640;//GetMonitorWidth(GetCurrentMonitor()); */
+  /* int screen_height = 480;//GetMonitorHeight(GetCurrentMonitor()); */
+  int screen_width = 400;
+  int screen_height = 200;
+  
   InitWindow(screen_width, screen_height, "Fractal @ PCAD");
   //  InitWindow(GetScreenWidth(), GetScreenHeight(), "Fractal @ PCAD");
   SetTargetFPS(60);
