@@ -24,7 +24,14 @@ atomic_int shutdown_requested;
 // buffer between the two threads (the render and the drawing).  To
 // avoid race conditions while one thread writes and the other reads
 // from the shared Color * buffer we use the pixelMutex.
-Color *sharedPixels = NULL;
+
+#define TOTAL_COLORS 3
+Color *g_mandelbrot_color = NULL;
+Color *g_pallete_color = NULL;
+Color *g_both_color = NULL; // mandelbrot with lower alpha + pallete
+
+int g_actual_color = 0;
+
 pthread_mutex_t pixelMutex;
 
 #define max(a,b)				\
@@ -117,12 +124,12 @@ void *ui_thread_function () {
     }
 
     /* ENTER starts user interaction */
-    if(g_selecting && IsKeyPressed(KEY_Z)){
+    if(g_selecting && (IsKeyPressed(KEY_Z) || IsKeyPressed(KEY_ENTER))){
       g_selecting = false;
       interaction = true;
       WaitTime(0.1);
     }    
-    if(!g_selecting && IsKeyPressed(KEY_Z)){
+    if(!g_selecting && (IsKeyPressed(KEY_Z) || IsKeyPressed(KEY_ENTER))){
       g_selecting = true;
       g_box_origin = (Vector2) {screen_width/4, screen_height/4};
       g_box_attr = (Vector2) {screen_width/2, screen_height/2};
@@ -176,13 +183,10 @@ void *ui_thread_function () {
       }
     }    
 
-    // Selecting the color for the next payload
-    if(IsKeyPressed(KEY_P)){ // Using color pallete defined in colors.h
-      use_pallete_colors = true;
-    }
-
-    if(IsKeyPressed(KEY_M)){
-      use_pallete_colors = false; // Using colors defined by function get_color in colors.c
+    // Changing mandelbrot color
+    if(IsKeyPressed(KEY_SPACE)){
+      g_actual_color = (g_actual_color + 1 >= TOTAL_COLORS) ? 0 : g_actual_color + 1; // Using colors defined by function get_color in colors.c
+      WaitTime(0.1);
     }
     
     if(interaction == true){
@@ -267,16 +271,23 @@ void *render_thread_function () {
 	  // must find a better way to map response->values[p] to a color
 	  // the maximum value of response->values[p] is available at
 	  // response->payload.fractal_depth
-	  cor_t cor = {0};
-	  if(g_use_pallete_colors){
+	    cor_t cor = {0};
+	    
+	    cor = get_color(response->values[p],
+			    response->payload.fractal_depth);
+	    
+	    struct Color color = {cor.r, cor.g, cor.b, 255};
+	    g_mandelbrot_color[j * screen_width + i] = color;
+	  
+	    color = (struct Color){cor.r, cor.g, cor.b, 100};
+	    g_both_color[j * screen_width + i] = color;
+	    
 	    cor = get_color_viridis(response->values[p],
 				    response->payload.fractal_depth);
-	  } else {
-	    cor = get_color(response->values[p],
-				  response->payload.fractal_depth);
-	  }
-	  struct Color color = { cor.r, cor.g, cor.b, 255};
-	  sharedPixels[j * screen_width + i] = color;
+	    
+	    color = (struct Color){cor.r, cor.g, cor.b, 255};
+	    g_pallete_color[j * screen_width + i] = color;
+	    
 	  }
 	  p++;
 	}
@@ -382,9 +393,20 @@ int main(int argc, char* argv[])
 
   // create a CPU-side "image" that we can draw on top when needed
   Image img = GenImageColor(screen_width, screen_height, RAYWHITE);
-  sharedPixels = LoadImageColors(img); //global
-  Texture2D texture = LoadTextureFromImage(img);
+  g_mandelbrot_color = LoadImageColors(img); //global
+  Texture2D texture_mandelbrot = LoadTextureFromImage(img);
   UnloadImage(img);
+
+  img = GenImageColor(screen_width, screen_height, RAYWHITE);
+  g_pallete_color = LoadImageColors(img); //global
+  Texture2D texture_pallete = LoadTextureFromImage(img);
+  UnloadImage(img);
+
+  img = GenImageColor(screen_width, screen_height, RAYWHITE);
+  g_both_color = LoadImageColors(img); //global
+  Texture2D texture_both = LoadTextureFromImage(img);
+  UnloadImage(img);
+
   pthread_mutex_init(&pixelMutex, NULL);
 
   srand(0);
@@ -408,18 +430,25 @@ int main(int argc, char* argv[])
   while (!WindowShouldClose()) { // Closed with ESC or manually closing window
     // get the mutex so we can read safely from sharedPixels
     pthread_mutex_lock(&pixelMutex);
-    UpdateTexture(texture, sharedPixels);
+    UpdateTexture(texture_mandelbrot, g_mandelbrot_color);
+    UpdateTexture(texture_pallete, g_pallete_color);
+    UpdateTexture(texture_both, g_both_color);
     pthread_mutex_unlock(&pixelMutex);
 
     // do the drawing (only here we actually do the drawing)
     BeginDrawing();
     ClearBackground(RAYWHITE);
-    DrawTexture(texture, 0, 0, WHITE);
+
+    if(g_actual_color == 0)
+      DrawTexture(texture_mandelbrot, 0, 0, WHITE);
+    else if(g_actual_color == 1)
+      DrawTexture(texture_pallete, 0, 0, WHITE);
+    else if(g_actual_color == 2){
+      DrawTexture(texture_pallete, 0, 0, WHITE);
+      DrawTexture(texture_both, 0, 0, WHITE);
+    }
     
     if(g_selecting){
-      //Vector2 mouse = GetMousePosition();
-      //Vector2 box_origin = (Vector2){min(g_box_first_point.x, mouse.x), min(g_box_first_point.y, mouse.y)};
-      //Vector2 attr = (Vector2){max(g_box_first_point.x, mouse.x) - box_origin.x, max(g_box_first_point.y, mouse.y) - box_origin.y};
       DrawRectangleV(g_box_origin, g_box_attr, (Color){1.0f, 1.0f, 255.0f, 100.0f});
     }
 
@@ -435,8 +464,13 @@ int main(int argc, char* argv[])
   pthread_join(payload_thread, NULL);
   pthread_join(response_thread, NULL);
 
-  UnloadTexture(texture);
-  UnloadImageColors(sharedPixels);
+  UnloadTexture(texture_mandelbrot);
+  UnloadTexture(texture_pallete);
+  UnloadTexture(texture_both);
+  
+  UnloadImageColors(g_mandelbrot_color);
+  UnloadImageColors(g_pallete_color);
+  UnloadImageColors(g_both_color);
   CloseWindow(); // Close OpenGL context 
 
   pthread_mutex_destroy(&pixelMutex);
