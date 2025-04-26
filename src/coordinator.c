@@ -8,6 +8,7 @@
 #include <pthread.h>
 #include <mpi.h>
 #include <sys/time.h>
+#include <signal.h>
 #include "fractal.h"
 #include "connection.h"
 #include "queue.h"
@@ -39,13 +40,13 @@ void *net_thread_receive_payload(void *arg)
     // Allocate new payload
     payload_t *payload = malloc(sizeof(payload_t)); 
     if (payload == NULL) {
-      perror("malloc failed.\n");
+      fprintf(stderr, "malloc failed.\n");
       pthread_exit(NULL);
     }
 
     // Get payload data from connection
     if (recv_all(connection, payload, sizeof(*payload), 0) <= 0) {
-      perror("Receive failed. Killing thread...\n");
+      fprintf(stderr, "Receive failed. Killing thread...\n");
       free(payload);
       pthread_exit(NULL);
     }
@@ -208,6 +209,7 @@ void *net_thread_send_response(void *arg)
   int connection = *(int *)arg;
   while(1) {
     response_t *response = (response_t *)queue_dequeue(&response_queue);
+    if (response == NULL) break; // poison pill
 #ifdef RESPONSE_DEBUG
     response_print(__func__, "preparating for sending the response", response);
 #endif
@@ -218,7 +220,7 @@ void *net_thread_send_response(void *arg)
 
     // First, send buffer size in bytes since response size is variable
     if (send(connection, &buffer_size, sizeof(buffer_size), 0) <= 0) {
-      perror("Send failed. Killing thread...\n");
+      fprintf(stderr, "Send failed. Killing thread...\n");
       free(response->values);
       free(response);
       free(buffer);
@@ -227,7 +229,7 @@ void *net_thread_send_response(void *arg)
 
     // Then, send actual buffer
     if (send(connection, buffer, buffer_size, 0) <= 0) {
-      perror("Send failed. Killing thread...\n");
+      fprintf(stderr, "Send failed. Killing thread...\n");
       free(response->values);
       free(response);
       free(buffer);
@@ -259,13 +261,11 @@ int main_coordinator(int argc, char* argv[])
   printf("%s: Coordinator (rank %d) with %d arguments\n", argv[0], rank, argc);
   printf("%s: \t There are %d workers\n", argv[0], size-1);
 
-  //Launch the paralellism mechanism!
+  signal(SIGPIPE, SIG_IGN); // ignoring SIGPIPE (failed send)
   
   struct sockaddr_in client_addr; // client ip address after connect
   socklen_t client_len = sizeof(client_addr);
   int socket = open_server_socket(atoi(argv[1]));
-  int connection = accept(socket, (struct sockaddr *)&client_addr, &client_len);
-  printf("Accepted connection.\n");
 
   queue_init(&payload_to_workers_queue, 256, free);
   queue_init(&response_queue, 256, free_response);
@@ -281,18 +281,36 @@ int main_coordinator(int argc, char* argv[])
   pthread_create(&main_mpi_send, NULL, main_thread_mpi_send_payloads, NULL);
   pthread_create(&main_mpi_recv, NULL, main_thread_mpi_recv_responses, NULL);
   pthread_create(&compute_thread, NULL, compute_create_blocks, NULL);
-  pthread_create(&payload_receive_thread, NULL, net_thread_receive_payload, &connection);
-  pthread_create(&response_send_thread, NULL, net_thread_send_response, &connection);
+
+  while(true) { // No shutdown logic yet, loop infinitely
+    int connection = accept(socket, (struct sockaddr *)&client_addr, &client_len);
+    printf("Accepted client connection.\n");
+
+    pthread_create(&payload_receive_thread, NULL, net_thread_receive_payload, &connection);
+    pthread_create(&response_send_thread, NULL, net_thread_send_response, &connection);
+
+    pthread_join(payload_receive_thread, NULL);
+    // Receiving thread died, meaning we can shut down the sending thread. 
+    // Enqueueing "poison pill" NULL response to kill it
+    queue_enqueue(&response_queue, NULL);
+    pthread_join(response_send_thread, NULL);
+    printf("TCP connection lost. Awaiting new connection...\n");
+
+    pthread_mutex_lock(&newest_payload_mutex);
+    newest_payload = NULL;
+    pthread_mutex_unlock(&newest_payload_mutex);
+    queue_clear(&payload_to_workers_queue);
+    queue_clear(&response_queue);
+
+    close(connection);
+  }
 
   pthread_join(main_mpi_send, NULL);
   pthread_join(main_mpi_recv, NULL);
   pthread_join(compute_thread, NULL);
-  pthread_join(payload_receive_thread, NULL);
-  pthread_join(response_send_thread, NULL);
 
   shutdown(socket, SHUT_RDWR);
   close(socket);
-  close(connection);
   
   queue_destroy(&payload_to_workers_queue);
   queue_destroy(&response_queue);
