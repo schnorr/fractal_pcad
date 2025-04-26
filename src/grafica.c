@@ -85,7 +85,6 @@ void *ui_thread_function () {
   double screen_width = 0.0f;
   double screen_height = 0.0f;
   double pixel_coord_ratio = 0;
-  double screen_ratio = 0.0f;
 
   Vector2 mouse = {0};
   Vector2 first_click_screen = {0, 0};
@@ -105,7 +104,6 @@ void *ui_thread_function () {
     if(initial && IsWindowReady()){ // If window is ready, config UI needs and send a initial payload
       screen_width = (double)GetScreenWidth();
       screen_height = (double)GetScreenHeight();
-      screen_ratio = screen_width/screen_height;
       
       pixel_coord_ratio = (actual_ur.real - actual_ll.real)/screen_width;
       actual_ur.imag = ((actual_ur.real - actual_ll.real) * (screen_height/screen_width))/2;
@@ -122,13 +120,13 @@ void *ui_thread_function () {
     if(g_selecting && IsKeyPressed(KEY_Z)){
       g_selecting = false;
       interaction = true;
-      sleep(1);
+      WaitTime(0.1);
     }    
     if(!g_selecting && IsKeyPressed(KEY_Z)){
       g_selecting = true;
       g_box_origin = (Vector2) {screen_width/4, screen_height/4};
       g_box_attr = (Vector2) {screen_width/2, screen_height/2};
-      sleep(1);
+      WaitTime(0.1);
     }
     if(IsKeyPressed(KEY_BACKSPACE)){
       g_selecting = false;
@@ -143,7 +141,6 @@ void *ui_thread_function () {
 	 mouse.x < g_box_origin.x + g_box_attr.x && mouse.y < g_box_origin.y + g_box_attr.y){
 
 	float zoom = GetFrameTime()*GetMouseWheelMove();
-	//	printf("zoom: %f\n", zoom);
 	WaitTime(0.0001);
 	
 	g_box_attr.x = g_box_attr.x + zoom*screen_width;
@@ -228,7 +225,7 @@ void *ui_thread_function () {
 
       queue_enqueue(&payload_queue, payload);
       payload = NULL;
-      sleep(1);
+      WaitTime(0.1);
     }
   }
 
@@ -407,7 +404,6 @@ int main(int argc, char* argv[])
   pthread_create(&payload_thread, NULL, net_thread_send_payload, &connection);
   pthread_create(&response_thread, NULL, net_thread_receive_response, &connection);
 
-  double proportion = (double)screen_width/screen_height;
   //  ToggleFullscreen();
   while (!WindowShouldClose()) { // Closed with ESC or manually closing window
     // get the mutex so we can read safely from sharedPixels
