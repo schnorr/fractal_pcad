@@ -83,7 +83,8 @@ void *ui_thread_function () {
 
   double screen_width = 0.0f;
   double screen_height = 0.0f;
-  double pixel_coord_ratio = 0;
+  double pixel_coord_ratio = 0.0f;
+  float zoom = 0.0f;
 
   Vector2 mouse = {0};
   Vector2 first_point_screen = {0, 0};
@@ -95,6 +96,9 @@ void *ui_thread_function () {
   bool initial = true;  
   bool clicked = false;
 
+  float moviment_speed = 0.0f;
+  float zoom_speed = 0.0f;
+  
   while(!atomic_load(&shutdown_requested)) {
 
     if(initial && IsWindowReady()){ /* Send the initial payload when the window gets ready */
@@ -135,48 +139,87 @@ void *ui_thread_function () {
     /* Selection box related */
     if(g_selecting){
 
+      /* Mouse interaction */
       mouse.x = GetMouseX();
       mouse.y = GetMouseY();
-
       if(mouse.x > g_box_origin.x && mouse.y > g_box_origin.y &&
 	 mouse.x < g_box_origin.x + g_box_attr.x && mouse.y < g_box_origin.y + g_box_attr.y){
 
-	float zoom = GetFrameTime()*GetMouseWheelMove();
+	zoom = GetFrameTime()*GetMouseWheelMove();
 	WaitTime(0.001); /* This defines how fast the box will inscrease or decrease */
-	
+
 	g_box_attr.x = g_box_attr.x + zoom*screen_width;
 	g_box_attr.y = g_box_attr.y + zoom*screen_height;
+	
 	g_box_origin.x = g_box_origin.x - zoom*screen_width/2;
 	g_box_origin.y = g_box_origin.y - zoom*screen_height/2;
 
 	if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
-	  
+
 	  first_point_screen.x = GetMouseX();
 	  first_point_screen.y = GetMouseY();
 	  clicked = true;
-	  
 	}
-	
-      } else {
-	clicked = true;
-      }
-      
+      } else { clicked = true; }
+
       if(clicked && IsMouseButtonDown(MOUSE_BUTTON_LEFT)){ 
 	
 	  Vector2 distance = (Vector2) {g_box_origin.x - first_point_screen.x, g_box_origin.y - first_point_screen.y};
-    
-                                                                               	  /* mouse delta */
-	  g_box_origin.x = max(-g_box_attr.x/4, mouse.x + distance.x + (mouse.x - first_point_screen.x)*GetFrameTime());
-	  g_box_origin.y = max(-g_box_attr.y/4, mouse.y + distance.y + (mouse.y - first_point_screen.y)*GetFrameTime());
-
+                                                         /* mouse delta */
+	  g_box_origin.x = mouse.x + distance.x + (mouse.x - first_point_screen.x)*GetFrameTime();
+	  g_box_origin.y = mouse.y + distance.y + (mouse.y - first_point_screen.y)*GetFrameTime();
        
-	  g_box_origin.x = min(g_box_origin.x, screen_width - g_box_attr.x + g_box_attr.x/4);
-	  g_box_origin.y = min(g_box_origin.y, screen_height - g_box_attr.y + g_box_attr.y/4);
-	
 	  first_point_screen.x = mouse.x;
 	  first_point_screen.y = mouse.y;
-      
       }
+
+      moviment_speed = IsKeyDown(KEY_LEFT_CONTROL) ? 0.1 : 1.5/screen_width; /* Left control sets precise moviment */
+
+      /* Keyboard interaction */
+      if(IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)){
+	g_box_origin.y = g_box_origin.y - 1;
+	WaitTime(moviment_speed); 
+      }
+      if(IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S)){
+	g_box_origin.y = g_box_origin.y + 1;
+	WaitTime(moviment_speed); 
+      }
+      if(IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A)){
+	g_box_origin.x = g_box_origin.x - 1;
+	WaitTime(moviment_speed); 
+      }
+      if(IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D)){
+	g_box_origin.x = g_box_origin.x + 1;
+	WaitTime(moviment_speed); 
+      }
+
+      if(IsKeyDown(KEY_LEFT_SHIFT)){
+
+	/* Left control enables precise zoom */
+	zoom = IsKeyDown(KEY_LEFT_CONTROL) ? GetFrameTime()/10 : GetFrameTime();
+	zoom_speed = IsKeyDown(KEY_LEFT_CONTROL) ? 0.1 : 0.01;
+	
+	if(IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)){
+	  g_box_attr.x = g_box_attr.x + zoom*screen_width;
+	  g_box_attr.y = g_box_attr.y + zoom*screen_height;
+	  g_box_origin.x = g_box_origin.x - zoom*screen_width/2;
+	  g_box_origin.y = g_box_origin.y - zoom*screen_height/2;
+	  WaitTime(zoom_speed); 
+	}
+	if(IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S)){
+	  g_box_attr.x = max(1, g_box_attr.x - zoom*screen_width);
+	  g_box_attr.y = max(1,g_box_attr.y - zoom*screen_height);
+	  g_box_origin.x = g_box_origin.x + zoom*screen_width/2;
+	  g_box_origin.y = g_box_origin.y + zoom*screen_height/2;
+	  WaitTime(zoom_speed); 
+	}
+      }
+      
+      /* Checking the screen limits*/
+      g_box_origin.x =  max(-g_box_attr.x/4, g_box_origin.x);
+      g_box_origin.y =  max(-g_box_attr.y/4, g_box_origin.y);
+      g_box_origin.x = min(g_box_origin.x, screen_width - g_box_attr.x + g_box_attr.x/4);
+      g_box_origin.y = min(g_box_origin.y, screen_height - g_box_attr.y + g_box_attr.y/4);
     }    
 
 
@@ -185,7 +228,7 @@ void *ui_thread_function () {
       g_actual_color = (g_actual_color + 1 >= TOTAL_COLORS) ? 0 : g_actual_color + 1;
       WaitTime(0.1);
     }
-    if(IsKeyPressed(KEY_W)){
+    if(IsKeyPressed(KEY_C)){
       g_show_workers = !g_show_workers;
       WaitTime(0.1);
     }
@@ -200,7 +243,6 @@ void *ui_thread_function () {
 	pthread_exit(NULL);
       }
 
-
       /* ratio from pixels to coordinates based on the x axis */
       pixel_coord_ratio = (actual_ur.real - actual_ll.real)/screen_width;
 
@@ -213,8 +255,8 @@ void *ui_thread_function () {
 
       /* Generating the payload */
       payload->generation = generation++; /* The generation is always increasing */
-      payload->granularity = 10; 
-      payload->fractal_depth = 1000; 
+      payload->granularity = 100; 
+      payload->fractal_depth = 2000; 
       payload->ll.real = (float) min(first_point_fractal.real, second_point_fractal.real); 
       payload->ll.imag = (float) min(first_point_fractal.imag, second_point_fractal.imag); 
       payload->ur.real = (float) max(first_point_fractal.real, second_point_fractal.real);
