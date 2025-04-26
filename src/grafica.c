@@ -95,9 +95,8 @@ void *ui_thread_function () {
     
   bool interaction = false; 
   bool initial = true;
-
+  
   bool clicked = false;
-
   // Primeiro caso enviar a tela inteira
   // Parar de desenhar o quadrado quando o payload 
 
@@ -120,12 +119,12 @@ void *ui_thread_function () {
     }
 
     /* ENTER starts user interaction */
-    if(g_selecting && IsKeyPressed(KEY_ENTER)){
+    if(g_selecting && IsKeyPressed(KEY_Z)){
       g_selecting = false;
       interaction = true;
       sleep(1);
     }    
-    if(!g_selecting && IsKeyPressed(KEY_ENTER)){
+    if(!g_selecting && IsKeyPressed(KEY_Z)){
       g_selecting = true;
       g_box_origin = (Vector2) {screen_width/4, screen_height/4};
       g_box_attr = (Vector2) {screen_width/2, screen_height/2};
@@ -143,11 +142,21 @@ void *ui_thread_function () {
       if(mouse.x > g_box_origin.x && mouse.y > g_box_origin.y &&
 	 mouse.x < g_box_origin.x + g_box_attr.x && mouse.y < g_box_origin.y + g_box_attr.y){
 
+	float zoom = GetFrameTime()*GetMouseWheelMove();
+	//	printf("zoom: %f\n", zoom);
+	WaitTime(0.0001);
+	
+	g_box_attr.x = g_box_attr.x + zoom*screen_width;
+	g_box_attr.y = g_box_attr.y + zoom*screen_height;
+	g_box_origin.x = g_box_origin.x - zoom*screen_width/2;
+	g_box_origin.y = g_box_origin.y - zoom*screen_height/2;
+
 	if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
 	  first_click_screen.x = GetMouseX();
 	  first_click_screen.y = GetMouseY();
 	  clicked = true;
 	}
+	
       } else {
 	clicked = true;
       }
