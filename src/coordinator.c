@@ -17,6 +17,7 @@
 
 //payload from the grafica
 static payload_t *newest_payload = NULL;
+static int latest_generation = 0;
 static pthread_mutex_t newest_payload_mutex;
 static pthread_cond_t new_payload;
 
@@ -61,6 +62,7 @@ void *net_thread_receive_payload(void *arg)
       free(newest_payload);
     }
     newest_payload = payload; // Update newest payload, signal compute_create_blocks
+    latest_generation = newest_payload->generation;
     payload = NULL;
     pthread_cond_signal(&new_payload);
     pthread_mutex_unlock(&newest_payload_mutex);
@@ -130,7 +132,13 @@ void *main_thread_mpi_recv_responses ()
 #ifdef RESPONSE_DEBUG
       response_print(__func__, "Enqueueing response", response);
 #endif
-      queue_enqueue(&response_queue, response);
+      // only queue responses that we are waiting for
+      if (response->payload.generation == latest_generation) {
+	queue_enqueue(&response_queue, response);
+      }else{
+	response_print(__func__, "Discard response", response);
+	free(response);
+      }
       response = NULL; // Transferred ownership to queue
     }
   }
