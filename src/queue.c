@@ -14,7 +14,6 @@ void queue_init(queue_t *q, size_t starting_capacity, void (*free_function)(void
     }
     q->front = 0;
     q->back = 0;
-    q->shutdown = 0;
     pthread_mutex_init(&q->mutex, NULL);
     pthread_cond_init(&q->not_empty, NULL);
     q->free_function = free_function;
@@ -34,8 +33,10 @@ static void queue_grow(queue_t *q) {
     }
 
     size_t i = 0;
-    for (size_t idx = q->front; idx != q->back; idx = (idx + 1) % old_size) {
-        new_queue[i++] = q->queue[idx];
+    while (q->front != q->back) {
+        new_queue[i] = q->queue[q->front];
+        q->front = (q->front + 1) % old_size;
+        i++;
     }
 
     free(q->queue);
@@ -53,14 +54,6 @@ void queue_enqueue(queue_t *q, void *item) {
         queue_grow(q);
     }
 
-    if (q->shutdown) {
-        if (q->free_function){
-            q->free_function(item);
-        }
-        pthread_mutex_unlock(&q->mutex);
-        return;
-    }
-
     q->queue[q->back] = item; // shallow copy
     q->back = (q->back + 1) % q->buffer_size;
     pthread_cond_signal(&q->not_empty);
@@ -70,13 +63,8 @@ void queue_enqueue(queue_t *q, void *item) {
 void* queue_dequeue(queue_t *q) {
     pthread_mutex_lock(&q->mutex);
 
-    while (q->front == q->back && !q->shutdown) { // Queue empty, wait for enqueue
+    while (q->front == q->back) { // Queue empty, wait for enqueue
         pthread_cond_wait(&q->not_empty, &q->mutex);
-    }
-
-    if (q->shutdown) {
-        pthread_mutex_unlock(&q->mutex);
-        return NULL; // Queue shutdown, return NULL
     }
 
     void *item = q->queue[q->front];
@@ -116,7 +104,7 @@ void queue_clear(queue_t *q) {
     // from a previous dequeue    
     while (q->front != q->back) {
         void *item = q->queue[q->front];
-        if (q->free_function){
+        if (item && q->free_function){
             q->free_function(item); // Free items using function
         }
         q->queue[q->front] = NULL;
@@ -134,11 +122,3 @@ void queue_destroy(queue_t *q) {
     pthread_mutex_destroy(&q->mutex);
     pthread_cond_destroy(&q->not_empty);
 }
-
-void queue_shutdown(queue_t *q) {
-    pthread_mutex_lock(&q->mutex);
-    q->shutdown = 1;
-    pthread_cond_broadcast(&q->not_empty);
-    pthread_mutex_unlock(&q->mutex);
-}
-

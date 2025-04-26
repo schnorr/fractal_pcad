@@ -14,7 +14,6 @@ typedef struct queue {
   pthread_mutex_t mutex;
   pthread_cond_t not_empty;
   void (*free_function)(void *); // destructor for items.
-  int shutdown;
 } queue_t;
 
 void queue_init(queue_t *q, size_t starting_capacity, void (*free_function)(void *));
@@ -32,10 +31,5 @@ void* queue_try_dequeue(queue_t *q);
 size_t queue_size(queue_t *q);
 void queue_clear(queue_t *q);
 void queue_destroy(queue_t *q);
-
-/* Function intended to clean up the program when exiting. Once called, threads blocked at
-   enqueue/dequeue will be signaled and will return. Enqueuing threads will have their enqueued 
-   item cleaned up, and dequeuing threads will return NULL . */
-void queue_shutdown(queue_t *q);
 
 #endif 

@@ -19,7 +19,7 @@ atomic_int shutdown_requested;
 static queue_t payload_queue = {0};
 static queue_t response_queue = {0};
 
-/* Shutdown function. Shuts down the TCP connection and unblocks all queues.*/
+/* Shutdown function. Shuts down the TCP connection and sends "poison pills" to queues.*/
 void request_shutdown(int connection){
   // Atomic exchange tests the variable and sets it atomically
   if (atomic_exchange(&shutdown_requested, 1) == 1){
@@ -27,8 +27,10 @@ void request_shutdown(int connection){
   }
   printf("Shutdown requested.\n");
   shutdown(connection, SHUT_RDWR); 
-  queue_shutdown(&payload_queue);
-  queue_shutdown(&response_queue);
+
+  // Send "poison pills" to queues, making threads dequeuing them quit
+  queue_enqueue(&payload_queue, NULL);
+  queue_enqueue(&response_queue, NULL);
 }
 
 /*
@@ -45,7 +47,7 @@ void *ui_thread_function () {
   // Placeholder: Currently simulating user input with random payloads every 5-10 seconds
   // Input handling function would be here instead
   while(!atomic_load(&shutdown_requested)) {
-    int wait_seconds = (rand() % 6) + 5;
+    int wait_seconds = 0;
 
     // User interaction creates a new payload
     payload_t *payload = calloc(1, sizeof(payload_t));
@@ -86,7 +88,7 @@ void *render_thread_function () {
   // Rendering function that takes response would be here instead
   while(!atomic_load(&shutdown_requested)) {
     response_t *response = (response_t *)queue_dequeue(&response_queue);
-    if (response == NULL) break; // Queue returns null on shutdown
+    if (response == NULL) break; // Poison pill
 
 #ifdef RESPONSE_DEBUG
     response_print(__func__, "Dequeued response", response);
@@ -105,7 +107,7 @@ void *net_thread_send_payload (void *arg)
   int connection = *(int *)arg;
   while(!atomic_load(&shutdown_requested)) {
     payload_t *payload = (payload_t *)queue_dequeue(&payload_queue);
-    if (payload == NULL) break; // Queue returns NULL on shutdown
+    if (payload == NULL) break; // Poison pill
     
     if (send(connection, payload, sizeof(*payload), 0) <= 0) {
       fprintf(stderr, "Send failed. Killing thread...\n");

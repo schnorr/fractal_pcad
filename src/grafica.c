@@ -55,7 +55,7 @@ static queue_t payload_queue = {0};
 static queue_t response_queue = {0};
 
 
-/* Shutdown function. Shuts down the TCP connection and unblocks all queues.*/
+/* Shutdown function. Shuts down the TCP connection and sends "poison pills" to queues.*/
 void request_shutdown(int connection){
   // Atomic exchange tests the variable and sets it atomically
   if (atomic_exchange(&shutdown_requested, 1) == 1){
@@ -63,8 +63,9 @@ void request_shutdown(int connection){
   }
   printf("Shutdown requested.\n");
   shutdown(connection, SHUT_RDWR); 
-  queue_shutdown(&payload_queue);
-  queue_shutdown(&response_queue);
+  // Send "poison pills" to queues, making threads dequeuing them quit
+  queue_enqueue(&payload_queue, NULL);
+  queue_enqueue(&response_queue, NULL);
 }
 
 /*
@@ -298,7 +299,7 @@ void *render_thread_function () {
 
   while(!atomic_load(&shutdown_requested)) {
     response_t *response = (response_t *)queue_dequeue(&response_queue);
-    if (response == NULL) break; // Queue shutdown
+    if (response == NULL) break; // Poison pill
 
     if(response->payload.generation > generation){
       generation = response->payload.generation;
@@ -354,7 +355,7 @@ void *net_thread_send_payload (void *arg)
   int connection = *(int *)arg;
   while(!atomic_load(&shutdown_requested)) {
     payload_t *payload = (payload_t *)queue_dequeue(&payload_queue);
-    if (payload == NULL) break; // Queue shutdown
+    if (payload == NULL) break; // Poison pill
     
     if (send(connection, payload, sizeof(*payload), 0) <= 0) {
       fprintf(stderr, "Send failed. Killing thread...\n");
