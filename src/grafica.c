@@ -17,25 +17,6 @@
 #include "queue.h"
 #include "colors.h"
 
-atomic_int shutdown_requested;
-
-// We need a multi-threaded Raylib app, where one thread handles
-// rendering, and another handles the UI or logic.  Shared pixel
-// buffer between the two threads (the render and the drawing).  To
-// avoid race conditions while one thread writes and the other reads
-// from the shared Color * buffer we use the pixelMutex.
-
-#define TOTAL_COLORS 3
-Color *g_pallete_color = NULL;
-Color *g_mandelbrot_color = NULL;
-Color *g_worker_color = NULL;
-Color *g_both_color = NULL; // mandelbrot with lower alpha + pallete
-bool g_show_workers = false;
-
-int g_actual_color = 0;
-
-pthread_mutex_t pixelMutex;
-
 #define max(a,b)				\
 ({ __typeof__ (a) _a = (a);			\
 __typeof__ (b) _b = (b);			\
@@ -46,16 +27,34 @@ _a > _b ? _a : _b; })
 __typeof__ (b) _b = (b);			\
 _a < _b ? _a : _b; })
 
-#define MAX_QUEUE_SIZE 100 // Should probably be much higher
+atomic_int shutdown_requested;
 
+// We need a multi-threaded Raylib app, where one thread handles
+// rendering, and another handles the UI or logic.  Shared pixel
+// buffer between the two threads (the render and the drawing).  To
+// avoid race conditions while one thread writes and the other reads
+// from the shared Color * buffer we use the pixelMutex.
+pthread_mutex_t pixelMutex;
+
+#define TOTAL_COLORS 3
+Color *g_pallete_pixels = NULL;
+Color *g_mandelbrot_pixels = NULL;
+Color *g_worker_pixels = NULL;
+Color *g_low_alpha_worker_pixels = NULL; 
+bool g_show_workers = false;
+int g_actual_color = 0;
+
+
+/* Selection box (blue box) related globals */
+bool g_selecting = false;
+Vector2 g_box_origin = {0, 0};
+Vector2 g_box_attr = {0, 0}; // x = width, y = height
+
+
+#define MAX_QUEUE_SIZE 100 // Should probably be much higher
 static queue_t payload_queue = {0};
 static queue_t response_queue = {0};
 
-bool g_selecting = false;
-Vector2 g_box_origin = {0, 0};
-Vector2 g_box_attr = {0, 0};
-
-// Currently sending random packets then ending threads.
 
 /* Shutdown function. Shuts down the TCP connection and unblocks all queues.*/
 void request_shutdown(int connection){
@@ -69,8 +68,6 @@ void request_shutdown(int connection){
   queue_shutdown(&response_queue);
 }
 
-// Main thread manages the window and user interaction
-
 /*
   ui_thread_function: Every time a user selects
   a new area to compute, a payload must be created with a
@@ -78,15 +75,11 @@ void request_shutdown(int connection){
   payload_queue using the queue_enqueue function.
 */
 void *ui_thread_function () {
-
+  /* This action is guided by the user */
+  
   static int generation = 0;
-  //This action is guided by the user
-
   static fractal_coord_t actual_ll = {-2, -1.5};
   static fractal_coord_t actual_ur = {2, 1.5};
-
-   // Placeholder: Currently simulating user input with random payloads every 5-10 seconds
-  // Input handling function would be here instead
 
   double screen_width = 0.0f;
   double screen_height = 0.0f;
@@ -99,38 +92,37 @@ void *ui_thread_function () {
   fractal_coord_t second_point_fractal = {0, 0};
     
   bool interaction = false; 
-  bool initial = true;
-  
+  bool initial = true;  
   bool clicked = false;
-  // Primeiro caso enviar a tela inteira
-  // Parar de desenhar o quadrado quando o payload 
 
   while(!atomic_load(&shutdown_requested)) {
 
-    if(initial && IsWindowReady()){ // If window is ready, config UI needs and send a initial payload
+    if(initial && IsWindowReady()){ /* Send the initial payload when the window gets ready */
+
       screen_width = (double)GetScreenWidth();
       screen_height = (double)GetScreenHeight();
       
       pixel_coord_ratio = (actual_ur.real - actual_ll.real)/screen_width;
+      
       actual_ur.imag = ((actual_ur.real - actual_ll.real) * (screen_height/screen_width))/2;
       actual_ll.imag = actual_ur.imag * -1;
       
-      initial = false;
-      interaction = true;
-
       g_box_origin = (Vector2) {0,0};
       g_box_attr = (Vector2) {screen_width, screen_height};
+
+      initial = false;
+      interaction = true;
+      
     }
 
-    /* ENTER starts user interaction */
-    if(!g_selecting && (IsKeyPressed(KEY_Z) || IsKeyPressed(KEY_ENTER))){
+    if(!g_selecting && IsKeyPressed(KEY_ENTER)){
       g_selecting = true;
       g_box_origin = (Vector2) {screen_width/4, screen_height/4};
       g_box_attr = (Vector2) {screen_width/2, screen_height/2};
-      WaitTime(0.1);
+      WaitTime(0.1); /* This is needed so this can work with the visual interface */
     }
 
-    if(g_selecting && (IsKeyPressed(KEY_Z) || IsKeyPressed(KEY_ENTER))){
+    if(g_selecting && IsKeyPressed(KEY_ENTER)){
       g_selecting = false;
       interaction = true;
       WaitTime(0.1);
@@ -139,9 +131,10 @@ void *ui_thread_function () {
     if(IsKeyPressed(KEY_BACKSPACE)){
       g_selecting = false;
     }
-    
 
+    /* Selection box related */
     if(g_selecting){
+
       mouse.x = GetMouseX();
       mouse.y = GetMouseY();
 
@@ -149,7 +142,7 @@ void *ui_thread_function () {
 	 mouse.x < g_box_origin.x + g_box_attr.x && mouse.y < g_box_origin.y + g_box_attr.y){
 
 	float zoom = GetFrameTime()*GetMouseWheelMove();
-	WaitTime(0.001);
+	WaitTime(0.001); /* This defines how fast the box will inscrease or decrease */
 	
 	g_box_attr.x = g_box_attr.x + zoom*screen_width;
 	g_box_attr.y = g_box_attr.y + zoom*screen_height;
@@ -157,9 +150,11 @@ void *ui_thread_function () {
 	g_box_origin.y = g_box_origin.y - zoom*screen_height/2;
 
 	if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
+	  
 	  first_point_screen.x = GetMouseX();
 	  first_point_screen.y = GetMouseY();
 	  clicked = true;
+	  
 	}
 	
       } else {
@@ -167,16 +162,16 @@ void *ui_thread_function () {
       }
       
       if(clicked && IsMouseButtonDown(MOUSE_BUTTON_LEFT)){ 
-
+	
 	  Vector2 distance = (Vector2) {g_box_origin.x - first_point_screen.x, g_box_origin.y - first_point_screen.y};
-	
-                                                         	  /* mouse delta */
-	  g_box_origin.x = max(0, mouse.x + distance.x + (mouse.x - first_point_screen.x)*GetFrameTime());
-	  g_box_origin.y = max(0, mouse.y + distance.y + (mouse.y - first_point_screen.y)*GetFrameTime());
+    
+                                                                               	  /* mouse delta */
+	  g_box_origin.x = max(-g_box_attr.x/4, mouse.x + distance.x + (mouse.x - first_point_screen.x)*GetFrameTime());
+	  g_box_origin.y = max(-g_box_attr.y/4, mouse.y + distance.y + (mouse.y - first_point_screen.y)*GetFrameTime());
 
-	
-	  g_box_origin.x = min(g_box_origin.x, screen_width - g_box_attr.x);
-	  g_box_origin.y = min(g_box_origin.y, screen_height - g_box_attr.y);
+       
+	  g_box_origin.x = min(g_box_origin.x, screen_width - g_box_attr.x + g_box_attr.x/4);
+	  g_box_origin.y = min(g_box_origin.y, screen_height - g_box_attr.y + g_box_attr.y/4);
 	
 	  first_point_screen.x = mouse.x;
 	  first_point_screen.y = mouse.y;
@@ -184,9 +179,10 @@ void *ui_thread_function () {
       }
     }    
 
-    // Changing mandelbrot color
+
+    /* Colors related */
     if(IsKeyPressed(KEY_SPACE)){
-      g_actual_color = (g_actual_color + 1 >= TOTAL_COLORS) ? 0 : g_actual_color + 1; // Using colors defined by function get_color in colors.c
+      g_actual_color = (g_actual_color + 1 >= TOTAL_COLORS) ? 0 : g_actual_color + 1;
       WaitTime(0.1);
     }
     if(IsKeyPressed(KEY_W)){
@@ -214,11 +210,11 @@ void *ui_thread_function () {
 
       second_point_fractal.real = (g_box_origin.x + g_box_attr.x)*pixel_coord_ratio + actual_ll.real;
       second_point_fractal.imag = (g_box_origin.y + g_box_attr.y)*pixel_coord_ratio + actual_ll.imag;
-      
-      payload->generation = generation++;
-      payload->granularity = 10; // placeholder values
-      payload->fractal_depth = 1000; // <-/
 
+      /* Generating the payload */
+      payload->generation = generation++; /* The generation is always increasing */
+      payload->granularity = 10; 
+      payload->fractal_depth = 1000; 
       payload->ll.real = (float) min(first_point_fractal.real, second_point_fractal.real); 
       payload->ll.imag = (float) min(first_point_fractal.imag, second_point_fractal.imag); 
       payload->ur.real = (float) max(first_point_fractal.real, second_point_fractal.real);
@@ -252,15 +248,13 @@ void *ui_thread_function () {
   response, the drawing must be fast.
 */
 void *render_thread_function () {
-  // This action is guided by the responses from the coordinator
+  /* This action is guided by the responses from the coordinator */
 
   static int generation = 0;
 
   int screen_width = GetScreenWidth();
   int screen_height = GetScreenHeight();
 
-  // Placeholder: Currently printing random values that come from coordinator
-  // Rendering function that takes response would be here instead
   while(!atomic_load(&shutdown_requested)) {
     response_t *response = (response_t *)queue_dequeue(&response_queue);
     if (response == NULL) break; // Queue shutdown
@@ -268,38 +262,34 @@ void *render_thread_function () {
     if(response->payload.generation > generation){
       generation = response->payload.generation;
     }
+    
     //    response_print(__func__, "dequeued response", response);
+
     if(response->payload.generation == generation){
       pthread_mutex_lock(&pixelMutex); //lock
       int p = 0;
       for (int i = response->payload.s_ll.x; i < response->payload.s_ur.x; i++){
 	for (int j = response->payload.s_ll.y; j < response->payload.s_ur.y; j++){
 	  if (i < screen_width && j < screen_height) {
-	  // must find a better way to map response->values[p] to a color
-	  // the maximum value of response->values[p] is available at
-	  // response->payload.fractal_depth
+
 	    cor_t cor = {0};
-	    
-	    cor = get_color(response->values[p],
-			    response->payload.fractal_depth);
-	    
+
+
+	    cor = get_color(response->values[p], response->payload.fractal_depth);
 	    struct Color color = {cor.r, cor.g, cor.b, 255};
-	    g_mandelbrot_color[j * screen_width + i] = color;
+	    g_mandelbrot_pixels[j * screen_width + i] = color;
 
-	    cor = get_color(response->worker_id,
-			    response->max_worker_id);
+	    
+	    cor = get_color_viridis(response->values[p], response->payload.fractal_depth);
+	    color = (struct Color){cor.r, cor.g, cor.b, 255};
+	    g_pallete_pixels[j * screen_width + i] = color;
 
+	    
+	    cor = get_color(response->worker_id, response->max_worker_id);
 	    color = (struct Color){cor.r, cor.g, cor.b, 255};
-	    g_worker_color[j * screen_width + i] = color;
-	    
-	    color = (struct Color){cor.r, cor.g, cor.b, 100};
-	    g_both_color[j * screen_width + i] = color;
-	    
-	    cor = get_color_viridis(response->values[p],
-				    response->payload.fractal_depth);
-	    
-	    color = (struct Color){cor.r, cor.g, cor.b, 255};
-	    g_pallete_color[j * screen_width + i] = color;
+	    g_worker_pixels[j * screen_width + i] = color;
+	    color.a = 100;
+	    g_low_alpha_worker_pixels[j * screen_width + i] = color;
 	    
 	  }
 	  p++;
@@ -399,36 +389,32 @@ int main(int argc, char* argv[])
 
   int screen_width = 1000;
   int screen_height = 800;
-  /* int screen_width = GetScreenWidth(); */
-  /* int screen_height = GetScreenHeight(); */
   
   InitWindow(screen_width, screen_height, "Fractal @ PCAD");
-  //  InitWindow(GetScreenWidth(), GetScreenHeight(), "Fractal @ PCAD");
   SetTargetFPS(60);
 
   // create a CPU-side "image" that we can draw on top when needed
   Image img = GenImageColor(screen_width, screen_height, RAYWHITE);
-  g_mandelbrot_color = LoadImageColors(img); //global
+  g_mandelbrot_pixels = LoadImageColors(img);
   Texture2D texture_mandelbrot = LoadTextureFromImage(img);
   UnloadImage(img);
 
   img = GenImageColor(screen_width, screen_height, RAYWHITE);
-  g_pallete_color = LoadImageColors(img); //global
+  g_pallete_pixels = LoadImageColors(img);
   Texture2D texture_pallete = LoadTextureFromImage(img);
   UnloadImage(img);
 
   img = GenImageColor(screen_width, screen_height, RAYWHITE);
-  g_worker_color = LoadImageColors(img); //global
+  g_worker_pixels = LoadImageColors(img);
   Texture2D texture_worker = LoadTextureFromImage(img);
   UnloadImage(img);
 
   img = GenImageColor(screen_width, screen_height, RAYWHITE);
-  g_both_color = LoadImageColors(img); //global
-  Texture2D texture_both = LoadTextureFromImage(img);
+  g_low_alpha_worker_pixels = LoadImageColors(img);
+  Texture2D texture_low_alpha_worker = LoadTextureFromImage(img);
   UnloadImage(img);
 
   pthread_mutex_init(&pixelMutex, NULL);
-
   srand(0);
 
   queue_init(&payload_queue, MAX_QUEUE_SIZE, free);
@@ -446,20 +432,23 @@ int main(int argc, char* argv[])
   pthread_create(&payload_thread, NULL, net_thread_send_payload, &connection);
   pthread_create(&response_thread, NULL, net_thread_receive_response, &connection);
 
-  //  ToggleFullscreen();
+
   while (!WindowShouldClose()) { // Closed with ESC or manually closing window
-    // get the mutex so we can read safely from sharedPixels
+
+    // get the mutex so we can read safely from global pixel colors
     pthread_mutex_lock(&pixelMutex);
-    UpdateTexture(texture_mandelbrot, g_mandelbrot_color);
-    UpdateTexture(texture_pallete, g_pallete_color);
-    UpdateTexture(texture_worker, g_worker_color);
-    UpdateTexture(texture_both, g_both_color);
+    
+    UpdateTexture(texture_mandelbrot, g_mandelbrot_pixels);
+    UpdateTexture(texture_pallete, g_pallete_pixels);
+    UpdateTexture(texture_worker, g_worker_pixels);
+    UpdateTexture(texture_low_alpha_worker, g_low_alpha_worker_pixels);
+
     pthread_mutex_unlock(&pixelMutex);
 
     // do the drawing (only here we actually do the drawing)
     BeginDrawing();
     ClearBackground(RAYWHITE);
-
+    
     
     if(g_actual_color == 0)
       DrawTexture(texture_mandelbrot, 0, 0, WHITE);
@@ -468,14 +457,13 @@ int main(int argc, char* argv[])
     else if(g_actual_color == 2)
       DrawTexture(texture_worker, 0, 0, WHITE);
     if(g_show_workers){
-      DrawTexture(texture_both, 0, 0, WHITE);
+      DrawTexture(texture_low_alpha_worker, 0, 0, WHITE);
     }
     
     if(g_selecting){
       DrawRectangleV(g_box_origin, g_box_attr, (Color){1.0f, 1.0f, 255.0f, 100.0f});
     }
 
-      
     EndDrawing();
   }
 
@@ -490,12 +478,12 @@ int main(int argc, char* argv[])
   UnloadTexture(texture_mandelbrot);
   UnloadTexture(texture_pallete);
   UnloadTexture(texture_worker);
-  UnloadTexture(texture_both);
+  UnloadTexture(texture_low_alpha_worker);
   
-  UnloadImageColors(g_mandelbrot_color);
-  UnloadImageColors(g_pallete_color);
-  UnloadImageColors(g_worker_color);
-  UnloadImageColors(g_both_color);
+  UnloadImageColors(g_mandelbrot_pixels);
+  UnloadImageColors(g_pallete_pixels);
+  UnloadImageColors(g_worker_pixels);
+  UnloadImageColors(g_low_alpha_worker_pixels);
   CloseWindow(); // Close OpenGL context 
 
   pthread_mutex_destroy(&pixelMutex);
