@@ -47,7 +47,7 @@ void *ui_thread_function () {
   // Placeholder: Currently simulating user input with random payloads every 5-10 seconds
   // Input handling function would be here instead
   while(!atomic_load(&shutdown_requested)) {
-    int wait_seconds = 0;
+    int wait_seconds = (rand() % 6) + 5;
 
     // User interaction creates a new payload
     payload_t *payload = calloc(1, sizeof(payload_t));
