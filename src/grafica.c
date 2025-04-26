@@ -43,7 +43,8 @@ static queue_t payload_queue = {0};
 static queue_t response_queue = {0};
 
 bool g_selecting = false;
-Vector2 g_box_first_point = {0, 0};
+Vector2 g_box_origin = {0, 0};
+Vector2 g_box_attr = {0, 0};
 
 bool g_use_pallete_colors = true;
 
@@ -78,56 +79,96 @@ void *ui_thread_function () {
   static fractal_coord_t actual_ll = {-2, -1.5};
   static fractal_coord_t actual_ur = {2, 1.5};
 
-  double pixel_coord_ratio = 0;
-
-  // Placeholder: Currently simulating user input with random payloads every 5-10 seconds
+   // Placeholder: Currently simulating user input with random payloads every 5-10 seconds
   // Input handling function would be here instead
 
   double screen_width = 0.0f;
   double screen_height = 0.0f;
-  
+  double pixel_coord_ratio = 0;
+  double screen_ratio = 0.0f;
+
+  Vector2 mouse = {0};
   Vector2 first_click_screen = {0, 0};
-  Vector2 second_click_screen = {0, 0};
 
   fractal_coord_t first_click_fractal = {0, 0};
   fractal_coord_t second_click_fractal = {0, 0};
     
   bool interaction = false; 
   bool initial = true;
-  
+
+  bool clicked = false;
+
+  // Primeiro caso enviar a tela inteira
+  // Parar de desenhar o quadrado quando o payload 
+
   while(!atomic_load(&shutdown_requested)) {
-    if(initial && IsWindowReady()){ // If window is ready, send a intial payload
+
+    if(initial && IsWindowReady()){ // If window is ready, config UI needs and send a initial payload
       screen_width = (double)GetScreenWidth();
       screen_height = (double)GetScreenHeight();
-
-      second_click_screen.x = screen_width;
-      second_click_screen.y = screen_height;
-
+      screen_ratio = screen_width/screen_height;
+      
       pixel_coord_ratio = (actual_ur.real - actual_ll.real)/screen_width;
       actual_ur.imag = ((actual_ur.real - actual_ll.real) * (screen_height/screen_width))/2;
       actual_ll.imag = actual_ur.imag * -1;
       
       initial = false;
       interaction = true;
+
+      g_box_origin = (Vector2) {0,0};
+      g_box_attr = (Vector2) {screen_width, screen_height};
     }
 
-    if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ 
-      first_click_screen.x = GetMouseX();
-      first_click_screen.y = GetMouseY();
-
-      g_box_first_point = first_click_screen;
-      g_selecting = true;
-    }
-
-    if(IsMouseButtonReleased(MOUSE_BUTTON_LEFT) // User interaction creates a new payload
-	&& GetMouseX() != first_click_screen.x){ // If mouse has moved from last click_screen
-     
-      second_click_screen.x = GetMouseX();
-      second_click_screen.y = GetMouseY();
+    /* ENTER starts user interaction */
+    if(g_selecting && IsKeyPressed(KEY_ENTER)){
+      g_selecting = false;
       interaction = true;
-
+      sleep(1);
+    }    
+    if(!g_selecting && IsKeyPressed(KEY_ENTER)){
+      g_selecting = true;
+      g_box_origin = (Vector2) {screen_width/4, screen_height/4};
+      g_box_attr = (Vector2) {screen_width/2, screen_height/2};
+      sleep(1);
+    }
+    if(IsKeyPressed(KEY_BACKSPACE)){
       g_selecting = false;
     }
+    
+
+    if(g_selecting){
+      mouse.x = GetMouseX();
+      mouse.y = GetMouseY();
+
+      if(mouse.x > g_box_origin.x && mouse.y > g_box_origin.y &&
+	 mouse.x < g_box_origin.x + g_box_attr.x && mouse.y < g_box_origin.y + g_box_attr.y){
+
+	if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
+	  first_click_screen.x = GetMouseX();
+	  first_click_screen.y = GetMouseY();
+	  clicked = true;
+	}
+      } else {
+	clicked = true;
+      }
+      
+      if(clicked && IsMouseButtonDown(MOUSE_BUTTON_LEFT)){ 
+
+	  Vector2 distance = (Vector2) {g_box_origin.x - first_click_screen.x, g_box_origin.y - first_click_screen.y};
+	
+                                                         	  /* mouse delta */
+	  g_box_origin.x = max(-100, mouse.x + distance.x + (mouse.x - first_click_screen.x)*GetFrameTime());
+	  g_box_origin.y = max(-100, mouse.y + distance.y + (mouse.y - first_click_screen.y)*GetFrameTime());
+
+	
+	  g_box_origin.x = min(g_box_origin.x, screen_width - g_box_attr.x + 100);
+	  g_box_origin.y = min(g_box_origin.y, screen_height - g_box_attr.y + 100);
+	
+	  first_click_screen.x = mouse.x;
+	  first_click_screen.y = mouse.y;
+      
+      }
+    }    
 
     // Selecting the color for the next payload
     if(IsKeyPressed(KEY_P)){ // Using color pallete defined in colors.h
@@ -154,11 +195,11 @@ void *ui_thread_function () {
       pixel_coord_ratio = (actual_ur.real - actual_ll.real)/screen_width;
 
       /* Transforming from screen coordinates to fractal coordinates */
-      first_click_fractal.real = (first_click_screen.x)*pixel_coord_ratio + actual_ll.real;
-      first_click_fractal.imag = (first_click_screen.y)*pixel_coord_ratio + actual_ll.imag;
+      first_click_fractal.real = (g_box_origin.x)*pixel_coord_ratio + actual_ll.real;
+      first_click_fractal.imag = (g_box_origin.y)*pixel_coord_ratio + actual_ll.imag;
 
-      second_click_fractal.real = (second_click_screen.x)*pixel_coord_ratio + actual_ll.real;      
-      second_click_fractal.imag = (second_click_screen.y)*pixel_coord_ratio + actual_ll.imag;
+      second_click_fractal.real = (g_box_origin.x + g_box_attr.x)*pixel_coord_ratio + actual_ll.real;
+      second_click_fractal.imag = (g_box_origin.y + g_box_attr.y)*pixel_coord_ratio + actual_ll.imag;
       
       payload->generation = generation++;
       payload->granularity = 10; // placeholder values
@@ -178,7 +219,7 @@ void *ui_thread_function () {
 
       queue_enqueue(&payload_queue, payload);
       payload = NULL;
-      sleep(1); // to send just one payload per interaction
+      sleep(1);
     }
   }
 
@@ -195,6 +236,9 @@ void *ui_thread_function () {
 */
 void *render_thread_function () {
   // This action is guided by the responses from the coordinator
+
+  static int generation = 0;
+
   int screen_width = GetScreenWidth();
   int screen_height = GetScreenHeight();
 
@@ -204,30 +248,35 @@ void *render_thread_function () {
     response_t *response = (response_t *)queue_dequeue(&response_queue);
     if (response == NULL) break; // Queue shutdown
 
+    if(response->payload.generation > generation){
+      generation = response->payload.generation;
+    }
     //    response_print(__func__, "dequeued response", response);
-    pthread_mutex_lock(&pixelMutex); //lock
-    int p = 0;
-    for (int i = response->payload.s_ll.x; i < response->payload.s_ur.x; i++){
-      for (int j = response->payload.s_ll.y; j < response->payload.s_ur.y; j++){
-	if (i < screen_width && j < screen_height) {
+    if(response->payload.generation == generation){
+      pthread_mutex_lock(&pixelMutex); //lock
+      int p = 0;
+      for (int i = response->payload.s_ll.x; i < response->payload.s_ur.x; i++){
+	for (int j = response->payload.s_ll.y; j < response->payload.s_ur.y; j++){
+	  if (i < screen_width && j < screen_height) {
 	  // must find a better way to map response->values[p] to a color
 	  // the maximum value of response->values[p] is available at
 	  // response->payload.fractal_depth
 	  cor_t cor = {0};
 	  if(g_use_pallete_colors){
 	    cor = get_color_viridis(response->values[p],
-					  response->payload.fractal_depth);
+				    response->payload.fractal_depth);
 	  } else {
 	    cor = get_color(response->values[p],
 				  response->payload.fractal_depth);
 	  }
 	  struct Color color = { cor.r, cor.g, cor.b, 255};
 	  sharedPixels[j * screen_width + i] = color;
+	  }
+	  p++;
 	}
-	p++;
       }
+      pthread_mutex_unlock(&pixelMutex); //unlock
     }
-    pthread_mutex_unlock(&pixelMutex); //unlock
     // Freeing response after using it
     free(response->values);
     free(response);
@@ -322,6 +371,7 @@ int main(int argc, char* argv[])
   int screen_height = 480;//GetMonitorHeight(GetCurrentMonitor());
 
   InitWindow(screen_width, screen_height, "Fractal @ PCAD");
+  //  InitWindow(GetScreenWidth(), GetScreenHeight(), "Fractal @ PCAD");
   SetTargetFPS(60);
 
   // create a CPU-side "image" that we can draw on top when needed
@@ -348,6 +398,7 @@ int main(int argc, char* argv[])
   pthread_create(&payload_thread, NULL, net_thread_send_payload, &connection);
   pthread_create(&response_thread, NULL, net_thread_receive_response, &connection);
 
+  double proportion = (double)screen_width/screen_height;
   //  ToggleFullscreen();
   while (!WindowShouldClose()) { // Closed with ESC or manually closing window
     // get the mutex so we can read safely from sharedPixels
@@ -359,16 +410,15 @@ int main(int argc, char* argv[])
     BeginDrawing();
     ClearBackground(RAYWHITE);
     DrawTexture(texture, 0, 0, WHITE);
-
+    
     if(g_selecting){
-
-      Vector2 mouse = GetMousePosition();
-      Vector2 box_origin = (Vector2){min(g_box_first_point.x, mouse.x), min(g_box_first_point.y, mouse.y)};
-      Vector2 attr = (Vector2){max(g_box_first_point.x, mouse.x) - box_origin.x, max(g_box_first_point.y, mouse.y) - box_origin.y};
-      
-      DrawRectangleV(box_origin, attr, (Color){1.0f, 1.0f, 255.0f, 100.0f});
+      //Vector2 mouse = GetMousePosition();
+      //Vector2 box_origin = (Vector2){min(g_box_first_point.x, mouse.x), min(g_box_first_point.y, mouse.y)};
+      //Vector2 attr = (Vector2){max(g_box_first_point.x, mouse.x) - box_origin.x, max(g_box_first_point.y, mouse.y) - box_origin.y};
+      DrawRectangleV(g_box_origin, g_box_attr, (Color){1.0f, 1.0f, 255.0f, 100.0f});
     }
 
+      
     EndDrawing();
   }
 
