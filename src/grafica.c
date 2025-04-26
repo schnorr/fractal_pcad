@@ -51,7 +51,6 @@ Vector2 g_box_origin = {0, 0};
 Vector2 g_box_attr = {0, 0}; // x = width, y = height
 
 
-#define MAX_QUEUE_SIZE 100 // Should probably be much higher
 static queue_t payload_queue = {0};
 static queue_t response_queue = {0};
 
@@ -459,8 +458,8 @@ int main(int argc, char* argv[])
   pthread_mutex_init(&pixelMutex, NULL);
   srand(0);
 
-  queue_init(&payload_queue, MAX_QUEUE_SIZE, free);
-  queue_init(&response_queue, MAX_QUEUE_SIZE, free_response);
+  queue_init(&payload_queue, 1, free);
+  queue_init(&response_queue, 256, free_response);
 
   int connection = open_connection(argv[1], atoi(argv[2]));
 

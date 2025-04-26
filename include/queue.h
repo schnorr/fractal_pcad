@@ -4,7 +4,8 @@
 #include <pthread.h>
 
 /* queue is generic, so receives and returns void*. memory management has to be done on 
-   caller, with a malloc before enqueue and free after dequeue.*/
+   caller, with a malloc before enqueue and free after dequeue.
+   queue is also unbounded, doubling in size when the limit is reached. */
 typedef struct queue {
   void **queue;
   size_t buffer_size; // buffer size is capacity + 1 (to distinguish full and empty)
@@ -12,20 +13,14 @@ typedef struct queue {
   size_t back;
   pthread_mutex_t mutex;
   pthread_cond_t not_empty;
-  pthread_cond_t not_full;
   void (*free_function)(void *); // destructor for items.
   int shutdown;
 } queue_t;
 
-void queue_init(queue_t *q, size_t capacity, void (*free_function)(void *));
+void queue_init(queue_t *q, size_t starting_capacity, void (*free_function)(void *));
 
-/* Blocking enqueue. Thread will be signaled when it can enqueue. 
-   Queue takes ownership of the pointer. */
+/* Queue takes ownership of the pointer. If size limit reached, doubles the size of the queue. */
 void queue_enqueue(queue_t *q, void *item);
-
-/* Non-blocking enqueue. Returns 1 on success, 0 on failure. 
-   Takes ownership of the pointer, provided the function returns 1.*/
-int queue_try_enqueue(queue_t *q, void *item);
 
 /* Blocking dequeue. Thread will be signaled when it can dequeue. 
    Returns a NULL pointer on shutdown. */
@@ -40,7 +35,7 @@ void queue_destroy(queue_t *q);
 
 /* Function intended to clean up the program when exiting. Once called, threads blocked at
    enqueue/dequeue will be signaled and will return. Enqueuing threads will have their enqueued 
-   item cleaned up, and dequeuing threads will return NULL. */
+   item cleaned up, and dequeuing threads will return NULL . */
 void queue_shutdown(queue_t *q);
 
 #endif 

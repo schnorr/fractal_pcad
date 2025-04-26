@@ -13,8 +13,6 @@
 #include "queue.h"
 #include "mpi_comm.h"
 
-#define MAX_QUEUE_SIZE 100 // Should probably be much higher
-
 //payload from the grafica
 static payload_t *newest_payload = NULL;
 static int latest_generation = 0;
@@ -269,8 +267,8 @@ int main_coordinator(int argc, char* argv[])
   int connection = accept(socket, (struct sockaddr *)&client_addr, &client_len);
   printf("Accepted connection.\n");
 
-  queue_init(&payload_to_workers_queue, MAX_QUEUE_SIZE, free);
-  queue_init(&response_queue, MAX_QUEUE_SIZE, free_response);
+  queue_init(&payload_to_workers_queue, 256, free);
+  queue_init(&response_queue, 256, free_response);
   pthread_mutex_init(&newest_payload_mutex, NULL);
   pthread_cond_init(&new_payload, NULL);
   

@@ -14,8 +14,6 @@
 #include "connection.h"
 #include "queue.h"
 
-#define MAX_QUEUE_SIZE 100 // Should probably be much higher
-
 atomic_int shutdown_requested;
 
 static queue_t payload_queue = {0};
@@ -47,7 +45,7 @@ void *ui_thread_function () {
   // Placeholder: Currently simulating user input with random payloads every 5-10 seconds
   // Input handling function would be here instead
   while(!atomic_load(&shutdown_requested)) {
-    int wait_seconds = 0;//(rand() % 6) + 5;
+    int wait_seconds = (rand() % 6) + 5;
 
     // User interaction creates a new payload
     payload_t *payload = calloc(1, sizeof(payload_t));
@@ -170,8 +168,8 @@ int main(int argc, char* argv[])
   atomic_init(&shutdown_requested, 0);
   signal(SIGPIPE, SIG_IGN); // Ignore SIGPIPE (failed send)
 
-  queue_init(&payload_queue, MAX_QUEUE_SIZE, free);
-  queue_init(&response_queue, MAX_QUEUE_SIZE, free_response);
+  queue_init(&payload_queue, 1, free);
+  queue_init(&response_queue, 256, free_response);
 
   int connection = open_connection(argv[1], atoi(argv[2]));
 

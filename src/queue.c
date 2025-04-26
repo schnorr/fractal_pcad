@@ -4,9 +4,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void queue_init(queue_t *q, size_t capacity, void (*free_function)(void *)) {
+void queue_init(queue_t *q, size_t starting_capacity, void (*free_function)(void *)) {
     // Extra slot needed to distinguish full and empty queue, allowing for capacity 1 queues
-    q->buffer_size = capacity + 1;
+    q->buffer_size = starting_capacity + 1;
     q->queue = malloc(sizeof(void*) * q->buffer_size);
     if (q->queue == NULL) {
         perror("malloc failed.");
@@ -17,15 +17,40 @@ void queue_init(queue_t *q, size_t capacity, void (*free_function)(void *)) {
     q->shutdown = 0;
     pthread_mutex_init(&q->mutex, NULL);
     pthread_cond_init(&q->not_empty, NULL);
-    pthread_cond_init(&q->not_full, NULL);
     q->free_function = free_function;
 }
+
+static void queue_grow(queue_t *q) {
+    // No mutex protection because it's called by an enqueueing thread
+    size_t old_size = q->buffer_size;
+    size_t new_size = ((old_size - 1) * 2) + 1;
+
+    printf("Queue capacity %ld -> %ld\n", old_size - 1, new_size -1);
+
+    void **new_queue = malloc(sizeof(void*) * new_size);
+    if (new_queue == NULL) {
+        perror("malloc failed.");
+        exit(1);
+    }
+
+    size_t i = 0;
+    for (size_t idx = q->front; idx != q->back; idx = (idx + 1) % old_size) {
+        new_queue[i++] = q->queue[idx];
+    }
+
+    free(q->queue);
+    q->queue = new_queue;
+    q->buffer_size = new_size;
+    q->front = 0;
+    q->back = i;
+}
+
 
 void queue_enqueue(queue_t *q, void *item) {
     pthread_mutex_lock(&q->mutex);
 
-    while ((q->back + 1) % q->buffer_size == q->front && !q->shutdown) { // Queue at max, wait for dequeue
-        pthread_cond_wait(&q->not_full, &q->mutex);
+    if ((q->back + 1) % q->buffer_size == q->front) { // Queue at max, wait for dequeue
+        queue_grow(q);
     }
 
     if (q->shutdown) {
@@ -42,21 +67,6 @@ void queue_enqueue(queue_t *q, void *item) {
     pthread_mutex_unlock(&q->mutex);
 }
 
-int queue_try_enqueue(queue_t *q, void *item) {
-    pthread_mutex_lock(&q->mutex);
-
-    if ((q->back + 1) % q->buffer_size == q->front) { // Queue at max, return 0
-        pthread_mutex_unlock(&q->mutex);
-        return 0;
-    }
-
-    q->queue[q->back] = item; // shallow copy
-    q->back = (q->back + 1) % q->buffer_size;
-    pthread_cond_signal(&q->not_empty);
-    pthread_mutex_unlock(&q->mutex);
-    return 1;
-}
-
 void* queue_dequeue(queue_t *q) {
     pthread_mutex_lock(&q->mutex);
 
@@ -71,7 +81,6 @@ void* queue_dequeue(queue_t *q) {
 
     void *item = q->queue[q->front];
     q->front = (q->front + 1) % q->buffer_size;
-    pthread_cond_signal(&q->not_full);
     pthread_mutex_unlock(&q->mutex);
 
     return item;
@@ -87,7 +96,6 @@ void* queue_try_dequeue(queue_t *q) {
 
     void *item = q->queue[q->front];
     q->front = (q->front + 1) % q->buffer_size;
-    pthread_cond_signal(&q->not_full);
     pthread_mutex_unlock(&q->mutex);
 
     return item;
@@ -117,7 +125,6 @@ void queue_clear(queue_t *q) {
 
     q->front = 0;
     q->back = 0;
-    pthread_cond_broadcast(&q->not_full); // Broadcast to all waiting threads
     pthread_mutex_unlock(&q->mutex);
 }
 
@@ -126,13 +133,12 @@ void queue_destroy(queue_t *q) {
     free(q->queue);
     pthread_mutex_destroy(&q->mutex);
     pthread_cond_destroy(&q->not_empty);
-    pthread_cond_destroy(&q->not_full);
 }
 
 void queue_shutdown(queue_t *q) {
     pthread_mutex_lock(&q->mutex);
     q->shutdown = 1;
     pthread_cond_broadcast(&q->not_empty);
-    pthread_cond_broadcast(&q->not_full);
     pthread_mutex_unlock(&q->mutex);
 }
+
