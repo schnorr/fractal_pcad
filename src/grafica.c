@@ -1,20 +1,3 @@
-/*
-This file is part of "Fractal @ PCAD".
-
-"Fractal @ PCAD" is free software: you can redistribute it and/or
-modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
-
-"Fractal @ PCAD" is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with "Fractal @ PCAD". If not, see
-<https://www.gnu.org/licenses/>.
-*/
 #include <raylib.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -60,7 +43,7 @@ Color *g_worker_pixels = NULL;
 Color *g_low_alpha_worker_pixels = NULL; 
 bool g_show_workers = false;
 int g_actual_color = 0;
-
+int g_granularity = 50;
 
 /* Selection box (blue box) related globals */
 bool g_selecting = false;
@@ -97,7 +80,6 @@ void *ui_thread_function () {
   static int generation = 0;
   static fractal_coord_t actual_ll = {-2, -1.5};
   static fractal_coord_t actual_ur = {2, 1.5};
-
   double screen_width = 0.0f;
   double screen_height = 0.0f;
   double pixel_coord_ratio = 0.0f;
@@ -135,7 +117,6 @@ void *ui_thread_function () {
       interaction = true;
       
     }
-
     if(!g_selecting && IsKeyPressed(KEY_ENTER)){
       g_selecting = true;
       g_box_origin = (Vector2) {screen_width/4, screen_height/4};
@@ -148,11 +129,27 @@ void *ui_thread_function () {
       interaction = true;
       WaitTime(0.1);
     }    
-
+   
     if(IsKeyPressed(KEY_BACKSPACE)){
       g_selecting = false;
     }
 
+    /* Add or Sub granularity  */
+    if (IsKeyDown(KEY_MINUS)){
+      g_granularity = g_granularity - 5;
+      if(g_granularity < 10){
+	g_granularity = 50;
+      }
+      WaitTime(0.1);
+    }
+    if(IsKeyDown(KEY_EQUAL)){
+      g_granularity = g_granularity + 5;
+      if(g_granularity > 100){
+	g_granularity = 50;
+      }
+      WaitTime(0.1);
+    }
+    
     /* Selection box related */
     if(g_selecting){
 
@@ -191,7 +188,7 @@ void *ui_thread_function () {
       }
 
       moviment_speed = IsKeyDown(KEY_LEFT_CONTROL) ? 0.1 : 1.5/screen_width; /* Left control sets precise moviment */
-
+      
       /* Keyboard interaction */
       if(IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)){
 	g_box_origin.y = g_box_origin.y - 1;
@@ -250,7 +247,6 @@ void *ui_thread_function () {
       WaitTime(0.1);
     }
     
-    
     if(interaction == true){
       interaction = false;
       
@@ -272,7 +268,7 @@ void *ui_thread_function () {
 
       /* Generating the payload */
       payload->generation = generation++; /* The generation is always increasing */
-      payload->granularity = 100; 
+      payload->granularity = g_granularity; 
       payload->fractal_depth = 2000; 
       payload->ll.real = (float) min(first_point_fractal.real, second_point_fractal.real); 
       payload->ll.imag = (float) min(first_point_fractal.imag, second_point_fractal.imag); 
@@ -504,7 +500,7 @@ int main(int argc, char* argv[])
 
     // get the mutex so we can read safely from global pixel colors
     pthread_mutex_lock(&pixelMutex);
-    
+
     UpdateTexture(texture_mandelbrot, g_mandelbrot_pixels);
     UpdateTexture(texture_pallete, g_pallete_pixels);
     UpdateTexture(texture_worker, g_worker_pixels);
@@ -529,7 +525,9 @@ int main(int argc, char* argv[])
     
     if(g_selecting){
       DrawRectangleV(g_box_origin, g_box_attr, (Color){1.0f, 1.0f, 255.0f, 100.0f});
+      DrawText(TextFormat("Granularity:  %d", g_granularity), 10, 10, 20, DARKGRAY);
     }
+    
 
     EndDrawing();
   }
