@@ -1,0 +1,114 @@
+#+STARTUP: overview indent
+
+* Scripts
+** License header
+
+#+begin_src C :tangle LICENSE_header.c :main no
+/*
+This file is part of "Fractal @ PCAD".
+
+"Fractal @ PCAD" is free software: you can redistribute it and/or
+modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+"Fractal @ PCAD" is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with "Fractal @ PCAD". If not, see
+<https://www.gnu.org/licenses/>.
+*/
+#+end_src
+
+#+RESULTS:
+
+** Apply copyright notice
+
+#+begin_src shell :results output :exports both :tangle apply_copyright_notice.sh :tangle-mode (identity #o755) :shebang "#!/usr/bin/bash"
+LICENSE_HEADER=LICENSE_header.c
+FILES=$(find ../src ../include -type f -name "*.c" -o -name "*.h" | sort)
+for file in $FILES; do
+    # remove current license header
+    # we assume the header is the first thing in that file
+    # so we remove everything up to the first preprocessor directive */
+    echo $file
+    UP_TO_LINE=$(grep -n '^#' $file | head -n1 | cut -d: -f1)
+    UP_TO_LINE=$((${UP_TO_LINE} - 1))
+    echo $UP_TO_LINE
+    if [ ${UP_TO_LINE} -gt 0 ]; then
+	echo "sed -i "\'1,${UP_TO_LINE}d\'" $file"
+	echo ${UP_TO_LINE}
+    fi
+    # apply the new licence header
+    tmpfile=$(mktemp)
+    cat ${LICENSE_HEADER} $file > $tmpfile
+    mv -v "$tmpfile" "$file"
+done
+#+end_src
+
+#+RESULTS:
+#+begin_example
+../include/colors.h
+0
+copied '/tmp/tmp.HlvCwFU30y' -> '../include/colors.h'
+removed '/tmp/tmp.HlvCwFU30y'
+../include/connection.h
+0
+copied '/tmp/tmp.OHakOPb8uF' -> '../include/connection.h'
+removed '/tmp/tmp.OHakOPb8uF'
+../include/fractal.h
+0
+copied '/tmp/tmp.o4DiEQvB5m' -> '../include/fractal.h'
+removed '/tmp/tmp.o4DiEQvB5m'
+../include/mandelbrot.h
+0
+copied '/tmp/tmp.7HlwEVqhul' -> '../include/mandelbrot.h'
+removed '/tmp/tmp.7HlwEVqhul'
+../include/mpi_comm.h
+0
+copied '/tmp/tmp.WIIla9ndxR' -> '../include/mpi_comm.h'
+removed '/tmp/tmp.WIIla9ndxR'
+../include/queue.h
+0
+copied '/tmp/tmp.bQiEpmzo78' -> '../include/queue.h'
+removed '/tmp/tmp.bQiEpmzo78'
+../src/colors.c
+0
+copied '/tmp/tmp.ICoWl1udJ0' -> '../src/colors.c'
+removed '/tmp/tmp.ICoWl1udJ0'
+../src/connection.c
+0
+copied '/tmp/tmp.x0RCDx3lIz' -> '../src/connection.c'
+removed '/tmp/tmp.x0RCDx3lIz'
+../src/coordinator.c
+0
+copied '/tmp/tmp.KUZGSMyh90' -> '../src/coordinator.c'
+removed '/tmp/tmp.KUZGSMyh90'
+../src/fractal.c
+0
+copied '/tmp/tmp.v3TpW7XmTX' -> '../src/fractal.c'
+removed '/tmp/tmp.v3TpW7XmTX'
+../src/grafica.c
+0
+copied '/tmp/tmp.fzA2TIX30I' -> '../src/grafica.c'
+removed '/tmp/tmp.fzA2TIX30I'
+../src/mandelbrot.c
+0
+copied '/tmp/tmp.vfpgELHnM9' -> '../src/mandelbrot.c'
+removed '/tmp/tmp.vfpgELHnM9'
+../src/mpi_comm.c
+0
+copied '/tmp/tmp.cfXWuTIeEK' -> '../src/mpi_comm.c'
+removed '/tmp/tmp.cfXWuTIeEK'
+../src/queue.c
+0
+copied '/tmp/tmp.BaNSszNfy8' -> '../src/queue.c'
+removed '/tmp/tmp.BaNSszNfy8'
+../src/textual.c
+0
+copied '/tmp/tmp.Ez8Lyov9tM' -> '../src/textual.c'
+removed '/tmp/tmp.Ez8Lyov9tM'
+#+end_example
