@@ -9,4 +9,4 @@ People involved:
 - Rayan Raddatz de Matos ([[https://github.com/rddtz][@rddtz]])
 - Francisco Pegoraro Etcheverria ([[https://github.com/thedoubleace][@thedoubleace]])
 
-If you want to get yourself involved, get in touch quickly. ;-)
+If you want to get yourself involved, get in touch. ;-)
