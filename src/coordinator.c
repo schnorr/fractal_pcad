@@ -210,29 +210,27 @@ void *net_thread_send_response(void *arg)
   while(1) {
     response_t *response = (response_t *)queue_dequeue(&response_queue);
     if (response == NULL) break; // poison pill
+
 #ifdef RESPONSE_DEBUG
     response_print(__func__, "preparating for sending the response", response);
 #endif
 
-    uint8_t *buffer;
-    // Serialize the response so response->values is sent
-    size_t buffer_size = response_serialize(response, &buffer);
+    size_t buffer_size = response->payload.granularity * response->payload.granularity;
+    buffer_size *= sizeof(int);
 
-    // First, send buffer size in bytes since response size is variable
-    if (send(connection, &buffer_size, sizeof(buffer_size), 0) <= 0) {
+    // First, send response
+    if (send(connection, response, sizeof(response_t), 0) <= 0) {
       fprintf(stderr, "Send failed. Killing thread...\n");
       free(response->values);
       free(response);
-      free(buffer);
       pthread_exit(NULL);
     }
 
-    // Then, send actual buffer
-    if (send(connection, buffer, buffer_size, 0) <= 0) {
+    // Then, send response values
+    if (send(connection, response->values, buffer_size, 0) <= 0) {
       fprintf(stderr, "Send failed. Killing thread...\n");
       free(response->values);
       free(response);
-      free(buffer);
       pthread_exit(NULL);
     }
 
@@ -242,7 +240,6 @@ void *net_thread_send_response(void *arg)
 
     free(response->values);
     free(response);
-    free(buffer);
   }
 
   pthread_exit(NULL);

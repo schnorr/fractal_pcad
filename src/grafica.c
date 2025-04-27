@@ -384,30 +384,38 @@ void *net_thread_receive_response (void *arg)
 {
   int connection = *(int *)arg;
   while(!atomic_load(&shutdown_requested)){
-    size_t response_size;
-
-    // Receive size of response. Done since response can be arbitrarily large due to *values
-    if (recv_all(connection, &response_size, sizeof(response_size), 0) <= 0) {
-      fprintf(stderr, "Receive failed. Killing thread...\n");
-      pthread_exit(NULL);
-    }
-
-    uint8_t *buffer = malloc(response_size);
-    if (buffer == NULL) {
+    response_t *response = malloc(sizeof(response_t)); 
+    if (response == NULL) {
       fprintf(stderr, "malloc failed.\n");
       pthread_exit(NULL);
     }
 
-    // Receive actual response, put in buffer
-    if (recv_all(connection, buffer, response_size, 0) <= 0) {
+    // Receive base response struct. Pointer to values is garbage.
+    if (recv_all(connection, response, sizeof(response_t), 0) <= 0) {
       fprintf(stderr, "Receive failed. Killing thread...\n");
+      free(response);
+      pthread_exit(NULL);
+    }
+
+    size_t buffer_size = response->payload.granularity * response->payload.granularity;
+    buffer_size *= sizeof(int);
+    int *buffer = malloc(buffer_size);
+
+    if (buffer == NULL) {
+      fprintf(stderr, "malloc failed.\n");
+      free(response);
+      pthread_exit(NULL);
+    }
+
+    // Receive values
+    if (recv_all(connection, buffer, buffer_size, 0) <= 0) {
+      fprintf(stderr, "Receive failed. Killing thread...\n");
+      free(response);
       free(buffer);
       pthread_exit(NULL);
     }
 
-    response_t *response = response_deserialize(&buffer);
-    free(buffer); 
-    buffer = NULL;
+    response->values = buffer;
 
     /* printf("(%d) %s: received response.\n", response->generation, __func__); */
     /* printf("\t[%d, %d]\n", */
