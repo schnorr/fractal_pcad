@@ -5,8 +5,8 @@ is to run an enourmous fractal in an interactive manner for our
 visitors at the Informatics Institute data center.
 
 People involved:
-- Prof. Lucas Mello Schnorr (@schnorr)
-- Rayan Raddatz de Matos (@rddtz)
-- Francisco Pegoraro Etcheverria (@thedoubleace)
+- Prof. Lucas Mello Schnorr ([[https://github.com/schnorr][@schnorr]])
+- Rayan Raddatz de Matos ([[https://github.com/rddtz][@rddtz]])
+- Francisco Pegoraro Etcheverria ([[https://github.com/thedoubleace][@thedoubleace]])
 
 If you want to get yourself involved, get in touch quickly. ;-)
