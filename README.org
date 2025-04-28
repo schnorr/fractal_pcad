@@ -8,5 +8,6 @@ People involved:
 - Prof. Lucas Mello Schnorr ([[https://github.com/schnorr][@schnorr]])
 - Rayan Raddatz de Matos ([[https://github.com/rddtz][@rddtz]])
 - Francisco Pegoraro Etcheverria ([[https://github.com/thedoubleace][@thedoubleace]])
+- Kenichi Brumati ([[https://github.com/Kenichi220][@Kenichi220]])
 
 If you want to get yourself involved, get in touch. ;-)
