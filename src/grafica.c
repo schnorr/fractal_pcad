@@ -469,10 +469,19 @@ int main(int argc, char* argv[])
   atomic_init(&shutdown_requested, 0);
   signal(SIGPIPE, SIG_IGN); // Ignore SIGPIPE (failed send)
 
-  int screen_width = 1000;
-  int screen_height = 800;
+  int screen_width = 1000;//
+  int screen_height = 800;//GetMonitorHeight(GetCurrentMonitor());
 
   InitWindow(screen_width, screen_height, "Fractal @ PCAD");
+  while(!IsWindowReady()){
+    // Waiting to window to start
+  }
+
+  screen_width = GetMonitorWidth(GetCurrentMonitor());// GetScreenWidth();//1000;
+  screen_height = GetMonitorHeight(GetCurrentMonitor());// GetScreenHeight();//800;
+  SetWindowSize(screen_width, screen_height);
+  ToggleFullscreen();
+
   SetTargetFPS(60);
 
   // create a CPU-side "image" that we can draw on top when needed
@@ -514,9 +523,7 @@ int main(int argc, char* argv[])
   pthread_create(&payload_thread, NULL, net_thread_send_payload, &connection);
   pthread_create(&response_thread, NULL, net_thread_receive_response, &connection);
 
-
   while (!WindowShouldClose()) { // Closed with ESC or manually closing window
-
     // get the mutex so we can read safely from global pixel colors
     pthread_mutex_lock(&pixelMutex);
 
