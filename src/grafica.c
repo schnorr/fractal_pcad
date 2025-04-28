@@ -406,10 +406,9 @@ void *net_thread_send_payload (void *arg)
   net_thread_receive_response: this function is responsible for
   receiving response. As the responses can be numerous (thousands), it
   is important to receive them as soon as possible. Algorithm: 1/ we
-  receive the response size (sent by the coordinator); 2/ we mallocate
-  the space needed to receive the response; 3/ we receive the actual data
-  with the recv_all function; 4/ we deserialize the function with the
-  response_deserialize function; 5/ and then we enqueue this function
+  mallocate a response struct and receive it from the coordinator with
+  recv_all; 2/ we mallocate the space needed to receive the values; 
+  3/ we receive the values; 4/ and then we enqueue this response
   so the render_thread can do its work.
 */
 void *net_thread_receive_response (void *arg)

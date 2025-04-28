@@ -66,7 +66,7 @@ static void queue_grow(queue_t *q) {
 void queue_enqueue(queue_t *q, void *item) {
     pthread_mutex_lock(&q->mutex);
 
-    if ((q->back + 1) % q->buffer_size == q->front) { // Queue at max, wait for dequeue
+    if ((q->back + 1) % q->buffer_size == q->front) { // Queue at max, reallocate it
         queue_grow(q);
     }
 
@@ -121,7 +121,7 @@ void queue_clear(queue_t *q) {
     while (q->front != q->back) {
         void *item = q->queue[q->front];
         if (item && q->free_function){
-            q->free_function(item); // Free items using function
+            q->free_function(item);
         }
         q->queue[q->front] = NULL;
         q->front = (q->front + 1) % q->buffer_size;
