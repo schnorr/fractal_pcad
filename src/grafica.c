@@ -208,21 +208,23 @@ void *ui_thread_function () {
       moviment_speed = IsKeyDown(KEY_LEFT_CONTROL) ? 0.1 : 1.5/screen_width; /* Left control sets precise moviment */
 
       /* Keyboard interaction */
-      if(IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)){
-	g_box_origin.y = g_box_origin.y - 1;
-	WaitTime(moviment_speed);
-      }
-      if(IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S)){
-	g_box_origin.y = g_box_origin.y + 1;
-	WaitTime(moviment_speed);
-      }
-      if(IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A)){
-	g_box_origin.x = g_box_origin.x - 1;
-	WaitTime(moviment_speed);
-      }
-      if(IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D)){
-	g_box_origin.x = g_box_origin.x + 1;
-	WaitTime(moviment_speed);
+      if(!IsKeyDown(KEY_LEFT_SHIFT)){
+	if(IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)){
+	  g_box_origin.y = g_box_origin.y - 1;
+	  WaitTime(moviment_speed);
+	}
+	if(IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S)){
+	  g_box_origin.y = g_box_origin.y + 1;
+	  WaitTime(moviment_speed);
+	}
+	if(IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A)){
+	  g_box_origin.x = g_box_origin.x - 1;
+	  WaitTime(moviment_speed);
+	}
+	if(IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D)){
+	  g_box_origin.x = g_box_origin.x + 1;
+	  WaitTime(moviment_speed);
+	}
       }
 
       if(IsKeyDown(KEY_LEFT_SHIFT)){
