@@ -155,14 +155,14 @@ void *ui_thread_function () {
     if (IsKeyDown(KEY_MINUS)){
       g_granularity = g_granularity - 5;
       if(g_granularity < 10){
-	g_granularity = 50;
+	g_granularity = 10;
       }
       WaitTime(0.1);
     }
     if(IsKeyDown(KEY_EQUAL)){
       g_granularity = g_granularity + 5;
       if(g_granularity > 100){
-	g_granularity = 50;
+	g_granularity = 100;
       }
       WaitTime(0.1);
     }
