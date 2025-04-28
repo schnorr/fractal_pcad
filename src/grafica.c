@@ -1,4 +1,4 @@
-git/*
+/*
 This file is part of "Fractal @ PCAD".
 
 "Fractal @ PCAD" is free software: you can redistribute it and/or
@@ -248,8 +248,8 @@ void *ui_thread_function () {
       }
 
       /* Checking the screen limits*/
-      g_box_origin.x =  max(-g_box_attr.x/4, g_box_origin.x);
-      g_box_origin.y =  max(-g_box_attr.y/4, g_box_origin.y);
+      g_box_origin.x = max(-g_box_attr.x/4, g_box_origin.x);
+      g_box_origin.y = max(-g_box_attr.y/4, g_box_origin.y);
       g_box_origin.x = min(g_box_origin.x, screen_width - g_box_attr.x + g_box_attr.x/4);
       g_box_origin.y = min(g_box_origin.y, screen_height - g_box_attr.y + g_box_attr.y/4);
     }
