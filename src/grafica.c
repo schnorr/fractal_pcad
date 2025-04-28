@@ -1,4 +1,4 @@
-/*
+git/*
 This file is part of "Fractal @ PCAD".
 
 "Fractal @ PCAD" is free software: you can redistribute it and/or
@@ -19,12 +19,12 @@ along with "Fractal @ PCAD". If not, see
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>       
-#include <arpa/inet.h>     
-#include <sys/socket.h>   
-#include <netinet/in.h> 
+#include <unistd.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 #include <pthread.h>
-#include <netdb.h> 
+#include <netdb.h>
 #include <sys/types.h>
 #include <signal.h>
 #include <stdatomic.h>
@@ -57,10 +57,11 @@ pthread_mutex_t pixelMutex;
 Color *g_pallete_pixels = NULL;
 Color *g_mandelbrot_pixels = NULL;
 Color *g_worker_pixels = NULL;
-Color *g_low_alpha_worker_pixels = NULL; 
+Color *g_low_alpha_worker_pixels = NULL;
 bool g_show_workers = false;
 int g_actual_color = 0;
-int g_granularity = 50;
+
+int g_granularity = 10;
 
 /* Selection box (blue box) related globals */
 bool g_selecting = false;
@@ -79,7 +80,7 @@ void request_shutdown(int connection){
     return; // If already shutting down
   }
   printf("Shutdown requested.\n");
-  shutdown(connection, SHUT_RDWR); 
+  shutdown(connection, SHUT_RDWR);
   // Send "poison pills" to queues, making threads dequeuing them quit
   queue_enqueue(&payload_queue, NULL);
   queue_enqueue(&response_queue, NULL);
@@ -93,7 +94,7 @@ void request_shutdown(int connection){
 */
 void *ui_thread_function () {
   /* This action is guided by the user */
-  
+
   static int generation = 0;
   static fractal_coord_t actual_ll = {-2, -1.5};
   static fractal_coord_t actual_ur = {2, 1.5};
@@ -107,32 +108,32 @@ void *ui_thread_function () {
 
   fractal_coord_t first_point_fractal = {0, 0};
   fractal_coord_t second_point_fractal = {0, 0};
-    
-  bool interaction = false; 
-  bool initial = true;  
+
+  bool interaction = false;
+  bool initial = true;
   bool clicked = false;
 
   float moviment_speed = 0.0f;
   float zoom_speed = 0.0f;
-  
+
   while(!atomic_load(&shutdown_requested)) {
 
     if(initial && IsWindowReady()){ /* Send the initial payload when the window gets ready */
 
       screen_width = (double)GetScreenWidth();
       screen_height = (double)GetScreenHeight();
-      
+
       pixel_coord_ratio = (actual_ur.real - actual_ll.real)/screen_width;
-      
+
       actual_ur.imag = ((actual_ur.real - actual_ll.real) * (screen_height/screen_width))/2;
       actual_ll.imag = actual_ur.imag * -1;
-      
+
       g_box_origin = (Vector2) {0,0};
       g_box_attr = (Vector2) {screen_width, screen_height};
 
       initial = false;
       interaction = true;
-      
+
     }
     if(!g_selecting && IsKeyPressed(KEY_ENTER)){
       g_selecting = true;
@@ -145,8 +146,8 @@ void *ui_thread_function () {
       g_selecting = false;
       interaction = true;
       WaitTime(0.1);
-    }    
-   
+    }
+
     if(IsKeyPressed(KEY_BACKSPACE)){
       g_selecting = false;
     }
@@ -166,7 +167,7 @@ void *ui_thread_function () {
       }
       WaitTime(0.1);
     }
-    
+
     /* Selection box related */
     if(g_selecting){
 
@@ -181,7 +182,7 @@ void *ui_thread_function () {
 
 	g_box_attr.x = g_box_attr.x + zoom*screen_width;
 	g_box_attr.y = g_box_attr.y + zoom*screen_height;
-	
+
 	g_box_origin.x = g_box_origin.x - zoom*screen_width/2;
 	g_box_origin.y = g_box_origin.y - zoom*screen_height/2;
 
@@ -193,35 +194,35 @@ void *ui_thread_function () {
 	}
       } else { clicked = true; }
 
-      if(clicked && IsMouseButtonDown(MOUSE_BUTTON_LEFT)){ 
-	
-	  Vector2 distance = (Vector2) {g_box_origin.x - first_point_screen.x, g_box_origin.y - first_point_screen.y};
-                                                         /* mouse delta */
+      if(clicked && IsMouseButtonDown(MOUSE_BUTTON_LEFT)){
+
+	Vector2 distance = (Vector2) {g_box_origin.x - first_point_screen.x, g_box_origin.y - first_point_screen.y};
+	/*                                               mouse delta                         */
 	  g_box_origin.x = mouse.x + distance.x + (mouse.x - first_point_screen.x)*GetFrameTime();
 	  g_box_origin.y = mouse.y + distance.y + (mouse.y - first_point_screen.y)*GetFrameTime();
-       
+
 	  first_point_screen.x = mouse.x;
 	  first_point_screen.y = mouse.y;
       }
 
       moviment_speed = IsKeyDown(KEY_LEFT_CONTROL) ? 0.1 : 1.5/screen_width; /* Left control sets precise moviment */
-      
+
       /* Keyboard interaction */
       if(IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)){
 	g_box_origin.y = g_box_origin.y - 1;
-	WaitTime(moviment_speed); 
+	WaitTime(moviment_speed);
       }
       if(IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S)){
 	g_box_origin.y = g_box_origin.y + 1;
-	WaitTime(moviment_speed); 
+	WaitTime(moviment_speed);
       }
       if(IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A)){
 	g_box_origin.x = g_box_origin.x - 1;
-	WaitTime(moviment_speed); 
+	WaitTime(moviment_speed);
       }
       if(IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D)){
 	g_box_origin.x = g_box_origin.x + 1;
-	WaitTime(moviment_speed); 
+	WaitTime(moviment_speed);
       }
 
       if(IsKeyDown(KEY_LEFT_SHIFT)){
@@ -229,30 +230,29 @@ void *ui_thread_function () {
 	/* Left control enables precise zoom */
 	zoom = IsKeyDown(KEY_LEFT_CONTROL) ? GetFrameTime()/10 : GetFrameTime();
 	zoom_speed = IsKeyDown(KEY_LEFT_CONTROL) ? 0.1 : 0.01;
-	
+
 	if(IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)){
 	  g_box_attr.x = g_box_attr.x + zoom*screen_width;
 	  g_box_attr.y = g_box_attr.y + zoom*screen_height;
 	  g_box_origin.x = g_box_origin.x - zoom*screen_width/2;
 	  g_box_origin.y = g_box_origin.y - zoom*screen_height/2;
-	  WaitTime(zoom_speed); 
+	  WaitTime(zoom_speed);
 	}
 	if(IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S)){
 	  g_box_attr.x = max(1, g_box_attr.x - zoom*screen_width);
 	  g_box_attr.y = max(1,g_box_attr.y - zoom*screen_height);
 	  g_box_origin.x = g_box_origin.x + zoom*screen_width/2;
 	  g_box_origin.y = g_box_origin.y + zoom*screen_height/2;
-	  WaitTime(zoom_speed); 
+	  WaitTime(zoom_speed);
 	}
       }
-      
+
       /* Checking the screen limits*/
       g_box_origin.x =  max(-g_box_attr.x/4, g_box_origin.x);
       g_box_origin.y =  max(-g_box_attr.y/4, g_box_origin.y);
       g_box_origin.x = min(g_box_origin.x, screen_width - g_box_attr.x + g_box_attr.x/4);
       g_box_origin.y = min(g_box_origin.y, screen_height - g_box_attr.y + g_box_attr.y/4);
-    }    
-
+    }
 
     /* Colors related */
     if(IsKeyPressed(KEY_SPACE)){
@@ -263,10 +263,10 @@ void *ui_thread_function () {
       g_show_workers = !g_show_workers;
       WaitTime(0.1);
     }
-    
+
     if(interaction == true){
       interaction = false;
-      
+
       payload_t *payload = calloc(1, sizeof(payload_t));
       if (payload == NULL) {
 	fprintf(stderr, "malloc failed.\n");
@@ -294,7 +294,7 @@ void *ui_thread_function () {
 
       actual_ll = payload->ll;
       actual_ur = payload->ur;
-      
+
       payload->s_ll.x = 0;
       payload->s_ll.y = 0;
       payload->s_ur.x = screen_width;
@@ -334,7 +334,7 @@ void *render_thread_function () {
     if(response->payload.generation > generation){
       generation = response->payload.generation;
     }
-    
+
     //    response_print(__func__, "dequeued response", response);
 
     if(response->payload.generation == generation){
@@ -351,18 +351,18 @@ void *render_thread_function () {
 	    struct Color color = {cor.r, cor.g, cor.b, 255};
 	    g_mandelbrot_pixels[j * screen_width + i] = color;
 
-	    
+
 	    cor = get_color_viridis(response->values[p], response->payload.fractal_depth);
 	    color = (struct Color){cor.r, cor.g, cor.b, 255};
 	    g_pallete_pixels[j * screen_width + i] = color;
 
-	    
+
 	    cor = get_color(response->worker_id, response->max_worker_id);
 	    color = (struct Color){cor.r, cor.g, cor.b, 255};
 	    g_worker_pixels[j * screen_width + i] = color;
 	    color.a = 100;
 	    g_low_alpha_worker_pixels[j * screen_width + i] = color;
-	    
+
 	  }
 	  p++;
 	}
@@ -386,7 +386,7 @@ void *net_thread_send_payload (void *arg)
   while(!atomic_load(&shutdown_requested)) {
     payload_t *payload = (payload_t *)queue_dequeue(&payload_queue);
     if (payload == NULL) break; // Poison pill
-    
+
     if (send(connection, payload, sizeof(*payload), 0) <= 0) {
       fprintf(stderr, "Send failed. Killing thread...\n");
       free(payload);
@@ -414,7 +414,7 @@ void *net_thread_receive_response (void *arg)
 {
   int connection = *(int *)arg;
   while(!atomic_load(&shutdown_requested)){
-    response_t *response = malloc(sizeof(response_t)); 
+    response_t *response = malloc(sizeof(response_t));
     if (response == NULL) {
       fprintf(stderr, "malloc failed.\n");
       pthread_exit(NULL);
@@ -449,7 +449,7 @@ void *net_thread_receive_response (void *arg)
 
     /* printf("(%d) %s: received response.\n", response->generation, __func__); */
     /* printf("\t[%d, %d]\n", */
-    /* 	   response->granularity, response->worker_id); */
+    /*	   response->granularity, response->worker_id); */
 
     queue_enqueue(&response_queue, response);
     response = NULL; // Transferred ownership to queue
@@ -469,7 +469,7 @@ int main(int argc, char* argv[])
 
   int screen_width = 1000;
   int screen_height = 800;
-  
+
   InitWindow(screen_width, screen_height, "Fractal @ PCAD");
   SetTargetFPS(60);
 
@@ -528,8 +528,8 @@ int main(int argc, char* argv[])
     // do the drawing (only here we actually do the drawing)
     BeginDrawing();
     ClearBackground(RAYWHITE);
-    
-    
+
+
     if(g_actual_color == 0)
       DrawTexture(texture_mandelbrot, 0, 0, WHITE);
     else if(g_actual_color == 1)
@@ -539,19 +539,18 @@ int main(int argc, char* argv[])
     if(g_show_workers){
       DrawTexture(texture_low_alpha_worker, 0, 0, WHITE);
     }
-    
+
     if(g_selecting){
       DrawRectangleV(g_box_origin, g_box_attr, (Color){1.0f, 1.0f, 255.0f, 100.0f});
       DrawText(TextFormat("Granularity:  %d", g_granularity), 10, 10, 20, DARKGRAY);
     }
-    
 
     EndDrawing();
   }
 
   // Window closed, request shutdown
   request_shutdown(connection);
-  
+
   pthread_join(ui_thread, NULL);
   pthread_join(render_thread, NULL);
   pthread_join(payload_thread, NULL);
@@ -561,12 +560,12 @@ int main(int argc, char* argv[])
   UnloadTexture(texture_pallete);
   UnloadTexture(texture_worker);
   UnloadTexture(texture_low_alpha_worker);
-  
+
   UnloadImageColors(g_mandelbrot_pixels);
   UnloadImageColors(g_pallete_pixels);
   UnloadImageColors(g_worker_pixels);
   UnloadImageColors(g_low_alpha_worker_pixels);
-  CloseWindow(); // Close OpenGL context 
+  CloseWindow(); // Close OpenGL context
 
   pthread_mutex_destroy(&pixelMutex);
 
