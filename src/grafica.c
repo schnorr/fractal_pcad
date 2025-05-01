@@ -170,7 +170,14 @@ void *ui_thread_function () {
     }
 
     if(IsKeyPressed(KEY_Z) && IsKeyDown(KEY_LEFT_CONTROL)){
-  
+      if (payload_count > 0) {
+            payload_count--; 
+            payload_history = realloc(payload_history, payload_count * sizeof(payload_t));
+	    
+            if (payload_history == NULL && payload_count > 0) {
+                perror("Realloc failed");  
+            }
+        }
       WaitTime(0.1);
     }
 
@@ -316,6 +323,11 @@ void *ui_thread_function () {
 
       payload_history[payload_count] = *payload;
       payload_count++;
+
+      // I will remove this after
+      /* for(int i = 0; i < payload_count; i++){
+	printf("\nGEN: %d\n\n", payload_history[i].generation);
+      }*/
       
       payload_print(__func__, "Enqueueing payload", payload);
 
