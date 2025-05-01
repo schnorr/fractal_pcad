@@ -71,7 +71,7 @@ Vector2 g_box_attr = {0, 0}; // x = width, y = height
 
 static queue_t payload_queue = {0};
 static queue_t response_queue = {0};
-
+payload_t *payload_history = NULL;
 
 /* Shutdown function. Shuts down the TCP connection and sends "poison pills" to queues.*/
 void request_shutdown(int connection){
@@ -96,6 +96,7 @@ void *ui_thread_function () {
   /* This action is guided by the user */
 
   static int generation = 0;
+  static int payload_count = 0;
   static fractal_coord_t actual_ll = {-2, -1.5};
   static fractal_coord_t actual_ur = {2, 1.5};
   double screen_width = 0.0f;
@@ -165,6 +166,11 @@ void *ui_thread_function () {
       if(g_granularity > 100){
 	g_granularity = 100;
       }
+      WaitTime(0.1);
+    }
+
+    if(IsKeyPressed(KEY_Z) && IsKeyDown(KEY_LEFT_CONTROL)){
+  
       WaitTime(0.1);
     }
 
@@ -268,7 +274,7 @@ void *ui_thread_function () {
 
     if(interaction == true){
       interaction = false;
-
+      
       payload_t *payload = calloc(1, sizeof(payload_t));
       if (payload == NULL) {
 	fprintf(stderr, "malloc failed.\n");
@@ -302,6 +308,15 @@ void *ui_thread_function () {
       payload->s_ur.x = screen_width;
       payload->s_ur.y = screen_height;
 
+      payload_history = realloc(payload_history, (payload_count + 1)*sizeof(payload_t));
+      if(payload_history == NULL){
+	perror("Malloc faild");
+	pthread_exit(NULL);
+      }
+
+      payload_history[payload_count] = *payload;
+      payload_count++;
+      
       payload_print(__func__, "Enqueueing payload", payload);
 
       queue_enqueue(&payload_queue, payload);
