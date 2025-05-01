@@ -338,10 +338,6 @@ void *ui_thread_function () {
       payload_history[payload_count] = *payload;
       payload_count++;
 
-      // I will remove this after
-      /* for(int i = 0; i < payload_count; i++){
-	printf("\nGEN: %d\n\n", payload_history[i].generation);
-      }*/
     }  
       payload_print(__func__, "Enqueueing payload", payload);
 
