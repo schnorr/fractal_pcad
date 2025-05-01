@@ -113,7 +113,8 @@ void *ui_thread_function () {
   bool interaction = false;
   bool initial = true;
   bool clicked = false;
-
+  bool back = false;
+  
   float moviment_speed = 0.0f;
   float zoom_speed = 0.0f;
 
@@ -170,15 +171,12 @@ void *ui_thread_function () {
     }
 
     if(IsKeyPressed(KEY_Z) && IsKeyDown(KEY_LEFT_CONTROL)){
-      if (payload_count > 0) {
-            payload_count--; 
-            payload_history = realloc(payload_history, payload_count * sizeof(payload_t));
-	    
-            if (payload_history == NULL && payload_count > 0) {
-                perror("Realloc failed");  
-            }
-        }
-      WaitTime(0.1);
+      // Is 1, because gen 0, is the 0 position
+      if(payload_count > 1){
+	back = true;
+	interaction = true;
+	WaitTime(0.1);
+      }
     }
 
     /* Selection box related */
@@ -298,6 +296,22 @@ void *ui_thread_function () {
       second_point_fractal.real = (g_box_origin.x + g_box_attr.x)*pixel_coord_ratio + actual_ll.real;
       second_point_fractal.imag = (g_box_origin.y + g_box_attr.y)*pixel_coord_ratio + actual_ll.imag;
 
+      if(back == true){
+	back = false;
+	payload_count--; 
+	*payload = payload_history[payload_count-1];
+	payload->generation = generation++;
+	actual_ll = payload->ll;
+	actual_ur = payload->ur;
+	if (payload_count > 0) {
+            payload_history = realloc(payload_history, payload_count * sizeof(payload_t));
+	    
+            if (payload_history == NULL && payload_count > 0) {
+                perror("Realloc failed");  
+            }
+        }
+      }
+      else{
       /* Generating the payload */
       payload->generation = generation++; /* The generation is always increasing */
       payload->granularity = g_granularity; 
@@ -328,7 +342,7 @@ void *ui_thread_function () {
       /* for(int i = 0; i < payload_count; i++){
 	printf("\nGEN: %d\n\n", payload_history[i].generation);
       }*/
-      
+    }  
       payload_print(__func__, "Enqueueing payload", payload);
 
       queue_enqueue(&payload_queue, payload);
