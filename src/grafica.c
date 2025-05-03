@@ -315,7 +315,7 @@ void *ui_thread_function () {
       /* Generating the payload */
       payload->generation = generation++; /* The generation is always increasing */
       payload->granularity = g_granularity; 
-      payload->fractal_depth = 2000; 
+      payload->fractal_depth = 256*256*256;
       payload->ll.real = (float) min(first_point_fractal.real, second_point_fractal.real); 
       payload->ll.imag = (float) min(first_point_fractal.imag, second_point_fractal.imag); 
       payload->ur.real = (float) max(first_point_fractal.real, second_point_fractal.real);
