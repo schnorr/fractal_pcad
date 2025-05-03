@@ -24,8 +24,8 @@ along with "Fractal @ PCAD". If not, see
 
 /* a fractal coordinate */
 typedef struct {
-  double real;
-  double imag;
+  long double real;
+  long double imag;
 } fractal_coord_t;
 
 /* a screen coordinate (in pixels) */

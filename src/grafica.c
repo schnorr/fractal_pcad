@@ -99,9 +99,9 @@ void *ui_thread_function () {
   static int payload_count = 0;
   static fractal_coord_t actual_ll = {-2, -1.5};
   static fractal_coord_t actual_ur = {2, 1.5};
-  double screen_width = 0.0f;
-  double screen_height = 0.0f;
-  double pixel_coord_ratio = 0.0f;
+  long double screen_width = 0.0f;
+  long double screen_height = 0.0f;
+  long double pixel_coord_ratio = 0.0f;
   float zoom = 0.0f;
 
   Vector2 mouse = {0};
@@ -122,8 +122,8 @@ void *ui_thread_function () {
 
     if(initial && IsWindowReady()){ /* Send the initial payload when the window gets ready */
 
-      screen_width = (double)GetScreenWidth();
-      screen_height = (double)GetScreenHeight();
+      screen_width = (long double)GetScreenWidth();
+      screen_height = (long double)GetScreenHeight();
 
       pixel_coord_ratio = (actual_ur.real - actual_ll.real)/screen_width;
 
@@ -315,11 +315,11 @@ void *ui_thread_function () {
       /* Generating the payload */
       payload->generation = generation++; /* The generation is always increasing */
       payload->granularity = g_granularity; 
-      payload->fractal_depth = 256*256*256;
-      payload->ll.real = (float) min(first_point_fractal.real, second_point_fractal.real); 
-      payload->ll.imag = (float) min(first_point_fractal.imag, second_point_fractal.imag); 
-      payload->ur.real = (float) max(first_point_fractal.real, second_point_fractal.real);
-      payload->ur.imag = (float) max(first_point_fractal.imag, second_point_fractal.imag);
+      payload->fractal_depth = 2*256*256;
+      payload->ll.real = min(first_point_fractal.real, second_point_fractal.real);
+      payload->ll.imag = min(first_point_fractal.imag, second_point_fractal.imag);
+      payload->ur.real = max(first_point_fractal.real, second_point_fractal.real);
+      payload->ur.imag = max(first_point_fractal.imag, second_point_fractal.imag);
 
       actual_ll = payload->ll;
       actual_ur = payload->ur;
