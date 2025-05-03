@@ -250,20 +250,23 @@ void *ui_thread_function () {
 	zoom = IsKeyDown(KEY_LEFT_CONTROL) ? GetFrameTime()/10 : GetFrameTime();
 	zoom_speed = IsKeyDown(KEY_LEFT_CONTROL) ? 0.1 : 0.01;
 
+	int zoom_direction = 0;
 	if(IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)){
-	  g_box_attr.x = g_box_attr.x + zoom*screen_width;
-	  g_box_attr.y = g_box_attr.y + zoom*screen_height;
-	  g_box_origin.x = g_box_origin.x - zoom*screen_width/2;
-	  g_box_origin.y = g_box_origin.y - zoom*screen_height/2;
-	  WaitTime(zoom_speed);
+	  zoom_direction = 1;
 	}
 	if(IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S)){
-	  g_box_attr.x = max(1, g_box_attr.x - zoom*screen_width);
-	  g_box_attr.y = max(1,g_box_attr.y - zoom*screen_height);
-	  g_box_origin.x = g_box_origin.x + zoom*screen_width/2;
-	  g_box_origin.y = g_box_origin.y + zoom*screen_height/2;
-	  WaitTime(zoom_speed);
+	  zoom_direction = -1;
 	}
+
+	zoom *= zoom_direction;
+	
+	g_box_attr.x = max(1, g_box_attr.x + zoom*screen_width);
+	g_box_attr.y = max(1, g_box_attr.y + zoom*screen_height);
+	if(g_box_attr.x > 1 && g_box_attr.y > 1){
+	  g_box_origin.x = g_box_origin.x - zoom*screen_width/2;
+	  g_box_origin.y = g_box_origin.y - zoom*screen_height/2;
+	}
+	WaitTime(zoom_speed);
       }
 
       /* Checking the screen limits*/
