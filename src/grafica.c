@@ -502,6 +502,8 @@ int main(int argc, char* argv[])
     return 1;
   }
 
+  int connection = open_connection(argv[1], atoi(argv[2]));
+
   atomic_init(&shutdown_requested, 0);
   signal(SIGPIPE, SIG_IGN); // Ignore SIGPIPE (failed send)
 
@@ -541,8 +543,6 @@ int main(int argc, char* argv[])
 
   queue_init(&payload_queue, 1, free);
   queue_init(&response_queue, 256, free_response);
-
-  int connection = open_connection(argv[1], atoi(argv[2]));
 
   pthread_t ui_thread = 0;
   pthread_t render_thread = 0;
