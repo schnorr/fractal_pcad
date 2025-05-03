@@ -386,6 +386,8 @@ int main_worker(int argc, char* argv[])
 int main(int argc, char* argv[])
 {
   int provided;
+  putenv("OMPI_MCA_pml=ob1");
+  putenv("OMPI_MCA_mtl=^ofi");
   MPI_Init_thread(&argc, &argv, MPI_THREAD_MULTIPLE, &provided);
   if (provided < MPI_THREAD_MULTIPLE) {
     // Tratamento de erro: seu código pode não funcionar corretamente
