@@ -179,6 +179,21 @@ void *ui_thread_function () {
       }
     }
 
+    /* Zoom */
+    if(GetMouseWheelMove()){
+      
+      zoom = GetFrameTime()*GetMouseWheelMove();
+      WaitTime(0.001); /* This defines how fast the box will inscrease or decrease */
+      
+      g_box_attr.x = max(1, g_box_attr.x - zoom*screen_width);
+      g_box_attr.y = max(1,g_box_attr.y - zoom*screen_height);
+
+      if(g_box_attr.x > 1 && g_box_attr.y > 1){
+	g_box_origin.x = g_box_origin.x + zoom*screen_width/2;
+	g_box_origin.y = g_box_origin.y + zoom*screen_height/2;
+      }
+    }
+      
     /* Selection box related */
     if(g_selecting){
 
@@ -187,15 +202,6 @@ void *ui_thread_function () {
       mouse.y = GetMouseY();
       if(mouse.x > g_box_origin.x && mouse.y > g_box_origin.y &&
 	 mouse.x < g_box_origin.x + g_box_attr.x && mouse.y < g_box_origin.y + g_box_attr.y){
-
-	zoom = GetFrameTime()*GetMouseWheelMove();
-	WaitTime(0.001); /* This defines how fast the box will inscrease or decrease */
-
-	g_box_attr.x = g_box_attr.x + zoom*screen_width;
-	g_box_attr.y = g_box_attr.y + zoom*screen_height;
-
-	g_box_origin.x = g_box_origin.x - zoom*screen_width/2;
-	g_box_origin.y = g_box_origin.y - zoom*screen_height/2;
 
 	if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
 
