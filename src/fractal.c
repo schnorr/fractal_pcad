@@ -27,6 +27,7 @@ void free_response(void* ptr) {
   free(response);
 }
 
+#ifdef EMBARALHAR
 // Função para embaralhar o vetor
 static void embaralhar(payload_t **vetor, int tamanho) {
     for (int i = tamanho - 1; i > 0; i--) {
@@ -37,6 +38,7 @@ static void embaralhar(payload_t **vetor, int tamanho) {
         vetor[j] = temp;
     }
 }
+#endif
 
 payload_t **discretize_payload (payload_t *origin, int *length)
 {
@@ -94,7 +96,9 @@ payload_t **discretize_payload (payload_t *origin, int *length)
       p++;
     }
   }
+#ifdef EMBARALHAR
   embaralhar(ret, *length);
+#endif
   return ret;
 }
 
