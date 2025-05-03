@@ -21,6 +21,6 @@ along with "Fractal @ PCAD". If not, see
 #include <complex.h>
 #include <math.h>
 
-int mandelbrot(double real, double imag, int max_depth);
+int mandelbrot(long double real, long double imag, int max_depth);
 
 #endif
