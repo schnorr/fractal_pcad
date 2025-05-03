@@ -12,9 +12,9 @@ for file in $FILES; do
     if [ ${UP_TO_LINE} -gt 0 ]; then
 	echo "sed -i "\'1,${UP_TO_LINE}d\'" $file"
 	echo ${UP_TO_LINE}
-	# apply the new licence header
-	tmpfile=$(mktemp)
-	cat ${LICENSE_HEADER} $file > $tmpfile
-	mv -v "$tmpfile" "$file"
     fi
+    # apply the new licence header
+    tmpfile=$(mktemp)
+    cat ${LICENSE_HEADER} $file > $tmpfile
+    mv -v "$tmpfile" "$file"
 done
