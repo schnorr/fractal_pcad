@@ -144,7 +144,7 @@ response_t *create_response_for_payload (payload_t *payload)
 void payload_print (const char *func, const char *message, const payload_t *p)
 {
   printf("(%d) %s: %s.\n", p->generation, func, message);
-  printf("\t[%d, %d, f_ll(%6.3lf, %6.3lf) -> f_ur(%6.3lf, %6.3lf)]\n"
+  printf("\t[%d, %d, f_ll(%6.3Lf, %6.3Lf) -> f_ur(%6.3Lf, %6.3Lf)]\n"
 	 "\t[        s_ll(%6d, %6d) -> s_ur(%6d, %6d)]\n",
 	 p->granularity, p->fractal_depth,
 	 p->ll.real, p->ll.imag,
