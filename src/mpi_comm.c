@@ -31,11 +31,11 @@ static payload_t *_mpi_payload_receive (int source, int tag)
 	   source,
 	   tag, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
   //coord lower-left
-  MPI_Recv(&payload->ll, 2, MPI_DOUBLE,
+  MPI_Recv(&payload->ll, 2, MPI_LONG_DOUBLE,
 	   source,
 	   tag, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
   //coord upper-right
-  MPI_Recv(&payload->ur, 2, MPI_DOUBLE,
+  MPI_Recv(&payload->ur, 2, MPI_LONG_DOUBLE,
 	   source,
 	   tag, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
   //screen coord lower-left
@@ -61,11 +61,11 @@ static void _mpi_payload_send (payload_t *payload, int target, int tag)
 	   target,
 	   tag, MPI_COMM_WORLD);
   //coord lower-left
-  MPI_Send(&payload->ll, 2, MPI_DOUBLE,
+  MPI_Send(&payload->ll, 2, MPI_LONG_DOUBLE,
 	   target,
 	   tag, MPI_COMM_WORLD);
   //coord upper-right
-  MPI_Send(&payload->ur, 2, MPI_DOUBLE,
+  MPI_Send(&payload->ur, 2, MPI_LONG_DOUBLE,
 	   target,
 	   tag, MPI_COMM_WORLD);
   //screen coord lower-left
