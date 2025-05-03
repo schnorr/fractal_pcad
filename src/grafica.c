@@ -62,6 +62,7 @@ bool g_show_workers = false;
 int g_actual_color = 0;
 
 int g_granularity = 10;
+int g_depth = 256;
 
 /* Selection box (blue box) related globals */
 bool g_selecting = false;
@@ -114,7 +115,7 @@ void *ui_thread_function () {
   bool initial = true;
   bool clicked = false;
   bool back = false;
-  
+
   float moviment_speed = 0.0f;
   float zoom_speed = 0.0f;
 
@@ -135,41 +136,47 @@ void *ui_thread_function () {
 
       initial = false;
       interaction = true;
-
     }
+
+
+
+    /* Starting selecting by pressing enter */
     if(!g_selecting && IsKeyPressed(KEY_ENTER)){
       g_selecting = true;
       g_box_origin = (Vector2) {screen_width/4, screen_height/4};
       g_box_attr = (Vector2) {screen_width/2, screen_height/2};
       WaitTime(0.1); /* This is needed so this can work with the visual interface */
     }
-
     if(g_selecting && IsKeyPressed(KEY_ENTER)){
       g_selecting = false;
       interaction = true;
       WaitTime(0.1);
     }
-
     if(IsKeyPressed(KEY_BACKSPACE)){
       g_selecting = false;
     }
 
-    /* Add or Sub granularity  */
+
+
+    /* add or sub granularity  */
     if (IsKeyDown(KEY_MINUS)){
-      g_granularity = g_granularity - 5;
+      g_granularity *= 0.9;
       if(g_granularity < 10){
 	g_granularity = 10;
       }
       WaitTime(0.1);
     }
     if(IsKeyDown(KEY_EQUAL)){
-      g_granularity = g_granularity + 5;
+      g_granularity *= 1.1;
       if(g_granularity > 100){
 	g_granularity = 100;
       }
       WaitTime(0.1);
     }
 
+
+
+    /* Go back with C-z */
     if(IsKeyPressed(KEY_Z) && IsKeyDown(KEY_LEFT_CONTROL)){
       // Is 1, because gen 0, is the 0 position
       if(payload_count > 1){
@@ -179,12 +186,13 @@ void *ui_thread_function () {
       }
     }
 
-    /* Zoom */
+
+
+    /* Zoom with mouse */
     if(GetMouseWheelMove()){
-      
       zoom = GetFrameTime()*GetMouseWheelMove();
       WaitTime(0.001); /* This defines how fast the box will inscrease or decrease */
-      
+
       g_box_attr.x = max(1, g_box_attr.x - zoom*screen_width);
       g_box_attr.y = max(1,g_box_attr.y - zoom*screen_height);
 
@@ -193,10 +201,11 @@ void *ui_thread_function () {
 	g_box_origin.y = g_box_origin.y + zoom*screen_height/2;
       }
     }
-      
+
+
+
     /* Selection box related */
     if(g_selecting){
-
       /* Mouse interaction */
       mouse.x = GetMouseX();
       mouse.y = GetMouseY();
@@ -222,9 +231,10 @@ void *ui_thread_function () {
 	  first_point_screen.y = mouse.y;
       }
 
-      moviment_speed = IsKeyDown(KEY_LEFT_CONTROL) ? 0.1 : 1.5/screen_width; /* Left control sets precise moviment */
 
-      /* Keyboard interaction */
+
+      moviment_speed = IsKeyDown(KEY_LEFT_CONTROL) ? 0.1 : 1.5/screen_width; /* Left control sets precise moviment */
+      /* Moving box with keyboard */
       if(!IsKeyDown(KEY_LEFT_SHIFT)){
 	if(IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)){
 	  g_box_origin.y = g_box_origin.y - 1;
@@ -244,9 +254,10 @@ void *ui_thread_function () {
 	}
       }
 
-      if(IsKeyDown(KEY_LEFT_SHIFT)){
 
-	/* Left control enables precise zoom */
+
+      /* Shift enables zoom mode */
+      if(IsKeyDown(KEY_LEFT_SHIFT)){
 	zoom = IsKeyDown(KEY_LEFT_CONTROL) ? GetFrameTime()/10 : GetFrameTime();
 	zoom_speed = IsKeyDown(KEY_LEFT_CONTROL) ? 0.1 : 0.01;
 
@@ -259,15 +270,18 @@ void *ui_thread_function () {
 	}
 
 	zoom *= zoom_direction;
-	
+
 	g_box_attr.x = max(1, g_box_attr.x + zoom*screen_width);
 	g_box_attr.y = max(1, g_box_attr.y + zoom*screen_height);
+
 	if(g_box_attr.x > 1 && g_box_attr.y > 1){
 	  g_box_origin.x = g_box_origin.x - zoom*screen_width/2;
 	  g_box_origin.y = g_box_origin.y - zoom*screen_height/2;
 	}
 	WaitTime(zoom_speed);
       }
+
+
 
       /* Checking the screen limits*/
       g_box_origin.x = max(-g_box_attr.x/4, g_box_origin.x);
@@ -276,7 +290,9 @@ void *ui_thread_function () {
       g_box_origin.y = min(g_box_origin.y, screen_height - g_box_attr.y + g_box_attr.y/4);
     }
 
-    /* Colors related */
+
+
+    /* Colors related keys */
     if(IsKeyPressed(KEY_SPACE)){
       g_actual_color = (g_actual_color + 1 >= TOTAL_COLORS) ? 0 : g_actual_color + 1;
       WaitTime(0.1);
@@ -286,9 +302,12 @@ void *ui_thread_function () {
       WaitTime(0.1);
     }
 
+
+
+
     if(interaction == true){
       interaction = false;
-      
+
       payload_t *payload = calloc(1, sizeof(payload_t));
       if (payload == NULL) {
 	fprintf(stderr, "malloc failed.\n");
@@ -307,23 +326,23 @@ void *ui_thread_function () {
 
       if(back == true){
 	back = false;
-	payload_count--; 
+	payload_count--;
 	*payload = payload_history[payload_count-1];
 	payload->generation = generation++;
 	actual_ll = payload->ll;
 	actual_ur = payload->ur;
+
 	if (payload_count > 0) {
-            payload_history = realloc(payload_history, payload_count * sizeof(payload_t));
-	    
-            if (payload_history == NULL && payload_count > 0) {
-                perror("Realloc failed");  
-            }
-        }
+	  payload_history = realloc(payload_history, payload_count * sizeof(payload_t));
+	  if (payload_history == NULL && payload_count > 0) {
+	    perror("Realloc failed");
+	    }
+	}
       }
       else{
       /* Generating the payload */
       payload->generation = generation++; /* The generation is always increasing */
-      payload->granularity = g_granularity; 
+      payload->granularity = g_granularity;
       payload->fractal_depth = 1*256;
       payload->ll.real = min(first_point_fractal.real, second_point_fractal.real);
       payload->ll.imag = min(first_point_fractal.imag, second_point_fractal.imag);
@@ -346,8 +365,8 @@ void *ui_thread_function () {
 
       payload_history[payload_count] = *payload;
       payload_count++;
+    }
 
-    }  
       payload_print(__func__, "Enqueueing payload", payload);
 
       queue_enqueue(&payload_queue, payload);
