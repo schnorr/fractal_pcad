@@ -61,6 +61,7 @@ Color *g_low_alpha_worker_pixels = NULL;
 bool g_show_workers = false;
 int g_actual_color = 0;
 
+#define MAX_DEPTH 256*256*256
 int g_granularity = 10;
 int g_depth = 256;
 
@@ -157,21 +158,42 @@ void *ui_thread_function () {
     }
 
 
+    /* add or sub fractal depth */
+    if(IsKeyDown(KEY_P)){
+      if(IsKeyDown(KEY_MINUS)){
+	g_depth *= 0.9;
+	if(g_depth < 256){
+	  g_depth = 256;
+	}
+	WaitTime(0.1);
+      }
+      if(IsKeyDown(KEY_EQUAL)){
+	g_depth *= 1.1;
+	if(g_depth > MAX_DEPTH){
+	  g_depth = MAX_DEPTH;
+	}
+	WaitTime(0.1);
+      }
+    }
+
+
 
     /* add or sub granularity  */
-    if (IsKeyDown(KEY_MINUS)){
-      g_granularity *= 0.9;
-      if(g_granularity < 10){
-	g_granularity = 10;
+    if(IsKeyDown(KEY_G)){
+      if(IsKeyDown(KEY_MINUS)){
+	g_granularity *= 0.9;
+	if(g_granularity < 10){
+	  g_granularity = 10;
+	}
+	WaitTime(0.1);
       }
-      WaitTime(0.1);
-    }
-    if(IsKeyDown(KEY_EQUAL)){
-      g_granularity *= 1.1;
-      if(g_granularity > 100){
-	g_granularity = 100;
+      if(IsKeyDown(KEY_EQUAL)){
+	g_granularity *= 1.1;
+	if(g_granularity > 100){
+	  g_granularity = 100;
+	}
+	WaitTime(0.1);
       }
-      WaitTime(0.1);
     }
 
 
@@ -304,7 +326,6 @@ void *ui_thread_function () {
 
 
 
-
     if(interaction == true){
       interaction = false;
 
@@ -343,7 +364,7 @@ void *ui_thread_function () {
       /* Generating the payload */
       payload->generation = generation++; /* The generation is always increasing */
       payload->granularity = g_granularity;
-      payload->fractal_depth = 1*256;
+      payload->fractal_depth = g_depth;
       payload->ll.real = min(first_point_fractal.real, second_point_fractal.real);
       payload->ll.imag = min(first_point_fractal.imag, second_point_fractal.imag);
       payload->ur.real = max(first_point_fractal.real, second_point_fractal.real);
@@ -611,6 +632,7 @@ int main(int argc, char* argv[])
     if(g_selecting){
       DrawRectangleV(g_box_origin, g_box_attr, (Color){1.0f, 1.0f, 255.0f, 100.0f});
       DrawText(TextFormat("Granularity:  %d", g_granularity), 10, 10, 20, DARKGRAY);
+      DrawText(TextFormat("Depth:  %d", g_depth), 10, 30, 20, DARKGRAY);
     }
 
     EndDrawing();
