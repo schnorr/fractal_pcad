@@ -29,7 +29,7 @@ when in selection mode. You can enter selection mode by pressing =ENTER=.
 | ARROWKEYS / WASD *        | Move selection box                                   |
 | S-UPARROW or S-w *        | Increase selection box size                          |
 | S-DOWNARROW or S-s *      | Decrease selection box size                          |
-| Space                     | Change the actual color mode                         |
+| SPACE                     | Change the actual color mode                         |
 | c                         | Show the workers colors within the actual color mode |
 | C-z **                    | Go back to the previous payload                      |
 
