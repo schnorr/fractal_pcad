@@ -22,16 +22,16 @@ when in selection mode. You can enter selection mode by pressing =ENTER=.
 | ENTER                     | Enters "Selection Mode"                              |
 | BACKSPACE                 | Exits "Selection Mode"                               |
 | ENTER (in selection mode) | Sends current selected area as next payload          |
+| ARROWKEYS / WASD *        | Move selection box                                   |
+| S-UPARROW or S-w *        | Increase selection box size                          |
+| S-DOWNARROW or S-s *      | Decrease selection box size                          |
+| C-z **                    | Go back to the previous payload                      |
+| SPACE                     | Change the actual color mode                         |
+| c                         | Show the workers colors within the actual color mode |
 | G +                       | Increase the granularity                             |
 | G -                       | Decrease the granularity                             |
 | P +                       | Increase the depth of the fractal                    |
 | P -                       | Decrease the depth of the fractal                    |
-| ARROWKEYS / WASD *        | Move selection box                                   |
-| S-UPARROW or S-w *        | Increase selection box size                          |
-| S-DOWNARROW or S-s *      | Decrease selection box size                          |
-| SPACE                     | Change the actual color mode                         |
-| c                         | Show the workers colors within the actual color mode |
-| C-z **                    | Go back to the previous payload                      |
 
 When in selection mode, you can also move the box using the mouse by
 left clicking the selection box and draggin it. And also change it's
