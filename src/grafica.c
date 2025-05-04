@@ -63,7 +63,12 @@ int g_actual_color = 0;
 
 #define MAX_DEPTH 256*256*256
 int g_granularity = 10;
+bool g_gchanged = false;
+
 int g_depth = 256;
+bool g_dchanged = false;
+
+int g_show_changes_timer = 0;
 
 /* Selection box (blue box) related globals */
 bool g_selecting = false;
@@ -161,6 +166,9 @@ void *ui_thread_function () {
     /* add or sub fractal depth */
     if(IsKeyDown(KEY_P)){
       if(IsKeyDown(KEY_MINUS)){
+	g_dchanged = true;
+	g_show_changes_timer = 50;
+	  
 	g_depth *= 0.9;
 	if(g_depth < 256){
 	  g_depth = 256;
@@ -168,6 +176,9 @@ void *ui_thread_function () {
 	WaitTime(0.1);
       }
       if(IsKeyDown(KEY_EQUAL)){
+	g_dchanged = true;
+	g_show_changes_timer = 50;
+		
 	g_depth *= 1.1;
 	if(g_depth > MAX_DEPTH){
 	  g_depth = MAX_DEPTH;
@@ -181,6 +192,9 @@ void *ui_thread_function () {
     /* add or sub granularity  */
     if(IsKeyDown(KEY_G)){
       if(IsKeyDown(KEY_MINUS)){
+	g_gchanged = true;
+	g_show_changes_timer = 50;
+
 	g_granularity *= 0.9;
 	if(g_granularity < 10){
 	  g_granularity = 10;
@@ -188,6 +202,9 @@ void *ui_thread_function () {
 	WaitTime(0.1);
       }
       if(IsKeyDown(KEY_EQUAL)){
+	g_gchanged = true;
+	g_show_changes_timer = 50;
+
 	g_granularity *= 1.1;
 	if(g_granularity > 100){
 	  g_granularity = 100;
@@ -434,7 +451,6 @@ void *render_thread_function () {
 
 	    cor_t cor = {0};
 
-
 	    cor = get_color(response->values[p], response->payload.fractal_depth);
 	    struct Color color = {cor.r, cor.g, cor.b, 255};
 	    g_mandelbrot_pixels[j * screen_width + i] = color;
@@ -629,6 +645,19 @@ int main(int argc, char* argv[])
       DrawTexture(texture_low_alpha_worker, 0, 0, WHITE);
     }
 
+    if(g_show_changes_timer > 0){
+      if(g_gchanged == true){
+	DrawText(TextFormat("Granularity:  %d", g_granularity), screen_width/4, screen_height/2 - 50, 100, WHITE);
+      }
+      if(g_dchanged == true){
+	DrawText(TextFormat("Depth:  %d", g_depth), screen_width/4, screen_height/2 + 50, 100, WHITE);
+      }
+      g_show_changes_timer -= GetFrameTime();
+    } else {
+      g_dchanged = false;
+      g_gchanged = false;
+    }
+    
     if(g_selecting){
       DrawRectangleV(g_box_origin, g_box_attr, (Color){1.0f, 1.0f, 255.0f, 100.0f});
       DrawText(TextFormat("Granularity:  %d", g_granularity), 10, 10, 20, DARKGRAY);
