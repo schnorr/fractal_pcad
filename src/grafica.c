@@ -645,7 +645,7 @@ int main(int argc, char* argv[])
       DrawTexture(texture_low_alpha_worker, 0, 0, WHITE);
     }
 
-    if(g_show_changes_timer > 0){
+    if(!g_selecting && g_show_changes_timer > 0){
       if(g_gchanged == true){
 	DrawText(TextFormat("Granularity:  %d", g_granularity), screen_width/4, screen_height/2 - 50, 100, WHITE);
       }
