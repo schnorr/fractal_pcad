@@ -37,5 +37,6 @@ When in selection mode, you can also move the box using the mouse by
 left clicking the selection box and draggin it. And also change it's
 size with the mouse scroll.
 
-*You can hold "CONTROL¨ to move the box or change it's size with precision.
+*You can hold "CONTROL" to move the box or change it's size with precision.
+
 **C stands for "CONTROL" and S stands for "SHIFT".
