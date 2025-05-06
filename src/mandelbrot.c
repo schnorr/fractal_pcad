@@ -18,7 +18,21 @@ along with "Fractal @ PCAD". If not, see
 #include <stdio.h>
 #include "mandelbrot.h"
 
+static int is_in_julia(long double x, long double y, double cre, double cim, int max_iter) {
+    long double complex z = x + y * I;
+    long double complex c = cre + cim * I;
+    int i;
+    for (i = 0; i < max_iter; ++i) {
+        z = z * z + c;
+        if (cabsl(z) > 2.0)
+            return i; // Escaped
+    }
+    return i; // Remained bounded
+}
+
 int mandelbrot(long double real, long double imag, int max_depth) {
+  return is_in_julia(real, imag, 0, 0, max_depth);
+  /*
   long double complex c = real + imag * I;
   long double complex z = 0 + 0 * I;
   int iter = 0;
@@ -27,4 +41,5 @@ int mandelbrot(long double real, long double imag, int max_depth) {
     iter++;
   }
   return iter;
+  */
 }
