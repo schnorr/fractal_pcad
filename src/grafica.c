@@ -64,6 +64,7 @@ int g_actual_color = 0;
 #define MAX_DEPTH 256*256*256
 int g_granularity = 10;
 bool g_gchanged = false;
+bool g_view_continuous = true;
 
 int g_depth = 256;
 bool g_dchanged = false;
@@ -187,8 +188,6 @@ void *ui_thread_function () {
       }
     }
 
-
-
     /* add or sub granularity  */
     if(IsKeyDown(KEY_G)){
       if(IsKeyDown(KEY_MINUS)){
@@ -213,8 +212,6 @@ void *ui_thread_function () {
       }
     }
 
-
-
     /* Go back with C-z */
     if(IsKeyPressed(KEY_Z) && IsKeyDown(KEY_LEFT_CONTROL)){
       // Is 1, because gen 0, is the 0 position
@@ -224,8 +221,6 @@ void *ui_thread_function () {
 	WaitTime(0.1);
       }
     }
-
-
 
     /* Zoom with mouse */
     if(GetMouseWheelMove()){
@@ -293,8 +288,6 @@ void *ui_thread_function () {
 	}
       }
 
-
-
       /* Shift enables zoom mode */
       if(IsKeyDown(KEY_LEFT_SHIFT)){
 	zoom = IsKeyDown(KEY_LEFT_CONTROL) ? GetFrameTime()/10 : GetFrameTime();
@@ -341,9 +334,12 @@ void *ui_thread_function () {
       WaitTime(0.1);
     }
 
+    if(IsKeyPressed(KEY_M)){
+        g_view_continuous = !g_view_continuous;
+        WaitTime(0.1);
+    }
 
-
-    if(interaction == true){
+    if(interaction == true && g_view_continuous == true){
       interaction = false;
 
       payload_t *payload = calloc(1, sizeof(payload_t));
@@ -436,7 +432,7 @@ void *render_thread_function () {
     response_t *response = (response_t *)queue_dequeue(&response_queue);
     if (response == NULL) break; // Poison pill
 
-    if(response->payload.generation > generation){
+    if(response->payload.generation > generation && g_view_continuous == true){
       generation = response->payload.generation;
     }
 
