@@ -153,6 +153,7 @@ void *main_thread_mpi_recv_responses ()
 	queue_enqueue(&response_queue, response);
       }else{
 	response_print(__func__, "Discard response", response);
+  free(response->values);
 	free(response);
       }
       response = NULL; // Transferred ownership to queue
