@@ -20,6 +20,171 @@
 # PDF generation can be done by make (thanks Luka Stanisic)
 #   or C-c C-e l p (thanks Vinicius Garcia)
 
+* Chamada de Trabalhos SSCAD-WIC                                   :noexport:
+
+O Workshop de Iniciação Científica em Arquitetura de Computadores e
+Computação de Alto Desempenho (SSCAD-WIC) é um evento anual, realizado
+em conjunto com o Simpósio em Sistemas Computacionais de Alto
+Desempenho (SSCAD) desde 2007, oferecendo uma oportunidade para os
+alunos de graduação apresentarem e discutirem seus trabalhos nos
+tópicos de interesse do SSCAD.
+
+Os artigos aceitos no evento serão publicados em formato digital e
+apresentados apenas na modalidade oral. Os artigos poderão ser
+redigidos em português ou inglês. O processo de submissão de trabalhos
+é eletrônico através do sistema JEMS onde serão aceitos somente
+arquivos no formato PDF. Os anais serão publicados na SBC OpenLib
+(SOL).
+
+Os três melhores artigos aceitos no SSCAD-WIC receberão premiação.
+Datas Importantes
+
+    Submissão de trabalhos:31/07/2025
+    Notificação de aceitação: 19/09/2024
+    Envio da versão final: 25/09/2024
+
+Tópicos de Interesse
+
+A chamada de trabalhos está aberta (mas não limitada) aos seguintes
+tópicos de interesse:
+
+    Algoritmos Paralelos e Distribuídos
+    Aplicações de Computação de Alto Desempenho
+    Big Data (fundamentos; infraestrutura; administração e gerenciamento; descoberta e mineração; segurança e privacidade; aplicações)
+    Aprendizado de Máquina em Alto Desempenho
+    Arquiteturas de Computadores
+    Arquiteturas Avançadas, Dedicadas e específicas
+    Avaliação, Medição e Predição de Desempenho
+    Computação em Aglomerados de Computadores
+    Computação Heterogênea
+    Computação de Alto Desempenho em Grade e na Nuvem
+    Computação Móvel de Alto Desempenho
+    Computação Móvel, Pervasiva e Embarcada
+    Computação Quântica
+    Engenharia de Desempenho
+    Escalonamento e Balanceamento de Carga
+    Internet das Coisas (IoT)
+    Linguagens, Compiladores e Ferramentas para Alto Desempenho
+    Memória Compartilhada Distribuída (DSM)
+    Modelagem e Simulação de Arquiteturas e Sistemas Paralelos/Sistemas Distribuídos
+    Redes e Protocolos de Comunicação de Alto Desempenho
+    Simulação de Arquiteturas e Sistemas Paralelos
+    Sistemas de Arquivos e Entrada e Saída de Alto Desempenho
+    Sistemas de Banco de Dados Paralelos e Distribuídos
+    Sistemas de Memória
+    Sistemas Operacionais
+    Sistemas Tolerantes a Falhas
+    Software Básico para Computação Paralela e Distribuída
+    Técnicas e Métodos de Extração de Paralelismo
+    Teste e Depuração de Programas Concorrentes
+    Virtualização
+
+Submissões
+
+A submissão de artigos para o SSCAD-WIC 2025 deve ser feita pelo
+sistema JEMS da SBC. Os artigos submetidos devem ser escritos em
+português ou inglês e obedecer ao limite de 8 páginas (incluindo
+figuras, tabelas e referências) seguindo o formato da SBC para
+submissão de artigos.  Coordenação do SSCAD-WIC
+
+    Gabriel P. Silva (Universidade Federal do Rio de Janeiro) — gabriel@ic.ufrj.br
+    Samuel Ferraz (Universidade Federal de Mato Grosso do Sul) — samuel.ferraz@ufms.br
+
+Comitê de Programa (a confirmar)
+
+    Adenauer Yamin (Universidade Católica de Pelotas/Universidade Federal de Pelotas)
+    Alexandre Carissimi (Universidade Federal do Rio Grande do Sul)
+    Anderson Faustino (Universidade Estadual de Maringá)
+    André Du Bois (Universidade Federal de Pelotas)
+    Andriele Busatto do Carmo (Universidade do Vale do Rio dos Sinos)
+    Arthur Lorenzon (Universidade Federal do Rio Grande do Sul)
+    Calebe Bianchini (Universidade Presbiteriana Mackenzie)
+    Claudio Schepke (Universidade Federal do Pampa)
+    Dalvan Griebler (Pontifícia Universidade Católica do Rio Grande do Sul)
+    Diego Leonel Cadette Dutra (Universidade Federal do Rio de Janeiro)
+    Edson Tavares de Camargo (Universidade Tecnológica Federal do Paraná)
+    Edson Luiz Padoin (Universidade Regional do Noroeste do Estado do Rio Grande do Sul)
+    Edward Moreno (Universidade Federal de Sergipe)
+    Emilio Francesquini (Universidade Federal do ABC)
+    Fabíola M. C. de Oliveira (Universidade Federal do ABC)
+    Fabrício Góes (University of Leicester)
+    Gabriel Nazar (Universidade Federal do Rio Grande do Sul)
+    Gabriel P. Silva (Universidade Federal do Rio de Janeiro)
+    Gerson Geraldo H. Cavalheiro (Universidade Federal de Pelotas)
+    Guilherme Galante (Universidade Estadual do Oeste do Paraná)
+    Guilherme Koslovski (Universidade do Estado de Santa Catarina)
+    Hélio Guardia (Universidade Federal de São Carlos)
+    Henrique Cota de Freitas (Pontifícia Universidade Católica de Minas Gerais)
+    Hermes Senger (Universidade Federal de São Carlos)
+    João Fabrício Filho (Universidade Tecnológica Federal do Paraná)
+    Jorge Barbosa (Universidade do Vale do Rio dos Sinos)
+    José Saito (Universidade Federal de São Carlos/Centro Universitário Campo Limpo Paulista)
+    Josemar Souza (Universidade do Estado da Bahia)
+    Joubert Lima (Universidade Federal de Ouro Preto)
+    Juliano Foleiss (Universidade Tecnológica Federal do Paraná)
+    Kalinka Castelo Branco (Instituto De Ciências Matemáticas e de Computação – USP)
+    Leonardo Pinho (Universidade Federal do Pampa)
+    Liana Duenha (Universidade Federal de Mato Grosso do Sul)
+    Lucas Mello Schnorr (Universidade Federal do Rio Grande do Sul)
+    Lucas Wanner (Universidade Estadual de Campinas)
+    Luciano Senger (Universidade Estadual de Ponta Grossa)
+    Luis Carlos De Bona (Universidade Federal do Paraná)
+    Luiz Carlos Albini (Universidade Federal do Paraná)
+    Marcelo Lobosco (Universidade Federal de Juiz de Fora)
+    Marcio Oyamada (Universidade Estadual do Oeste do Paraná)
+    Marco Wehrmeister (Universidade Tecnológica Federal do Paraná)
+    Marco Antonio Zanata Alves (Universidade Federal do Paraná)
+    Marcus Botacin (Texas A&M University)
+    Maria Clicia Castro (Universidade Estadual do Rio de Janeiro)
+    Mario Dantas (Universidade Federal de Juiz de Fora)
+    Mateus Rutzig (Universidade Federal de Santa Maria)
+    Matheus Souza (Pontifícia Universidade Católica de Minas Gerais)
+    Márcio Castro (Universidade Federal de Santa Catarina)
+    Márcio Kreutz (Universidade Federal do Rio Grande do Norte)
+    Monica Pereira (Universidade Federal do Rio Grande do Norte)
+    Nahri Moreano (Universidade Federal de Mato Grosso do Sul)
+    Newton Will (Universidade Tecnológica Federal do Paraná)
+    Odorico Mendizabal (Universidade Federal de Santa Catarina)
+    Omar Cortes (Instituto Federal do Maranhão)
+    Paulo Cesar Santos (Universidade Federal do Paraná)
+    Rafaela Brum (Universidade Federal Fluminense)
+    Renato Ishii (Universidade Federal de Mato Grosso do Sul)
+    Ricardo da Rocha (Universidade Federal de Catalão)
+    Ricardo Menotti (Universidade Federal de São Carlos)
+    Rodolfo Azevedo (Universidade Estadual de Campinas)
+    Rodrigo Campiolo (Universidade Tecnológica Federal do Paraná)
+    Rodrigo Righi (Universidade do Vale do Rio dos Sinos)
+    Rogério Gonçalves (Universidade Tecnológica Federal do Paraná)
+    Samuel Ferraz (Universidade Federal do Mato Grosso do Sul)
+    Sairo Santos (Universidade Federal Rural do Semi-Árido)
+    Sarita Bruschi (Instituto de Ciências Matemáticas e de Computação – USP)
+    Sergio Carvalho (Universidade Federal de Goiás)
+    Tiago Ferreto (Pontifícia Universidade Católica Rio Grande do Sul)
+    Tiago Heinrich (Universidade Federal do Paraná)
+    Vinícius Vitor dos Santos Dias (Universidade Federal de Lavras)
+    Vinícius Garcia (Universidade Federal do Paraná)
+    Vinícius Garcia Pinto (Universidade Federal do Rio Grande)
+    Wagner Zola (Universidade Federal do Paraná)
+    Wanderson Roger Azevedo Dias (Instituto Federal de Rondônia)
+
+Patrocinadores:
+Diamante:
+
+Parceiro:
+Organização:
+Promoção:
+Financiamento:
+
+    Chamada de Trabalhos – Trilha Principal Chamada de Trabalhos –
+    Workshop sobre Educação em Arquitetura de Computadores (WEAC)
+    Chamada de Trabalhos SSCAD-WIC Comitês Concurso de Teses e
+    Dissertações em Arquitetura de Computadores e Computação de Alto
+    Desempenho (SSCAD-CTD) Hospedagem Local Minicursos Principal
+
+Copyright ©2025 XXVI SSCAD 2025 . All rights reserved. Powered by
+WordPress & Designed by Bizberg Themes
+
+
 * *The Paper*                                                       :ignore:
 ** Frontpage                                                        :ignore:
 
