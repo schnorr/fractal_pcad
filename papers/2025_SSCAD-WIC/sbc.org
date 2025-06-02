@@ -1,0 +1,141 @@
+# -*- coding: utf-8 -*-
+# -*- mode: org -*-
+
+#+TITLE: Article Title
+#+AUTHOR: Lucas Mello Schnorr
+
+#+STARTUP: overview indent
+#+LANGUAGE: en
+#+OPTIONS: H:3 creator:nil timestamp:nil skip:nil toc:nil num:t ^:nil ~:~
+#+OPTIONS: author:nil title:nil date:nil
+#+TAGS: noexport(n) deprecated(d) ignore(i)
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+
+#+LATEX_CLASS: article
+#+LATEX_CLASS_OPTIONS: [12pt]
+
+#+LATEX_HEADER: \sloppy
+
+# PDF generation can be done by make (thanks Luka Stanisic)
+#   or C-c C-e l p (thanks Vinicius Garcia)
+
+* *The Paper*                                                       :ignore:
+** Frontpage                                                        :ignore:
+
+#+BEGIN_EXPORT latex
+\makeatletter
+\let\orgtitle\@title
+\makeatother
+
+\title{\orgtitle}
+
+\author{
+   Lucas Mello Schnorr\inst{1},
+   Somebody Else\inst{2}}
+
+\address{
+   Institute of Informatics, Federal University of Rio Grande do Sul (UFRGS)\\
+   Caixa Postal 15.064 -- 91.501-970 -- Porto Alegre -- RS -- Brazil
+   \nextinstitute
+   Somebody else's Institution,
+   Adress --  Brazil
+   \email{schnorr@inf.ufrgs.br}}
+#+END_EXPORT
+
+#+LaTeX: \maketitle
+
+** Abstract                                                         :ignore:
+
+#+begin_abstract
+Put the abstract here.
+#+end_abstract
+
+#+begin_resumo
+Coloque o resumo aqui.
+#+end_resumo
+
+** Introduction
+
+This is just an example to show how Orgmode cite:orgmode can be
+neatly used to write papers following the SBC Article latex style. Feel
+free to modify and distributed this as you wish.
+
+Be aware that this example is compatible with OrgMode 9.*. Earlier or
+later OrgMode versions require minor modifications to the Makefile
+and/or ieee.org files.
+
+For a detailed explanation on why and how to write reproducible
+articles using OrgMode, please visit the following [[https://github.com/alegrand/RR_webinars/blob/master/1_replicable_article_laboratory_notebook/index.org][page]].
+
+** Background and Experimental Context
+<<sec.context>>
+*** Background
+<<sec.background>>
+*** Experimental Context and Workload Details
+<<sec.setup>>
+** Related Work and Motivation
+<<sec.relatedwork>>
+
+Check this paper cite:schnorr2013visualizing about how you need to
+semantically aggregate data.
+
+** Your Great Contribution to Computer Science
+<<sec.proposal>>
+** Your Super Results
+** Conclusion
+** Acknowledgments
+:PROPERTIES:
+:UNNUMBERED: t
+:END:
+
+Who paid for this?
+
+** References                                                        :ignore:
+
+# See next section to understand how refs.bib file is created.
+bibliographystyle:sbc.bst
+[[bibliography:refs.bib]]
+
+* Bib file is here                                                 :noexport:
+
+Tangle this file with C-c C-v t
+#+begin_src bibtex :tangle refs.bib
+@article{orgmode,
+  author =	"Eric Schulte and Dan Davison and Thomas Dye and Carsten Dominik",
+  title =	"A Multi-Language Computing Environment for Literate Programming and Reproducible Research",
+  journal =	"J. of Stat. Soft.",
+  volume =	"46",
+  number =	"3",
+  day =  	"25",
+  year = 	"2012",
+  CODEN =	"JSSOBK",
+  ISSN = 	"1548-7660",
+  bibdate =	"2011-10-03",
+  accepted =	"2011-10-03",
+  acknowledgement = "",
+  submitted =	"2010-12-22",
+}
+
+@incollection{schnorr2013visualizing,
+  title={Visualizing More Performance Data Than What Fits on Your Screen},
+  author={Schnorr, Lucas M and Legrand, Arnaud},
+  booktitle={Tools for High Performance Computing 2012},
+  pages={149--162},
+  year={2013},
+  publisher={Springer}
+}
+#+end_src
+* Emacs setup                                                      :noexport:
+# Local Variables:
+# eval: (add-to-list 'load-path ".")
+# eval: (require 'ox-extra)
+# eval: (ox-extras-activate '(ignore-headlines))
+# eval: (require 'org-ref)
+# eval: (require 'doi-utils)
+# eval: (add-to-list 'org-latex-packages-alist '("" "url") t)
+# eval: (add-to-list 'org-latex-packages-alist '("" "sbc-template") t)
+# eval: (add-to-list 'org-latex-packages-alist '("AUTO" "babel" t ("pdflatex")))
+# eval: (setq org-latex-pdf-process (list "latexmk -pdf %f"))
+# eval: (add-to-list 'org-export-before-processing-hook (lambda (be) (org-babel-tangle)))
+# End:
