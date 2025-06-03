@@ -36,10 +36,9 @@ static double norm_linear(int depth, int max_depth){
 
 // Normalizes depth to [0, 1] range scaled with a power function (depth/k)^n
 // 256 and 1/e were chosen as balanced values, adjustment is possible
-// First full cycle happens at depth 512, then slows down gradually so that colors
+// First full cycle happens at depth 256, then slows down gradually so that colors
 // keep stably looping as depth increases. The effect of this is as the depth increases, 
 // the color palette loops, more often initially then tapering off.
-// The values at which t resets are all integers n such that 512 * n^e
 static double norm_power_cycle(int depth, int max_depth) {
   ++max_depth; // unused
   return fmod(pow(depth / 256.0, (1.0 / 2.71828)), 1.0);
