@@ -26,7 +26,17 @@ typedef struct {
   unsigned short b;
 } cor_t;
 
-#define VIRIDIS_SIZE 256
+
+// Definition for a normalizing function. Currently, these normalize values into a [0, 1] range.
+// The color values will then be fed into coloring functions.
+typedef double (*normalize_fn)(int depth, int max_depth);
+
+// Definition for a coloring function. Currently, these take normalized values and map them to a color.
+typedef cor_t (*color_fn)(double t);
+
+#define TOTAL_COLORS 9
+
+#define VIRIDIS_SIZE 227
 
 static const cor_t viridis_palette[VIRIDIS_SIZE] = {
   {68, 1, 84}, {68, 2, 86}, {69, 4, 87}, {69, 5, 89}, {70, 7, 90},
@@ -77,7 +87,6 @@ static const cor_t viridis_palette[VIRIDIS_SIZE] = {
   {213, 254, 87}, {216, 255, 86}
 };
 
-cor_t get_color (int patamar, int maximo);
-cor_t get_color_viridis (int patamar, int maximo);
+cor_t get_current_pallette_color(int current_color, int depth, int max_depth);
 
 #endif

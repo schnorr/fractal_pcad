@@ -52,14 +52,12 @@ atomic_int shutdown_requested;
 // avoid race conditions while one thread writes and the other reads
 // from the shared Color * buffer we use the pixelMutex.
 pthread_mutex_t pixelMutex;
-
-#define TOTAL_COLORS 3
-Color *g_pallete_pixels = NULL;
-Color *g_mandelbrot_pixels = NULL;
-Color *g_worker_pixels = NULL;
-Color *g_low_alpha_worker_pixels = NULL;
+int *g_pixel_depth = NULL;// Depths for all screen coordinates.
+Color *g_pixels = NULL; // Stores current pallete texture in RAM
+Color *g_worker_pixels = NULL; // Stores worker texture in RAM
+bool g_pixels_changed = false;
 bool g_show_workers = false;
-int g_actual_color = 0;
+int g_current_color = 0;
 
 #define MAX_DEPTH 256*256*256
 int g_granularity = 10;
@@ -75,10 +73,10 @@ bool g_selecting = false;
 Vector2 g_box_origin = {0, 0};
 Vector2 g_box_attr = {0, 0}; // x = width, y = height
 
-
 static queue_t payload_queue = {0};
 static queue_t response_queue = {0};
 payload_t *payload_history = NULL;
+int payload_count = 0;
 
 /* Shutdown function. Shuts down the TCP connection and sends "poison pills" to queues.*/
 void request_shutdown(int connection){
@@ -93,6 +91,50 @@ void request_shutdown(int connection){
   queue_enqueue(&response_queue, NULL);
 }
 
+void update_pixels(response_t *response) {
+  int screen_width = GetScreenWidth();
+
+  pthread_mutex_lock(&pixelMutex); //lock
+  int p = 0;
+  for (int i = response->payload.s_ll.x; i < response->payload.s_ur.x; i++){
+	  for (int j = response->payload.s_ll.y; j < response->payload.s_ur.y; j++){
+      g_pixel_depth[j * screen_width + i] = response->values[p];
+
+	    cor_t cor = {0};
+      struct Color color = {0};
+	    cor = get_current_pallette_color(g_current_color, response->values[p], response->payload.fractal_depth);
+	    color = (Color){cor.r, cor.g, cor.b, 255};
+	    g_pixels[j * screen_width + i] = color;
+
+	    cor = get_current_pallette_color(0, response->worker_id, response->max_worker_id);
+	    color = (Color){cor.r, cor.g, cor.b, 255};
+	    g_worker_pixels[j * screen_width + i] = color;
+	    p++;
+	  }
+  }
+  g_pixels_changed = true;
+  pthread_mutex_unlock(&pixelMutex); //unlock
+}
+
+void swap_pallete() {
+  g_current_color = (g_current_color + 1 > TOTAL_COLORS) ? 0 : g_current_color + 1;
+  if (g_current_color >= TOTAL_COLORS) return;
+
+  int screen_width = GetScreenWidth();
+  int screen_height = GetScreenHeight();
+  pthread_mutex_lock(&pixelMutex);
+  for (int i = 0; i < screen_width; i++){
+    for (int j = 0; j < screen_height; j++) {
+      int max_depth = payload_history[payload_count-1].fractal_depth;
+      cor_t cor = get_current_pallette_color(g_current_color, g_pixel_depth[j * screen_width + i], max_depth);
+	    struct Color color = {cor.r, cor.g, cor.b, 255};
+	    g_pixels[j * screen_width + i] = color;
+    }
+  }
+  g_pixels_changed = true;
+  pthread_mutex_unlock(&pixelMutex);
+}
+
 /*
   ui_thread_function: Every time a user selects
   a new area to compute, a payload must be created with a
@@ -103,7 +145,6 @@ void *ui_thread_function () {
   /* This action is guided by the user */
 
   static int generation = 0;
-  static int payload_count = 0;
   static fractal_coord_t actual_ll = {-2, -1.5};
   static fractal_coord_t actual_ur = {2, 1.5};
   long double screen_width = 0.0f;
@@ -333,7 +374,7 @@ void *ui_thread_function () {
 
     /* Colors related keys */
     if(IsKeyPressed(KEY_SPACE)){
-      g_actual_color = (g_actual_color + 1 >= TOTAL_COLORS) ? 0 : g_actual_color + 1;
+      swap_pallete();
       WaitTime(0.1);
     }
     if(IsKeyPressed(KEY_C)){
@@ -429,9 +470,6 @@ void *render_thread_function () {
 
   static int generation = 0;
 
-  int screen_width = GetScreenWidth();
-  int screen_height = GetScreenHeight();
-
   while(!atomic_load(&shutdown_requested)) {
     response_t *response = (response_t *)queue_dequeue(&response_queue);
     if (response == NULL) break; // Poison pill
@@ -439,40 +477,9 @@ void *render_thread_function () {
     if(response->payload.generation > generation){
       generation = response->payload.generation;
     }
-
     //    response_print(__func__, "dequeued response", response);
-
-    if(response->payload.generation == generation){
-      pthread_mutex_lock(&pixelMutex); //lock
-      int p = 0;
-      for (int i = response->payload.s_ll.x; i < response->payload.s_ur.x; i++){
-	for (int j = response->payload.s_ll.y; j < response->payload.s_ur.y; j++){
-	  if (i < screen_width && j < screen_height) {
-
-	    cor_t cor = {0};
-
-	    cor = get_color(response->values[p], response->payload.fractal_depth);
-	    struct Color color = {cor.r, cor.g, cor.b, 255};
-	    g_mandelbrot_pixels[j * screen_width + i] = color;
-
-
-	    cor = get_color_viridis(response->values[p], response->payload.fractal_depth);
-	    color = (struct Color){cor.r, cor.g, cor.b, 255};
-	    g_pallete_pixels[j * screen_width + i] = color;
-
-
-	    cor = get_color(response->worker_id, response->max_worker_id);
-	    color = (struct Color){cor.r, cor.g, cor.b, 255};
-	    g_worker_pixels[j * screen_width + i] = color;
-	    color.a = 100;
-	    g_low_alpha_worker_pixels[j * screen_width + i] = color;
-
-	  }
-	  p++;
-	}
-      }
-      pthread_mutex_unlock(&pixelMutex); //unlock
-    }
+    update_pixels(response);
+    
     // Freeing response after using it
     free(response->values);
     free(response);
@@ -582,25 +589,17 @@ int main(int argc, char* argv[])
   ToggleFullscreen();
   SetTargetFPS(60);
 
+  g_pixel_depth = calloc(screen_width * screen_height, sizeof(int));
+  
   // create a CPU-side "image" that we can draw on top when needed
   Image img = GenImageColor(screen_width, screen_height, RAYWHITE);
-  g_mandelbrot_pixels = LoadImageColors(img);
+  g_pixels = LoadImageColors(img);
   Texture2D texture_mandelbrot = LoadTextureFromImage(img);
-  UnloadImage(img);
-
-  img = GenImageColor(screen_width, screen_height, RAYWHITE);
-  g_pallete_pixels = LoadImageColors(img);
-  Texture2D texture_pallete = LoadTextureFromImage(img);
   UnloadImage(img);
 
   img = GenImageColor(screen_width, screen_height, RAYWHITE);
   g_worker_pixels = LoadImageColors(img);
   Texture2D texture_worker = LoadTextureFromImage(img);
-  UnloadImage(img);
-
-  img = GenImageColor(screen_width, screen_height, RAYWHITE);
-  g_low_alpha_worker_pixels = LoadImageColors(img);
-  Texture2D texture_low_alpha_worker = LoadTextureFromImage(img);
   UnloadImage(img);
 
   pthread_mutex_init(&pixelMutex, NULL);
@@ -622,28 +621,20 @@ int main(int argc, char* argv[])
   while (!WindowShouldClose()) { // Closed with ESC or manually closing window
     // get the mutex so we can read safely from global pixel colors
     pthread_mutex_lock(&pixelMutex);
-
-    UpdateTexture(texture_mandelbrot, g_mandelbrot_pixels);
-    UpdateTexture(texture_pallete, g_pallete_pixels);
-    UpdateTexture(texture_worker, g_worker_pixels);
-    UpdateTexture(texture_low_alpha_worker, g_low_alpha_worker_pixels);
-
+    if (g_pixels_changed) { // Only update if pixels changed
+      UpdateTexture(texture_mandelbrot, g_pixels);
+      UpdateTexture(texture_worker, g_worker_pixels);
+    }
     pthread_mutex_unlock(&pixelMutex);
 
     // do the drawing (only here we actually do the drawing)
     BeginDrawing();
     ClearBackground(RAYWHITE);
 
-
-    if(g_actual_color == 0)
-      DrawTexture(texture_mandelbrot, 0, 0, WHITE);
-    else if(g_actual_color == 1)
-      DrawTexture(texture_pallete, 0, 0, WHITE);
-    else if(g_actual_color == 2)
-      DrawTexture(texture_worker, 0, 0, WHITE);
-    if(g_show_workers){
-      DrawTexture(texture_low_alpha_worker, 0, 0, WHITE);
-    }
+    DrawTexture(texture_mandelbrot, 0, 0, WHITE);
+    if(g_current_color == TOTAL_COLORS) DrawTexture(texture_worker, 0, 0, WHITE);
+    // If overlaying workers on top, draw with alpha
+    if(g_show_workers) DrawTexture(texture_worker, 0, 0, (Color){ 255, 255, 255, 128 });
 
     if(!g_selecting && g_show_changes_timer > 0){
       if(g_gchanged == true){
@@ -676,15 +667,13 @@ int main(int argc, char* argv[])
   pthread_join(response_thread, NULL);
 
   UnloadTexture(texture_mandelbrot);
-  UnloadTexture(texture_pallete);
   UnloadTexture(texture_worker);
-  UnloadTexture(texture_low_alpha_worker);
 
-  UnloadImageColors(g_mandelbrot_pixels);
-  UnloadImageColors(g_pallete_pixels);
+  UnloadImageColors(g_pixels);
   UnloadImageColors(g_worker_pixels);
-  UnloadImageColors(g_low_alpha_worker_pixels);
   CloseWindow(); // Close OpenGL context
+
+  free(g_pixel_depth);
 
   pthread_mutex_destroy(&pixelMutex);
 

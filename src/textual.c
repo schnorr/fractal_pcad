@@ -212,7 +212,10 @@ int main(int argc, char* argv[])
 
   char input[64];
   while (!atomic_load(&shutdown_requested)){
-    fgets(input, sizeof(input), stdin);
+    if (fgets(input, sizeof(input), stdin) == NULL){
+      request_shutdown(connection);
+      break;
+    }
     input[strcspn(input, "\n")] = '\0';
     if (strcmp(input, "quit") == 0 || strcmp(input, "exit") == 0) {
       request_shutdown(connection);
