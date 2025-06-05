@@ -19,11 +19,13 @@ along with "Fractal @ PCAD". If not, see
 #include "mandelbrot.h"
 
 int mandelbrot(long double real, long double imag, int max_depth) {
-  long double complex c = real + imag * I;
-  long double complex z = 0 + 0 * I;
+  long double zr = 0.0, zi = 0.0; // real and imaginary parts
   int iter = 0;
-  while (cabsl(z) <= 2.0 && iter < max_depth) {
-    z = z * z + c;
+  while (zr * zr + zi * zi <= 4.0 && iter < max_depth) {
+    long double zr_squared = zr * zr;
+    long double zi_squared = zi * zi;
+    zi = 2.0 * zr * zi + imag;
+    zr = zr_squared - zi_squared + real;
     iter++;
   }
   return iter;
