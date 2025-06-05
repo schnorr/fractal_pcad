@@ -93,23 +93,26 @@ void request_shutdown(int connection){
 
 void update_pixels(response_t *response) {
   int screen_width = GetScreenWidth();
+  int screen_height = GetScreenHeight();
 
   pthread_mutex_lock(&pixelMutex); //lock
   int p = 0;
   for (int i = response->payload.s_ll.x; i < response->payload.s_ur.x; i++){
 	  for (int j = response->payload.s_ll.y; j < response->payload.s_ur.y; j++){
-      g_pixel_depth[j * screen_width + i] = response->values[p];
+      if (i < screen_width && j < screen_height) {
+        g_pixel_depth[j * screen_width + i] = response->values[p];
 
-	    cor_t cor = {0};
-      struct Color color = {0};
-	    cor = get_current_pallette_color(g_current_color, response->values[p], response->payload.fractal_depth);
-	    color = (Color){cor.r, cor.g, cor.b, 255};
-	    g_pixels[j * screen_width + i] = color;
+	      cor_t cor = {0};
+        struct Color color = {0};
+	      cor = get_current_pallette_color(g_current_color, response->values[p], response->payload.fractal_depth);
+	      color = (Color){cor.r, cor.g, cor.b, 255};
+	      g_pixels[j * screen_width + i] = color;
 
-	    cor = get_current_pallette_color(0, response->worker_id, response->max_worker_id);
-	    color = (Color){cor.r, cor.g, cor.b, 255};
-	    g_worker_pixels[j * screen_width + i] = color;
-	    p++;
+	      cor = get_current_pallette_color(0, response->worker_id, response->max_worker_id);
+	      color = (Color){cor.r, cor.g, cor.b, 255};
+	      g_worker_pixels[j * screen_width + i] = color;
+      }
+      p++;
 	  }
   }
   g_pixels_changed = true;
