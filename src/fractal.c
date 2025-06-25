@@ -54,8 +54,10 @@ payload_t **discretize_payload (payload_t *origin, int *length)
   *length = amount_x * amount_y;
 
   /* Define the fractal space we need to cover */
-  double real_step = (origin->ur.real - origin->ll.real) / amount_x;
-  double imag_step = (origin->ur.imag - origin->ll.imag) / amount_y;
+  double x_ratio = (origin->ur.real - origin->ll.real) / screen_width;
+  double y_ratio = (origin->ur.imag - origin->ll.imag) / screen_height;
+  double real_step = origin->granularity * x_ratio;
+  double imag_step = origin->granularity * y_ratio;
 
   /* Define the (corresponding) screen space we need to cover */
   int x_step = origin->granularity;
