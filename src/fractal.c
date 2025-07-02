@@ -106,8 +106,6 @@ payload_t **discretize_payload (payload_t *origin, int *length)
 
 response_t *create_response_for_payload (payload_t *payload)
 {
-  int i, j;
-
   if (!payload) return NULL;
   response_t *ret = calloc(1, sizeof(response_t));
   if (!ret) {
@@ -127,11 +125,11 @@ response_t *create_response_for_payload (payload_t *payload)
   // TODO: sequencial solution for now
   //  payload_print(__func__, "compute", payload);
   int r = 0;
-  for (i = 0; i < screen_width; i++){
-    for (j = 0; j < screen_height; j++){
+  for (int y = 0; y < screen_height; y++){
+    for (int x = 0; x < screen_width; x++){
       fractal_coord_t fractal_current = payload->ll;
-      fractal_current.real += real_step * i;
-      fractal_current.imag += imag_step * j;
+      fractal_current.imag += imag_step * y;
+      fractal_current.real += real_step * x;
 
       ret->values[r] =
 	mandelbrot (fractal_current.real,

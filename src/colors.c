@@ -16,16 +16,18 @@ along with "Fractal @ PCAD". If not, see
 <https://www.gnu.org/licenses/>.
 */
 #include <math.h>
+#include <raylib.h>
 
 #include "colors.h"
 
-static cor_t linear_interpolation(cor_t c1, cor_t c2, double alpha) {
+static Color linear_interpolation(Color c1, Color c2, double alpha) {
   if (alpha <= 0.0) return c1;
   if (alpha >= 1.0) return c2;
-  cor_t c;
-  c.r = (unsigned short)(0.5 + (1.0 - alpha) * c1.r + alpha * c2.r);
-  c.g = (unsigned short)(0.5 + (1.0 - alpha) * c1.g + alpha * c2.g);
-  c.b = (unsigned short)(0.5 + (1.0 - alpha) * c1.b + alpha * c2.b);
+  Color c;
+  c.r = (unsigned char)(0.5 + (1.0 - alpha) * c1.r + alpha * c2.r);
+  c.g = (unsigned char)(0.5 + (1.0 - alpha) * c1.g + alpha * c2.g);
+  c.b = (unsigned char)(0.5 + (1.0 - alpha) * c1.b + alpha * c2.b);
+  c.a = (unsigned char)(0.5 + (1.0 - alpha) * c1.a + alpha * c2.a);
   return c;
 }
 
@@ -52,16 +54,17 @@ static double norm_log_cycle(int depth, int max_depth) {
 // Functions below should be able to accept values outside [0, 1] range, but not tested
 
 // Maps to rainbow colors using sine wave
-static cor_t color_sine(double t){
-  cor_t cor;
-  cor.r = (unsigned short)(sin(6.28318 * t + 0.0) * 127.5 + 127.5); // fase 0
-  cor.g = (unsigned short)(sin(6.28318 * t + 2.094) * 127.5 + 127.5); // fase 2π/3
-  cor.b = (unsigned short)(sin(6.28318 * t + 4.188) * 127.5 + 127.5); // fase 4π/3
+static Color color_sine(double t){
+  Color cor;
+  cor.r = (unsigned char)(sin(6.28318 * t + 0.0) * 127.5 + 127.5); // fase 0
+  cor.g = (unsigned char)(sin(6.28318 * t + 2.094) * 127.5 + 127.5); // fase 2π/3
+  cor.b = (unsigned char)(sin(6.28318 * t + 4.188) * 127.5 + 127.5); // fase 4π/3
+  cor.a = 255;
   return cor;
 }
 
 // Maps to predefined viridis palette, interpolating
-static cor_t color_viridis(double t) {
+static Color color_viridis(double t) {
   t = t - floor(t); 
   t = t * (VIRIDIS_SIZE - 1);
   int index = (int)t;
@@ -77,10 +80,10 @@ static cor_t color_viridis(double t) {
 
 
 // Maps to grayscale
-static cor_t color_linear_grayscale(double t) {
+static Color color_linear_grayscale(double t) {
   t = t - floor(t);
-  unsigned short gray =(unsigned short)(t * 255.0); // Modulo for values over 1
-  return (cor_t) {gray, gray, gray};
+  unsigned short gray =(unsigned char)(t * 255.0); // Modulo for values over 1
+  return (Color) {gray, gray, gray, 255};
 }
 
 // Mirrored normalization below. Grayscale and viridis have very dark colors at 0 and 
@@ -91,7 +94,7 @@ static double mirror_t(double t){
   return (t <= 0.5) ? t * 2.0 : 2.0 - 2.0 * t;
 }
 
-static cor_t color_viridis_mirrored(double t) {
+static Color color_viridis_mirrored(double t) {
   t = mirror_t(t);
   t = t * (VIRIDIS_SIZE - 1);
   int index = (int)t;
@@ -105,20 +108,20 @@ static cor_t color_viridis_mirrored(double t) {
   return linear_interpolation(viridis_palette[index], viridis_palette[index + 1], alpha);
 }
 
-static cor_t color_linear_grayscale_mirrored(double t) {
+static Color color_linear_grayscale_mirrored(double t) {
   t = mirror_t(t);
-  unsigned short gray = (unsigned short)(t * 255.0);
-  return (cor_t) {gray, gray, gray};
+  unsigned short gray = (unsigned char)(t * 255.0);
+  return (Color) {gray, gray, gray, 255};
 }
 
-static cor_t get_color(int depth, int max_depth, normalize_fn normalize_fn, color_fn color_fn) {
-  if (depth >= max_depth) return (cor_t){0, 0, 0};
+static Color get_color(int depth, int max_depth, normalize_fn normalize_fn, color_fn color_fn) {
+  if (depth >= max_depth) return (Color){0, 0, 0, 255};
   double t = normalize_fn(depth, max_depth);
   return color_fn(t);
 }
 
 // TODO: histogram coloring/other possibilities?
-cor_t get_current_pallette_color(int current_color, int depth, int max_depth){
+Color get_current_pallette_color(int current_color, int depth, int max_depth){
   switch (current_color) {
     case 0:  return get_color(depth, max_depth, norm_linear, color_sine);
     case 1:  return get_color(depth, max_depth, norm_power_cycle, color_sine);
@@ -129,7 +132,7 @@ cor_t get_current_pallette_color(int current_color, int depth, int max_depth){
     case 5:  return get_color(depth, max_depth, norm_log_cycle, color_viridis_mirrored);
   
     case 6:  return get_color(depth, max_depth, norm_linear, color_linear_grayscale);
-    case 7: return get_color(depth, max_depth, norm_power_cycle, color_linear_grayscale_mirrored);
+    case 7:  return get_color(depth, max_depth, norm_power_cycle, color_linear_grayscale_mirrored);
     case 8:  return get_color(depth, max_depth, norm_log_cycle, color_linear_grayscale_mirrored);
 
     default: return get_color(depth, max_depth, norm_linear, color_sine);

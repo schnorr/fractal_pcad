@@ -95,25 +95,28 @@ void update_pixels(response_t *response) {
   int screen_width = GetScreenWidth();
   int screen_height = GetScreenHeight();
 
+  // Compute bounds before loop so we don't have to check whether a pixel escapes screen
+  int x0 = max(response->payload.s_ll.x, 0);
+  int y0 = max(response->payload.s_ll.y, 0);
+  int x1 = min(response->payload.s_ur.x, screen_width);
+  int y1 = min(response->payload.s_ur.y, screen_height);
+  int x_offset = x0 - response->payload.s_ll.x;
+  int y_offset = y0 - response->payload.s_ll.y;
+  int p = y_offset * response->payload.granularity + x_offset;
+
   pthread_mutex_lock(&pixelMutex); //lock
-  int p = 0;
-  for (int i = response->payload.s_ll.x; i < response->payload.s_ur.x; i++){
-	  for (int j = response->payload.s_ll.y; j < response->payload.s_ur.y; j++){
-      if (i < screen_width && j < screen_height) {
-        g_pixel_depth[j * screen_width + i] = response->values[p];
+  for (int y = y0; y < y1; y++) {
+    for (int x = x0; x < x1; x++) {
+      g_pixel_depth[y * screen_width + x] = response->values[p];
 
-	      cor_t cor = {0};
-        struct Color color = {0};
-	      cor = get_current_pallette_color(g_current_color, response->values[p], response->payload.fractal_depth);
-	      color = (Color){cor.r, cor.g, cor.b, 255};
-	      g_pixels[j * screen_width + i] = color;
+      Color color = get_current_pallette_color(g_current_color, response->values[p], response->payload.fractal_depth);
+	    g_pixels[y * screen_width + x] = color;
 
-	      cor = get_current_pallette_color(0, response->worker_id, response->max_worker_id);
-	      color = (Color){cor.r, cor.g, cor.b, 255};
-	      g_worker_pixels[j * screen_width + i] = color;
-      }
+      color = get_current_pallette_color(0, response->worker_id, response->max_worker_id);
+	    g_worker_pixels[y * screen_width + x] = color;
       p++;
 	  }
+    p += (response->payload.granularity - (x1 - x0)); // Skip to next row in case there are values left over
   }
   g_pixels_changed = true;
   pthread_mutex_unlock(&pixelMutex); //unlock
@@ -126,12 +129,11 @@ void swap_pallete() {
   int screen_width = GetScreenWidth();
   int screen_height = GetScreenHeight();
   pthread_mutex_lock(&pixelMutex);
-  for (int i = 0; i < screen_width; i++){
-    for (int j = 0; j < screen_height; j++) {
+  for (int y = 0; y < screen_height; y++) {
+    for (int x = 0; x < screen_width; x++) {
       int max_depth = payload_history[payload_count-1].fractal_depth;
-      cor_t cor = get_current_pallette_color(g_current_color, g_pixel_depth[j * screen_width + i], max_depth);
-	    struct Color color = {cor.r, cor.g, cor.b, 255};
-	    g_pixels[j * screen_width + i] = color;
+      Color color = get_current_pallette_color(g_current_color, g_pixel_depth[y * screen_width + x], max_depth);
+	    g_pixels[y * screen_width + x] = color;
     }
   }
   g_pixels_changed = true;
@@ -214,8 +216,8 @@ void *ui_thread_function () {
 	g_show_changes_timer = 50;
 	  
 	g_depth *= 0.9;
-	if(g_depth < 256){
-	  g_depth = 256;
+	if(g_depth < 2){
+	  g_depth = 2;
 	}
 	WaitTime(0.1);
       }
@@ -223,7 +225,9 @@ void *ui_thread_function () {
 	g_dchanged = true;
 	g_show_changes_timer = 50;
 		
-	g_depth *= 1.1;
+  if (g_depth < 10) g_depth++;
+	else g_depth *= 1.1;
+
 	if(g_depth > MAX_DEPTH){
 	  g_depth = MAX_DEPTH;
 	}
@@ -240,8 +244,8 @@ void *ui_thread_function () {
 	g_show_changes_timer = 50;
 
 	g_granularity *= 0.9;
-	if(g_granularity < 10){
-	  g_granularity = 10;
+	if(g_granularity < 1){
+	  g_granularity = 1;
 	}
 	WaitTime(0.1);
       }
@@ -249,9 +253,11 @@ void *ui_thread_function () {
 	g_gchanged = true;
 	g_show_changes_timer = 50;
 
-	g_granularity *= 1.1;
-	if(g_granularity > 100){
-	  g_granularity = 100;
+  if(g_granularity < 10) g_granularity++;
+  else g_granularity *= 1.1;
+
+ 	if(g_granularity > 500){
+	  g_granularity = 500;
 	}
 	WaitTime(0.1);
       }
@@ -597,11 +603,8 @@ int main(int argc, char* argv[])
   // create a CPU-side "image" that we can draw on top when needed
   Image img = GenImageColor(screen_width, screen_height, RAYWHITE);
   g_pixels = LoadImageColors(img);
-  Texture2D texture_mandelbrot = LoadTextureFromImage(img);
-  UnloadImage(img);
-
-  img = GenImageColor(screen_width, screen_height, RAYWHITE);
   g_worker_pixels = LoadImageColors(img);
+  Texture2D texture_mandelbrot = LoadTextureFromImage(img);
   Texture2D texture_worker = LoadTextureFromImage(img);
   UnloadImage(img);
 
