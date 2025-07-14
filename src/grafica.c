@@ -60,18 +60,18 @@ bool g_show_workers = false;
 int g_current_color = 0;
 
 #define MAX_DEPTH 256*256*256
-int g_granularity = 10;
+// Using float for smooth granularity and depth input, cast to int when actually used
+float g_granularity = 10;
 bool g_gchanged = false;
 
-int g_depth = 256;
+float g_depth = 256;
 bool g_dchanged = false;
 
-int g_show_changes_timer = 0;
+float g_show_changes_timer = 0;
 
 /* Selection box (blue box) related globals */
 bool g_selecting = false;
-Vector2 g_box_origin = {0, 0};
-Vector2 g_box_attr = {0, 0}; // x = width, y = height
+Rectangle g_box = {0, 0, 0, 0};
 
 static queue_t payload_queue = {0};
 static queue_t response_queue = {0};
@@ -141,297 +141,226 @@ void swap_pallete() {
 }
 
 /*
-  ui_thread_function: Every time a user selects
+  handle_input: Handles user input. Every time a user selects
   a new area to compute, a payload must be created with a
   new generation. This payload must then be queued in the
   payload_queue using the queue_enqueue function.
 */
-void *ui_thread_function () {
+void handle_input() {
   /* This action is guided by the user */
-
   static int generation = 0;
   static fractal_coord_t actual_ll = {-2, -1.5};
   static fractal_coord_t actual_ur = {2, 1.5};
-  long double screen_width = 0.0f;
-  long double screen_height = 0.0f;
-  long double pixel_coord_ratio = 0.0f;
-  float zoom = 0.0f;
 
-  Vector2 mouse = {0};
-  Vector2 first_point_screen = {0, 0};
+  static float zoom = 0.0f;
 
-  fractal_coord_t first_point_fractal = {0, 0};
-  fractal_coord_t second_point_fractal = {0, 0};
+  static fractal_coord_t first_point_fractal = {0, 0};
+  static fractal_coord_t second_point_fractal = {0, 0};
 
-  bool interaction = false;
-  bool initial = true;
-  bool clicked = false;
-  bool back = false;
+  static bool interaction = false;
+  static bool initial = true;
+  static bool back = false;
 
-  float moviment_speed = 0.0f;
-  float zoom_speed = 0.0f;
+  long double screen_width = (long double) GetScreenWidth();
+  long double screen_height = (long double) GetScreenHeight();
+  long double pixel_coord_ratio = (actual_ur.real - actual_ll.real) / screen_width;
 
-  while(!atomic_load(&shutdown_requested)) {
+  float dt = GetFrameTime();
 
-    if(initial && IsWindowReady()){ /* Send the initial payload when the window gets ready */
+  if(initial){ /* Send the initial payload when the window gets ready */
+    actual_ur.imag = ((actual_ur.real - actual_ll.real) * (screen_height/screen_width))/2;
+    actual_ll.imag = actual_ur.imag * -1;
 
-      screen_width = (long double)GetScreenWidth();
-      screen_height = (long double)GetScreenHeight();
+    g_box = (Rectangle){.x = 0, .y = 0, .width = screen_width, .height = screen_height};
 
-      pixel_coord_ratio = (actual_ur.real - actual_ll.real)/screen_width;
+    initial = false;
+    interaction = true;
+  }
 
-      actual_ur.imag = ((actual_ur.real - actual_ll.real) * (screen_height/screen_width))/2;
-      actual_ll.imag = actual_ur.imag * -1;
-
-      g_box_origin = (Vector2) {0,0};
-      g_box_attr = (Vector2) {screen_width, screen_height};
-
-      initial = false;
+  /* Starting selecting by pressing enter */
+  if(IsKeyPressed(KEY_ENTER)){
+    if (g_selecting) {
+      g_selecting = false;
       interaction = true;
-    }
-
-
-
-    /* Starting selecting by pressing enter */
-    if(!g_selecting && IsKeyPressed(KEY_ENTER)){
+    } else {
       g_selecting = true;
-      g_box_origin = (Vector2) {screen_width/4, screen_height/4};
-      g_box_attr = (Vector2) {screen_width/2, screen_height/2};
-      WaitTime(0.1); /* This is needed so this can work with the visual interface */
+      g_box = (Rectangle){
+        .x = screen_width/4, 
+        .y = screen_height/4, 
+        .width = screen_width/2, 
+        .height = screen_height/2
+      };
     }
-    if(g_selecting && IsKeyPressed(KEY_ENTER)){
-      g_selecting = false;
-      interaction = true;
-      WaitTime(0.1);
+  }
+  if(IsKeyPressed(KEY_BACKSPACE)){
+    g_selecting = false;
+  }
+
+  /* add or sub fractal depth */
+  if(IsKeyDown(KEY_P)){
+    // Increase depth based on frame time, scaling faster the higher it is
+    float change = g_depth * dt;
+    if(IsKeyDown(KEY_MINUS)){
+	    g_dchanged = true;
+	    g_show_changes_timer = 1.0f;
+	    g_depth -= change;
     }
-    if(IsKeyPressed(KEY_BACKSPACE)){
-      g_selecting = false;
+    if(IsKeyDown(KEY_EQUAL)){
+	    g_dchanged = true;
+	    g_show_changes_timer = 1.0f;
+	    g_depth += change;
     }
+    g_depth = min(g_depth, MAX_DEPTH);
+    g_depth = max(g_depth, 2);
+  }
 
-
-    /* add or sub fractal depth */
-    if(IsKeyDown(KEY_P)){
-      if(IsKeyDown(KEY_MINUS)){
-	g_dchanged = true;
-	g_show_changes_timer = 50;
-	  
-	g_depth *= 0.9;
-	if(g_depth < 2){
-	  g_depth = 2;
-	}
-	WaitTime(0.1);
-      }
-      if(IsKeyDown(KEY_EQUAL)){
-	g_dchanged = true;
-	g_show_changes_timer = 50;
-		
-  if (g_depth < 10) g_depth++;
-	else g_depth *= 1.1;
-
-	if(g_depth > MAX_DEPTH){
-	  g_depth = MAX_DEPTH;
-	}
-	WaitTime(0.1);
-      }
+  /* add or sub granularity  */
+  if(IsKeyDown(KEY_G)){
+    float change = g_granularity * dt;
+    if(IsKeyDown(KEY_MINUS)){
+	    g_gchanged = true;
+	    g_show_changes_timer = 1.0f;
+	    g_granularity -= change;
     }
-
-
-
-    /* add or sub granularity  */
-    if(IsKeyDown(KEY_G)){
-      if(IsKeyDown(KEY_MINUS)){
-	g_gchanged = true;
-	g_show_changes_timer = 50;
-
-	g_granularity *= 0.9;
-	if(g_granularity < 1){
-	  g_granularity = 1;
-	}
-	WaitTime(0.1);
-      }
-      if(IsKeyDown(KEY_EQUAL)){
-	g_gchanged = true;
-	g_show_changes_timer = 50;
-
-  if(g_granularity < 10) g_granularity++;
-  else g_granularity *= 1.1;
-
- 	if(g_granularity > 500){
-	  g_granularity = 500;
-	}
-	WaitTime(0.1);
-      }
+    if(IsKeyDown(KEY_EQUAL)){
+	    g_gchanged = true;
+	    g_show_changes_timer = 1.0f;
+      g_granularity += change;
     }
+    g_granularity = min(g_granularity, 500);
+    g_granularity = max(g_granularity, 1);
+  }
 
-
-
-    /* Go back with C-z */
-    if(IsKeyPressed(KEY_Z) && IsKeyDown(KEY_LEFT_CONTROL)){
-      // Is 1, because gen 0, is the 0 position
-      if(payload_count > 1){
-	back = true;
-	interaction = true;
-	WaitTime(0.1);
-      }
+  /* Go back with C-z */
+  if(IsKeyPressed(KEY_Z) && IsKeyDown(KEY_LEFT_CONTROL)){
+    // Is 1, because gen 0, is the 0 position
+    if(payload_count > 1){
+	    back = true;
+	    interaction = true;
     }
+  }
 
+  /* Zoom with mouse */
+  if(GetMouseWheelMove()){
+    zoom = dt * GetMouseWheelMove() * 3.0;
 
+    g_box.width = max(1, g_box.width - zoom*screen_width);
+    g_box.height = max(1, g_box.height - zoom*screen_height);
 
-    /* Zoom with mouse */
-    if(GetMouseWheelMove()){
-      zoom = GetFrameTime()*GetMouseWheelMove();
-      WaitTime(0.001); /* This defines how fast the box will inscrease or decrease */
-
-      g_box_attr.x = max(1, g_box_attr.x - zoom*screen_width);
-      g_box_attr.y = max(1,g_box_attr.y - zoom*screen_height);
-
-      if(g_box_attr.x > 1 && g_box_attr.y > 1){
-	g_box_origin.x = g_box_origin.x + zoom*screen_width/2;
-	g_box_origin.y = g_box_origin.y + zoom*screen_height/2;
-      }
+    if(g_box.width > 1 && g_box.height > 1){
+	    g_box.x = g_box.x + zoom*screen_width/2;
+	    g_box.y = g_box.y + zoom*screen_height/2;
     }
+  }
 
-
-
-    /* Selection box related */
-    if(g_selecting){
-      /* Mouse interaction */
-      mouse.x = GetMouseX();
-      mouse.y = GetMouseY();
-      if(mouse.x > g_box_origin.x && mouse.y > g_box_origin.y &&
-	 mouse.x < g_box_origin.x + g_box_attr.x && mouse.y < g_box_origin.y + g_box_attr.y){
-
-	if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
-
-	  first_point_screen.x = GetMouseX();
-	  first_point_screen.y = GetMouseY();
-	  clicked = true;
-	}
-      } else { clicked = true; }
-
-      if(clicked && IsMouseButtonDown(MOUSE_BUTTON_LEFT)){
-
-	Vector2 distance = (Vector2) {g_box_origin.x - first_point_screen.x, g_box_origin.y - first_point_screen.y};
-	/*                                               mouse delta                         */
-	  g_box_origin.x = mouse.x + distance.x + (mouse.x - first_point_screen.x)*GetFrameTime();
-	  g_box_origin.y = mouse.y + distance.y + (mouse.y - first_point_screen.y)*GetFrameTime();
-
-	  first_point_screen.x = mouse.x;
-	  first_point_screen.y = mouse.y;
-      }
-
-
-
-      moviment_speed = IsKeyDown(KEY_LEFT_CONTROL) ? 0.1 : 1.5/screen_width; /* Left control sets precise moviment */
-      /* Moving box with keyboard */
-      if(!IsKeyDown(KEY_LEFT_SHIFT)){
-	if(IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)){
-	  g_box_origin.y = g_box_origin.y - 1;
-	  WaitTime(moviment_speed);
-	}
-	if(IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S)){
-	  g_box_origin.y = g_box_origin.y + 1;
-	  WaitTime(moviment_speed);
-	}
-	if(IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A)){
-	  g_box_origin.x = g_box_origin.x - 1;
-	  WaitTime(moviment_speed);
-	}
-	if(IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D)){
-	  g_box_origin.x = g_box_origin.x + 1;
-	  WaitTime(moviment_speed);
-	}
-      }
-
-
-
-      /* Shift enables zoom mode */
-      if(IsKeyDown(KEY_LEFT_SHIFT)){
-	zoom = IsKeyDown(KEY_LEFT_CONTROL) ? GetFrameTime()/10 : GetFrameTime();
-	zoom_speed = IsKeyDown(KEY_LEFT_CONTROL) ? 0.1 : 0.01;
-
-	int zoom_direction = 0;
-	if(IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)){
-	  zoom_direction = 1;
-	}
-	if(IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S)){
-	  zoom_direction = -1;
-	}
-
-	zoom *= zoom_direction;
-
-	g_box_attr.x = max(1, g_box_attr.x + zoom*screen_width);
-	g_box_attr.y = max(1, g_box_attr.y + zoom*screen_height);
-
-	if(g_box_attr.x > 1 && g_box_attr.y > 1){
-	  g_box_origin.x = g_box_origin.x - zoom*screen_width/2;
-	  g_box_origin.y = g_box_origin.y - zoom*screen_height/2;
-	}
-	WaitTime(zoom_speed);
-      }
-
-
-
-      /* Checking the screen limits*/
-      g_box_origin.x = max(-g_box_attr.x/4, g_box_origin.x);
-      g_box_origin.y = max(-g_box_attr.y/4, g_box_origin.y);
-      g_box_origin.x = min(g_box_origin.x, screen_width - g_box_attr.x + g_box_attr.x/4);
-      g_box_origin.y = min(g_box_origin.y, screen_height - g_box_attr.y + g_box_attr.y/4);
-    }
-
-
-
-    /* Colors related keys */
-    if(IsKeyPressed(KEY_SPACE)){
-      swap_pallete();
-      WaitTime(0.1);
-    }
-    if(IsKeyPressed(KEY_C)){
-      g_show_workers = !g_show_workers;
-      WaitTime(0.1);
-    }
-
-
-
-    if(interaction == true){
-      interaction = false;
-
-      payload_t *payload = calloc(1, sizeof(payload_t));
-      if (payload == NULL) {
-	fprintf(stderr, "malloc failed.\n");
-	pthread_exit(NULL);
-      }
-
-      /* ratio from pixels to coordinates based on the x axis */
-      pixel_coord_ratio = (actual_ur.real - actual_ll.real)/screen_width;
-
-      /* Transforming from screen coordinates to fractal coordinates */
-      first_point_fractal.real = (g_box_origin.x)*pixel_coord_ratio + actual_ll.real;
-      first_point_fractal.imag = (g_box_origin.y)*pixel_coord_ratio + actual_ll.imag;
-
-      second_point_fractal.real = (g_box_origin.x + g_box_attr.x)*pixel_coord_ratio + actual_ll.real;
-      second_point_fractal.imag = (g_box_origin.y + g_box_attr.y)*pixel_coord_ratio + actual_ll.imag;
-
-      if(back == true){
-	back = false;
-	payload_count--;
-	*payload = payload_history[payload_count-1];
-	payload->generation = generation++;
-	actual_ll = payload->ll;
-	actual_ur = payload->ur;
-
-	if (payload_count > 0) {
-	  payload_history = realloc(payload_history, payload_count * sizeof(payload_t));
-	  if (payload_history == NULL && payload_count > 0) {
-	    perror("Realloc failed");
+  /* Selection box related */
+  if(g_selecting){
+    /* Mouse interaction */
+    Vector2 mouse = GetMousePosition();
+    if(mouse.x > g_box.x && mouse.y > g_box.y &&
+	    mouse.x < g_box.x + g_box.width && mouse.y < g_box.y + g_box.height){
+	    if(IsMouseButtonDown(MOUSE_BUTTON_LEFT)){
+        Vector2 delta = GetMouseDelta();
+	      g_box.x += delta.x;
+	      g_box.y += delta.y;
 	    }
-	}
-      }
-      else{
+    }
+
+    /* Left control sets precise moviment */
+    float movement_speed = IsKeyDown(KEY_LEFT_CONTROL) ? screen_width / 10 : screen_width / 3;
+    /* Moving box with keyboard */
+    if(!IsKeyDown(KEY_LEFT_SHIFT)){
+	    if(IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)){
+	      g_box.y = g_box.y - movement_speed * dt;
+	    }
+	    if(IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S)){
+	      g_box.y = g_box.y + movement_speed * dt;
+	    }
+	    if(IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A)){
+	      g_box.x = g_box.x - movement_speed * dt;
+	    }
+	    if(IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D)){
+	      g_box.x = g_box.x + movement_speed * dt;
+	    }
+    }
+
+    /* Shift enables zoom mode */
+    if(IsKeyDown(KEY_LEFT_SHIFT)){
+	    zoom = IsKeyDown(KEY_LEFT_CONTROL) ? dt / 10 : dt;
+
+	    int zoom_direction = 0;
+	    if(IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)){
+	      zoom_direction = 1;
+	    }
+	    if(IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S)){
+	      zoom_direction = -1;
+	    }
+
+	    zoom *= zoom_direction;
+
+	    g_box.width = max(1, g_box.width + zoom*screen_width);
+	    g_box.height = max(1, g_box.height + zoom*screen_height);
+
+	    if(g_box.width > 1 && g_box.height > 1){
+	      g_box.x = g_box.x - zoom * screen_width/2;
+	      g_box.y = g_box.y - zoom * screen_height/2;
+	    }
+    }
+
+    /* Checking the screen limits*/
+    g_box.x = max(-g_box.width/4, g_box.x);
+    g_box.y = max(-g_box.height/4, g_box.y);
+    g_box.x = min(g_box.x, screen_width - g_box.width + g_box.width/4);
+    g_box.y = min(g_box.y, screen_height - g_box.height + g_box.height/4);
+  }
+
+  /* Colors related keys */
+  if(IsKeyPressed(KEY_SPACE)){
+    swap_pallete();
+  }
+  if(IsKeyPressed(KEY_C)){
+    g_show_workers = !g_show_workers;
+  }
+
+  if(interaction == true){
+    interaction = false;
+
+    payload_t *payload = calloc(1, sizeof(payload_t));
+    if (payload == NULL) {
+	    fprintf(stderr, "malloc failed.\n");
+      exit(1);
+    }
+
+    /* ratio from pixels to coordinates based on the x axis */
+    pixel_coord_ratio = (actual_ur.real - actual_ll.real)/screen_width;
+
+    /* Transforming from screen coordinates to fractal coordinates */
+    first_point_fractal.real = (g_box.x)*pixel_coord_ratio + actual_ll.real;
+    first_point_fractal.imag = (g_box.y)*pixel_coord_ratio + actual_ll.imag;
+
+    second_point_fractal.real = (g_box.x + g_box.width)*pixel_coord_ratio + actual_ll.real;
+    second_point_fractal.imag = (g_box.y + g_box.height)*pixel_coord_ratio + actual_ll.imag;
+
+    if(back == true){
+	    back = false;
+	    payload_count--;
+	    *payload = payload_history[payload_count-1];
+	    payload->generation = generation++;
+	    actual_ll = payload->ll;
+	    actual_ur = payload->ur;
+
+	    if (payload_count > 0) {
+	      payload_history = realloc(payload_history, payload_count * sizeof(payload_t));
+	      if (payload_history == NULL && payload_count > 0) {
+	        fprintf(stderr, "Realloc failed.\n");
+          exit(1);
+	      }
+	    }
+    } else {
       /* Generating the payload */
       payload->generation = generation++; /* The generation is always increasing */
-      payload->granularity = g_granularity;
-      payload->fractal_depth = g_depth;
+      payload->granularity = (int) g_granularity;
+      payload->fractal_depth = (int) g_depth;
       payload->ll.real = min(first_point_fractal.real, second_point_fractal.real);
       payload->ll.imag = min(first_point_fractal.imag, second_point_fractal.imag);
       payload->ur.real = max(first_point_fractal.real, second_point_fractal.real);
@@ -447,23 +376,18 @@ void *ui_thread_function () {
 
       payload_history = realloc(payload_history, (payload_count + 1)*sizeof(payload_t));
       if(payload_history == NULL){
-	perror("Malloc faild");
-	pthread_exit(NULL);
+	      fprintf(stderr, "malloc failed.\n");
+        exit(1);
       }
 
       payload_history[payload_count] = *payload;
       payload_count++;
     }
 
-      payload_print(__func__, "Enqueueing payload", payload);
-
-      queue_enqueue(&payload_queue, payload);
-      payload = NULL;
-      WaitTime(0.1);
-    }
+    payload_print(__func__, "Enqueueing payload", payload);
+    queue_enqueue(&payload_queue, payload);
+    payload = NULL;
   }
-
-  pthread_exit(NULL);
 }
 
 /*
@@ -614,17 +538,17 @@ int main(int argc, char* argv[])
   queue_init(&payload_queue, 1, free);
   queue_init(&response_queue, 256, free_response);
 
-  pthread_t ui_thread = 0;
   pthread_t render_thread = 0;
   pthread_t payload_thread = 0;
   pthread_t response_thread = 0;
 
-  pthread_create(&ui_thread, NULL, ui_thread_function, NULL);
   pthread_create(&render_thread, NULL, render_thread_function, NULL);
   pthread_create(&payload_thread, NULL, net_thread_send_payload, &connection);
   pthread_create(&response_thread, NULL, net_thread_receive_response, &connection);
 
   while (!WindowShouldClose()) { // Closed with ESC or manually closing window
+    handle_input(); // Handle user input
+
     // get the mutex so we can read safely from global pixel colors
     pthread_mutex_lock(&pixelMutex);
     if (g_pixels_changed) { // Only update if pixels changed
@@ -642,12 +566,12 @@ int main(int argc, char* argv[])
     // If overlaying workers on top, draw with alpha
     if(g_show_workers) DrawTexture(texture_worker, 0, 0, (Color){ 255, 255, 255, 128 });
 
-    if(!g_selecting && g_show_changes_timer > 0){
+    if(!g_selecting && g_show_changes_timer > 0.0f){
       if(g_gchanged == true){
-	DrawText(TextFormat("Granularity:  %d", g_granularity), screen_width/4, screen_height/2 - 50, 100, WHITE);
+	      DrawText(TextFormat("Granularity:  %d", (int)g_granularity), screen_width/4, screen_height/2 - 50, 100, WHITE);
       }
       if(g_dchanged == true){
-	DrawText(TextFormat("Depth:  %d", g_depth), screen_width/4, screen_height/2 + 50, 100, WHITE);
+	      DrawText(TextFormat("Depth:  %d", (int)g_depth), screen_width/4, screen_height/2 + 50, 100, WHITE);
       }
       g_show_changes_timer -= GetFrameTime();
     } else {
@@ -656,9 +580,9 @@ int main(int argc, char* argv[])
     }
     
     if(g_selecting){
-      DrawRectangleV(g_box_origin, g_box_attr, (Color){1.0f, 1.0f, 255.0f, 100.0f});
-      DrawText(TextFormat("Granularity:  %d", g_granularity), 10, 10, 20, DARKGRAY);
-      DrawText(TextFormat("Depth:  %d", g_depth), 10, 30, 20, DARKGRAY);
+      DrawRectangleRec(g_box, (Color){1.0f, 1.0f, 255.0f, 100.0f});
+      DrawText(TextFormat("Granularity:  %d", (int)g_granularity), 10, 10, 20, DARKGRAY);
+      DrawText(TextFormat("Depth:  %d", (int)g_depth), 10, 30, 20, DARKGRAY);
     }
 
     EndDrawing();
@@ -667,7 +591,6 @@ int main(int argc, char* argv[])
   // Window closed, request shutdown
   request_shutdown(connection);
 
-  pthread_join(ui_thread, NULL);
   pthread_join(render_thread, NULL);
   pthread_join(payload_thread, NULL);
   pthread_join(response_thread, NULL);
