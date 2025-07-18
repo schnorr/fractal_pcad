@@ -92,6 +92,7 @@ void compute_create_blocks(payload_t *payload,
   for (int i = 0; i < length; i++) {
     queue_enqueue(payload_to_workers_queue, payload_vector[i]);
   }
+  free(payload_vector);
 }
 
 void *main_thread_mpi_recv_responses ()
@@ -276,7 +277,7 @@ int main_worker(int argc, char* argv[])
   printf("%s: Worker (rank %d) with %d arguments\n", argv[0], rank, argc);
 
   while (1) { // Loop through rounds of work
-    MPI_Barrier(MPI_COMM_WORLD); // Synchronize with coordinator
+    MPI_Barrier(MPI_COMM_WORLD); // Synchronize all workers and coordinator
     struct timespec total_time = {0}, total_compute_time = {0};
     struct timespec start_time, end_time, compute_start_time, compute_end_time;
     clock_gettime(CLOCK_MONOTONIC, &start_time);
@@ -298,11 +299,10 @@ int main_worker(int argc, char* argv[])
       clock_gettime(CLOCK_MONOTONIC, &compute_end_time);
 
       response_t *response = response_result.response;
-      printf("[WORKER %d PAYLOAD_LOG]: Computed %lld iterations for payload [ll(%d, %d), ur(%d, %d)] in %0.6fs]\n", 
+      printf("[WORKER %d PAYLOAD_LOG]: Computed %d depth values in %lld iterations in %0.9fs]\n", 
              rank,
+             response->payload.granularity * response->payload.granularity,
              response_result.total_iterations, 
-             response->payload.s_ll.x, response->payload.s_ll.y,
-             response->payload.s_ur.x, response->payload.s_ur.y,
              timespec_to_double(timespec_diff(compute_start_time, compute_end_time)));
 
       total_compute_time = timespec_add(total_compute_time, 
@@ -321,7 +321,7 @@ int main_worker(int argc, char* argv[])
     clock_gettime(CLOCK_MONOTONIC, &end_time);
     total_time = timespec_diff(start_time, end_time);
     
-    printf("[WORKER %d FINAL_LOG]: Total elapsed time for payload = %.6fs [Total compute time: %.6fs]\n", 
+    printf("[WORKER %d FINAL_LOG]: Total elapsed time for payload = %.9fs [Total compute time: %.9fs]\n", 
            rank, 
            timespec_to_double(total_time), 
            timespec_to_double(total_compute_time));
