@@ -30,17 +30,15 @@ along with "Fractal @ PCAD". If not, see
 #include "connection.h"
 #include "queue.h"
 #include "mpi_comm.h"
+#include "timing.h"
 
-//payload from the grafica
-static payload_t *newest_payload = NULL;
-static int latest_generation = 0;
-static pthread_mutex_t newest_payload_mutex;
-static pthread_cond_t new_payload;
-
-//many small payloads to the workers
-static queue_t payload_to_workers_queue;
-
+static queue_t incoming_payload_queue;  // Raw payloads from network
+static queue_t payload_to_workers_queue; // Discretized payloads for workers
 static queue_t response_queue;
+
+pthread_mutex_t latest_generation_mutex = PTHREAD_MUTEX_INITIALIZER;
+int latest_generation = -1;
+
 
 /*
   net_thread_receive_payload: the sole goal is to receive one payload
@@ -72,155 +70,95 @@ void *net_thread_receive_payload(void *arg)
     payload_print(__func__, "received payload", payload);
 #endif
 
-    pthread_mutex_lock(&newest_payload_mutex);
-    // Checking if there's a previous payload that hasn't been used in compute_create_blocks yet
-    if (newest_payload != NULL) {
-      free(newest_payload);
-    }
-    newest_payload = payload; // Update newest payload, signal compute_create_blocks
-    latest_generation = newest_payload->generation;
-    payload = NULL;
-    pthread_cond_signal(&new_payload);
-    pthread_mutex_unlock(&newest_payload_mutex);
+    queue_clear(&payload_to_workers_queue);
+    queue_clear(&incoming_payload_queue);
+    queue_enqueue(&incoming_payload_queue, payload);
   }
   pthread_exit(NULL);
 }
 
 /*
-  compute_create_blocks: after signaling, this function discretizes
+  compute_create_blocks: this function discretizes
   the newest payload so we have numerous blocks to compute. The
   "sub-blocks" will be queued in the =payload_to_workers_queue= so our
-  main thread (main_thread_function) can distribute them accordingly
-  to the workers.
+  mpi thread can distribute them accordingly to the workers.
 */
-void *compute_create_blocks()
+void compute_create_blocks(payload_t *payload, 
+                           queue_t *payload_to_workers_queue)
 {
-  while(1) {
-    pthread_mutex_lock(&newest_payload_mutex);
-    while (newest_payload == NULL) { // Wait for new payload to arrive
-      pthread_cond_wait(&new_payload, &newest_payload_mutex);
-    }
-
-#ifdef PAYLOAD_DEBUG
-    payload_print(__func__, "received newest_payload", newest_payload);
-#endif
-
-    // new payload, so clear obsolete payloads to workers
-    queue_clear(&payload_to_workers_queue);
-
-    //payload consumer: get the payload, discretize in blocks
-    //Call Ana Laura function
-    int length = 0, i;
-    payload_t **payload_vector = discretize_payload(newest_payload, &length);
-    for (i = 0; i < length; i++){
-#ifdef PAYLOAD_DEBUG
-      printf("(%d) %s: Enqueueing discretized payload %d\n", payload_vector[i]->generation, __func__, i);
-#endif
-      queue_enqueue(&payload_to_workers_queue, payload_vector[i]);
-      payload_vector[i] = NULL; //transfer ownership to the queue
-    }
-    free(payload_vector); //no longer necessary as all members have been queued
-    newest_payload = NULL; // Ownership transferred to queue
-    pthread_mutex_unlock(&newest_payload_mutex);
+  int length = 0;
+  payload_t **payload_vector = discretize_payload(payload, &length);
+  
+  for (int i = 0; i < length; i++) {
+    queue_enqueue(payload_to_workers_queue, payload_vector[i]);
   }
-  pthread_exit(NULL);
 }
 
-/*
-  main_thread_mpi_recv: receive responses from our workers.
-*/
 void *main_thread_mpi_recv_responses ()
 {
-  while(1) {
-    // Might have to rethink - queue-dequeue() currently locks
-    // thread. If this thread needs to wait for worker answers, maybe
-    // a queue_peek() that doesn't block thread would be appropriate?
+  int world_size;
+  MPI_Comm_size(MPI_COMM_WORLD, &world_size);
+  int num_workers = world_size - 1;
 
-    int worker;
-    {
-      // verify who wants to send us a response
-      MPI_Recv(&worker, 1, MPI_INT,
-	       MPI_ANY_SOURCE, // receive request from any worker
-	       FRACTAL_MPI_RESPONSE_REQUEST,
-	       MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-      // receive response from this worker
-      response_t *response = mpi_response_receive (worker);
-#ifdef RESPONSE_DEBUG
-      response_print(__func__, "Enqueueing response", response);
-#endif
-      // only queue responses that we are waiting for
+  while (1) { // Loop through rounds of work
+    int workers_done = 0;
+    while (workers_done < num_workers) { // Loop until all workers have received their payloads
+      int worker;
+      MPI_Recv(&worker, 1, MPI_INT, MPI_ANY_SOURCE, FRACTAL_MPI_RESPONSE_REQUEST, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
+      response_t *response = mpi_response_receive(worker);
       if (response->payload.generation == latest_generation) {
-	queue_enqueue(&response_queue, response);
-      }else{
-	response_print(__func__, "Discard response", response);
-  free(response->values);
-	free(response);
+        queue_enqueue(&response_queue, response);
+      } else {
+        if (response->payload.generation == -1) {
+          workers_done++;
+        }
+        free(response->values);
+        free(response);
       }
-      response = NULL; // Transferred ownership to queue
     }
   }
-  //keep looking to the payload_to_workers queue
-  //lock payload_to_workers
-  //consume payload_to_workers and distribute each payload
-  //to the queue of workers
-  //unlock
-
-  //wait for any worker to answer (mpi-test and if true, mpi-wait-any)
-  //lock response_queue
-  //while there is a response from a worker
-  //  - receive from the worker
-  //  - producer: put in that queue
-  //signal response-queue (net-thread-send-response)
-  //unlock
 
   pthread_exit(NULL);
 }
 
-/*
-  main_thread_function: distribute discretized payloads to our workers.
-*/
 void *main_thread_mpi_send_payloads ()
 {
-  while(1) {
-    // Might have to rethink - queue-dequeue() currently locks
-    // thread. If this thread needs to wait for worker answers, maybe
-    // a queue_peek() that doesn't block thread would be appropriate?
+  payload_t done_flag; // This payload will be sent to workers to signal end of current round
+  done_flag.generation = -1;
 
-    int worker;
-    {
-      // Get the payload (the queue-dequeue blocks this thread)
-      payload_t *payload = (payload_t *)queue_dequeue(&payload_to_workers_queue);
+  int world_size;
+  MPI_Comm_size(MPI_COMM_WORLD, &world_size);
+  int num_workers = world_size - 1;
 
-      // after getting a payload to do, check which worker is available
-      MPI_Recv(&worker, 1, MPI_INT,
-	       MPI_ANY_SOURCE, // receive request from any worker
-	       FRACTAL_MPI_PAYLOAD_REQUEST,
-	       MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+  while (1) { // Loop through rounds of work
+    payload_t *new_payload = (payload_t *)queue_dequeue(&incoming_payload_queue);
+    if (new_payload == NULL) break; // shutdown
 
-      // send the work to this worker
-      mpi_payload_send (payload, worker);
+    compute_create_blocks(new_payload, &payload_to_workers_queue);
 
-      // free the payload
-      free(payload);
-      payload = NULL;
+    MPI_Barrier(MPI_COMM_WORLD);
+
+    int workers_done = 0;
+    while (workers_done < num_workers) { // Loop until all workers have received their payloads
+      int worker;
+      MPI_Recv(&worker, 1, MPI_INT, MPI_ANY_SOURCE, FRACTAL_MPI_PAYLOAD_REQUEST, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
+      payload_t *payload = queue_try_dequeue(&payload_to_workers_queue); // Non blocking dequeue
+      if (payload){
+        latest_generation = payload->generation;
+        mpi_payload_send(payload, worker);
+        free(payload);
+      } else {
+        workers_done++;
+        mpi_payload_send(&done_flag, worker);
+      }
     }
   }
-  //keep looking to the payload_to_workers queue
-  //lock payload_to_workers
-  //consume payload_to_workers and distribute each payload
-  //to the queue of workers
-  //unlock
-
-  //wait for any worker to answer (mpi-test and if true, mpi-wait-any)
-  //lock response_queue
-  //while there is a response from a worker
-  //  - receive from the worker
-  //  - producer: put in that queue
-  //signal response-queue (net-thread-send-response)
-  //unlock
 
   pthread_exit(NULL);
 }
+
 
 void *net_thread_send_response(void *arg)
 {
@@ -282,20 +220,17 @@ int main_coordinator(int argc, char* argv[])
   socklen_t client_len = sizeof(client_addr);
   int socket = open_server_socket(atoi(argv[1]));
 
-  queue_init(&payload_to_workers_queue, 256, free);
-  queue_init(&response_queue, 256, free_response);
-  pthread_mutex_init(&newest_payload_mutex, NULL);
-  pthread_cond_init(&new_payload, NULL);
+  queue_init(&incoming_payload_queue, 1, free);
+  queue_init(&payload_to_workers_queue, 65536, free);
+  queue_init(&response_queue, 65536, free_response);
   
-  pthread_t main_mpi_send = 0;
-  pthread_t main_mpi_recv = 0;
-  pthread_t compute_thread = 0;
+  pthread_t mpi_send = 0;
+  pthread_t mpi_recv = 0;
   pthread_t payload_receive_thread = 0;
   pthread_t response_send_thread = 0;
 
-  pthread_create(&main_mpi_send, NULL, main_thread_mpi_send_payloads, NULL);
-  pthread_create(&main_mpi_recv, NULL, main_thread_mpi_recv_responses, NULL);
-  pthread_create(&compute_thread, NULL, compute_create_blocks, NULL);
+  pthread_create(&mpi_send, NULL, main_thread_mpi_send_payloads, NULL);
+  pthread_create(&mpi_recv, NULL, main_thread_mpi_recv_responses, NULL);
 
   while(true) { // No shutdown logic yet, loop infinitely
     int connection = accept(socket, (struct sockaddr *)&client_addr, &client_len);
@@ -311,75 +246,85 @@ int main_coordinator(int argc, char* argv[])
     pthread_join(response_send_thread, NULL);
     printf("TCP connection lost. Awaiting new connection...\n");
 
-    pthread_mutex_lock(&newest_payload_mutex);
-    newest_payload = NULL;
-    latest_generation = 0;
-    pthread_mutex_unlock(&newest_payload_mutex);
+    queue_clear(&incoming_payload_queue);
     queue_clear(&payload_to_workers_queue);
     queue_clear(&response_queue);
 
     close(connection);
   }
 
-  pthread_join(main_mpi_send, NULL);
-  pthread_join(main_mpi_recv, NULL);
-  pthread_join(compute_thread, NULL);
+  pthread_join(mpi_recv, NULL);
+  pthread_join(mpi_send, NULL);
 
   shutdown(socket, SHUT_RDWR);
   close(socket);
   
+  queue_destroy(&incoming_payload_queue);
   queue_destroy(&payload_to_workers_queue);
   queue_destroy(&response_queue);
   return 0;
 }
 
-double get_time_seconds() {
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-    return (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
-}
-
 int main_worker(int argc, char* argv[])
 {
+  response_t done_flag = {0};
+  done_flag.payload.generation = -1;
+
   int rank, size;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   printf("%s: Worker (rank %d) with %d arguments\n", argv[0], rank, argc);
 
-  // execute forever
-  while(1) {
-    payload_t *payload = NULL;
-    {
-      // send our rank to the coordinator so it can send us jobs
-      MPI_Ssend(&rank, 1, MPI_INT,
-		0, // to our coordinator (rank zero)
-		FRACTAL_MPI_PAYLOAD_REQUEST,
-		MPI_COMM_WORLD);
+  while (1) { // Loop through rounds of work
+    MPI_Barrier(MPI_COMM_WORLD); // Synchronize with coordinator
+    struct timespec total_time = {0}, total_compute_time = {0};
+    struct timespec start_time, end_time, compute_start_time, compute_end_time;
+    clock_gettime(CLOCK_MONOTONIC, &start_time);
+    
+    while (1) { // Loop through individual payloads
+      // Send rank and receive payload
+      MPI_Ssend(&rank, 1, MPI_INT, 0, FRACTAL_MPI_PAYLOAD_REQUEST, MPI_COMM_WORLD);
+      payload_t *payload = mpi_payload_receive(0);
 
-      // receive the payload from the coordinator
-      payload = mpi_payload_receive(0);
-    }
+      if (payload->generation == -1) { // Poison pill, signal worker done
+        free(payload);
+        MPI_Ssend(&rank, 1, MPI_INT, 0, FRACTAL_MPI_RESPONSE_REQUEST, MPI_COMM_WORLD);
+        mpi_response_send(&done_flag);
+        break;
+      }
 
-    {
-      // compute the response
-      response_t *response = create_response_for_payload (payload);
+      clock_gettime(CLOCK_MONOTONIC, &compute_start_time);
+      create_response_return_t response_result = create_response_for_payload(payload);
+      clock_gettime(CLOCK_MONOTONIC, &compute_end_time);
+
+      response_t *response = response_result.response;
+      printf("[WORKER %d]: Computed %lld iterations for payload [ll(%d, %d), ur(%d, %d)] in %0.6fs]\n", 
+             rank,
+             response_result.total_iterations, 
+             response->payload.s_ll.x, response->payload.s_ll.y,
+             response->payload.s_ur.x, response->payload.s_ur.y,
+             timespec_to_double(timespec_diff(compute_start_time, compute_end_time)));
+
+      total_compute_time = timespec_add(total_compute_time, 
+                                        timespec_diff(compute_start_time, compute_end_time));
+
       response->max_worker_id = size;
       response->worker_id = rank;
 
-      // send our rank to the coordinator so it can wait for our response
-      MPI_Ssend(&rank, 1, MPI_INT,
-		0, // to our coordinator (rank zero)
-		FRACTAL_MPI_RESPONSE_REQUEST,
-		MPI_COMM_WORLD);
-
-      // send the response back to the coordinator
+      MPI_Ssend(&rank, 1, MPI_INT, 0, FRACTAL_MPI_RESPONSE_REQUEST, MPI_COMM_WORLD);
       mpi_response_send(response);
 
-      // free stuff for this round
       free(response->values);
       free(response);
       free(payload);
     }
+    clock_gettime(CLOCK_MONOTONIC, &end_time);
+    total_time = timespec_diff(start_time, end_time);
+    
+    printf("[WORKER %d]: Total elapsed time for payload = %.6fs [Total compute time: %.6fs]\n", 
+           rank, 
+           timespec_to_double(total_time), 
+           timespec_to_double(total_compute_time));
   }
   return 0;
 }

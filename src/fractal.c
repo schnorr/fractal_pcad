@@ -104,12 +104,12 @@ payload_t **discretize_payload (payload_t *origin, int *length)
   return ret;
 }
 
-response_t *create_response_for_payload (payload_t *payload)
+create_response_return_t create_response_for_payload (payload_t *payload)
 {
-  if (!payload) return NULL;
+  if (!payload) return (create_response_return_t) {0};
   response_t *ret = calloc(1, sizeof(response_t));
   if (!ret) {
-    return NULL;
+    return (create_response_return_t) {0};
   }
   ret->payload = *payload;
   int screen_width = payload->s_ur.x - payload->s_ll.x;
@@ -124,6 +124,7 @@ response_t *create_response_for_payload (payload_t *payload)
 
   // TODO: sequencial solution for now
   //  payload_print(__func__, "compute", payload);
+  long long total_iterations = 0;
   int r = 0;
   for (int y = 0; y < screen_height; y++){
     for (int x = 0; x < screen_width; x++){
@@ -135,10 +136,14 @@ response_t *create_response_for_payload (payload_t *payload)
 	mandelbrot (fractal_current.real,
 		    fractal_current.imag,
 		    ret->payload.fractal_depth);
+      total_iterations += ret->values[r];
       r++;
     }
   }
-  return ret;
+  return (create_response_return_t) {
+    .response = ret,
+    .total_iterations = total_iterations
+  };
 }
 
 void payload_print (const char *func, const char *message, const payload_t *p)

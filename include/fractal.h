@@ -55,13 +55,18 @@ typedef struct {
   int *values; // there are granularity * granularity elements
 } response_t;
 
+typedef struct {
+  response_t *response; 
+  long long total_iterations;
+} create_response_return_t;
+
 void free_response(void* ptr); // custom free function for use in queue
 
 /* discretized a payload in several pieces, block-wise */
 payload_t **discretize_payload (payload_t *origin, int *length);
 
 /* encapsulate a response for a given payload */
-response_t *create_response_for_payload (payload_t *payload);
+create_response_return_t create_response_for_payload (payload_t *payload);
 
 /* print a payload */
 void payload_print (const char *func, const char *message, const payload_t *p);
