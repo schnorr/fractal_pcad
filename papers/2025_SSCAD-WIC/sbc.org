@@ -221,24 +221,85 @@ Coloque o resumo aqui.
 #+end_resumo
 
 ** Introduction
-
-This is just an example to show how Orgmode cite:orgmode can be
-neatly used to write papers following the SBC Article latex style. Feel
-free to modify and distributed this as you wish.
-
-Be aware that this example is compatible with OrgMode 9.*. Earlier or
-later OrgMode versions require minor modifications to the Makefile
-and/or ieee.org files.
-
-For a detailed explanation on why and how to write reproducible
-articles using OrgMode, please visit the following [[https://github.com/alegrand/RR_webinars/blob/master/1_replicable_article_laboratory_notebook/index.org][page]].
-
 ** Background and Experimental Context
 <<sec.context>>
 *** Background
 <<sec.background>>
 *** Experimental Context and Workload Details
 <<sec.setup>>
+** 
+** Experimental Methodology
+*** Hardware
+- cei, 6 nodes with 24 hw cores each (144 cores)
+*** Input parameters
+- Resolução 1920x1080 (FullHD)
+  
+- Granularidade [5, 10, 20, 40, 60, 120], que resultam em [82944,
+  20736, 5184, 1296, 576, 144] responses (Esses valores foram
+  escolhidos porque dividem a largura e altura exatamente). Talvez 5
+  seja baixo demais, já que quase 50% de um response é o payload.
+  
+- Número de núcleos 1:6 (saltos na quantidade de cores)
+  - Ajuster para a máquina
+  
+- Sobre as coordenadas, acho que a coordenada inicial
+  - easy, um ponto/zoom onde todas as coordenadas escapam rapidamente
+    (o laço iterativo que calculo o ponto termina com 1 ou 2 iterações)
+  - default -> [f_ll(-2, -1.125), f_ur(2, 1.125)] é uma boa, já que tem
+    vários pontos fáceis
+  e difíceis.
+  - hard -> Uma coordanada onde todo ponto é relativamente difícil
+    seria [f_ll(0.25012917440406966100,
+    0.0000022362858728693646947011080050658587),
+    f_ur(0.25012917440406976709,
+    0.0000022362858729754443477445676967781596)], que é bastante
+    profunda, e não tem muitos pontos que escapam. A profundidade máxima
+    poderia ser ajustada dependendo do tempo que vamos alocar aos
+    testes.
+
+- Talvez seja interessante ter um ponto relativemente fácil, mas não
+  tenho certeza.
+
+- Neste caso testaria mais a latência da comunicação
+  entre workers e o coordenador.
+*** Experimental Project
+
+
+#+begin_src R :results output :session *R* :exports both :noweb yes :colnames yes
+options(crayon.enabled=FALSE)
+library(DoE.base)
+library(tidyverse)
+
+fator_granularity = c(5, 10, 20, 40, 60, 120)
+fator_nodes = 1:6
+fator_coordinates = c("easy", "default", "hard")
+
+fac.design(nfactors = 3,
+           replications = 10,
+           repeat.only = FALSE,
+           randomize = TRUE,
+           seed=0,
+           nlevels=c(length(fator_granularity),
+                     length(fator_nodes),
+                     length(fator_coordinates)),
+           factor.names=list(
+             granularity = fator_granularity,
+             nodes = fator_nodes,
+             coordinates = fator_coordinates
+           )) |>
+  as_tibble() |>
+  mutate(resolution = '1920x1080') |>
+  mutate(depth = case_when(coordinates == "easy" ~ "X",
+                           coordinates == "default" ~ "Y",
+                           coordinates == "hard" ~ "Z")) |>
+  mutate_at(vars(granularity:depth), as.character) |>
+  select(granularity, nodes, coordinates, depth, resolution, Blocks) |>
+  write_csv("projeto_experimental_francisco.csv", progress=FALSE)
+#+end_src
+
+#+RESULTS:
+: creating full factorial with 108 runs ...
+
 ** Related Work and Motivation
 <<sec.relatedwork>>
 
