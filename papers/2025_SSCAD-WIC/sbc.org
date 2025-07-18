@@ -184,7 +184,6 @@ Financiamento:
 Copyright ©2025 XXVI SSCAD 2025 . All rights reserved. Powered by
 WordPress & Designed by Bizberg Themes
 
-
 * *The Paper*                                                       :ignore:
 ** Frontpage                                                        :ignore:
 
@@ -220,18 +219,36 @@ Put the abstract here.
 Coloque o resumo aqui.
 #+end_resumo
 
-** Introduction
-** Background and Experimental Context
-<<sec.context>>
-*** Background
-<<sec.background>>
-*** Experimental Context and Workload Details
-<<sec.setup>>
-** 
-** Experimental Methodology
-*** Hardware
+** Introduction                                                      :RA:KE:
+- Mandelbrot
+*** Related Work
+
+Example of citation:
+cite:schnorr2013visualizing
+
+Section [[sec.materials]] discusses all the materials and methods about
+our work, including the detailed description of the observerd system. 
+
+sol.sbc.org.br
+
+** Materials and Methods                                             :FR:LU:
+<<sec.materials>>
+*** Observed System
+**** General overview
+- A figure with the design, the threads
+  - The role of each thread
+**** Computational aspects
+- Workload discretization etc
+- MPI implementation
+*** Hardware & Software configuration
 - cei, 6 nodes with 24 hw cores each (144 cores)
-*** Input parameters
+- cei + software (mpi version, etc)
+  - guix https://guix.gnu.org
+    #+begin_src bash
+    guix shell openmpi
+    #+end_src
+*** Experimental Project
+**** Input parameters
 - Resolução 1920x1080 (FullHD)
   
 - Granularidade [5, 10, 20, 40, 60, 120], que resultam em [82944,
@@ -262,10 +279,14 @@ Coloque o resumo aqui.
 
 - Neste caso testaria mais a latência da comunicação
   entre workers e o coordenador.
-*** Experimental Project
+**** Observability (/aka/ Instrumentation Techniques)
+**** Design of Experiments (DoE)
+***** Text                                                       :ignore:
 
+Description of the design of experiments.
 
-#+begin_src R :results output :session *R* :exports both :noweb yes :colnames yes
+***** Code                                                     :noexport:
+#+begin_src R :results output :session *R* :exports none :noweb yes :colnames yes
 options(crayon.enabled=FALSE)
 library(DoE.base)
 library(tidyverse)
@@ -300,22 +321,19 @@ fac.design(nfactors = 3,
 #+RESULTS:
 : creating full factorial with 108 runs ...
 
-** Related Work and Motivation
-<<sec.relatedwork>>
-
-Check this paper cite:schnorr2013visualizing about how you need to
-semantically aggregate data.
-
-** Your Great Contribution to Computer Science
-<<sec.proposal>>
-** Your Super Results
+*** Evaluation procedure
+** Results
+<<sec.results>>
 ** Conclusion
+<<sec.conclusion>>
 ** Acknowledgments
 :PROPERTIES:
 :UNNUMBERED: t
 :END:
 
 Who paid for this?
+- PCAD
+- Scholarships
 
 ** References                                                        :ignore:
 
