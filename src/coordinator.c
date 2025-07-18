@@ -298,7 +298,7 @@ int main_worker(int argc, char* argv[])
       clock_gettime(CLOCK_MONOTONIC, &compute_end_time);
 
       response_t *response = response_result.response;
-      printf("[WORKER %d]: Computed %lld iterations for payload [ll(%d, %d), ur(%d, %d)] in %0.6fs]\n", 
+      printf("[WORKER %d PAYLOAD_LOG]: Computed %lld iterations for payload [ll(%d, %d), ur(%d, %d)] in %0.6fs]\n", 
              rank,
              response_result.total_iterations, 
              response->payload.s_ll.x, response->payload.s_ll.y,
@@ -321,7 +321,7 @@ int main_worker(int argc, char* argv[])
     clock_gettime(CLOCK_MONOTONIC, &end_time);
     total_time = timespec_diff(start_time, end_time);
     
-    printf("[WORKER %d]: Total elapsed time for payload = %.6fs [Total compute time: %.6fs]\n", 
+    printf("[WORKER %d FINAL_LOG]: Total elapsed time for payload = %.6fs [Total compute time: %.6fs]\n", 
            rank, 
            timespec_to_double(total_time), 
            timespec_to_double(total_compute_time));
