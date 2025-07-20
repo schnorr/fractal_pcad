@@ -40,8 +40,6 @@ static void queue_grow(queue_t *q) {
     size_t old_size = q->buffer_size;
     size_t new_size = ((old_size - 1) * 2) + 1;
 
-    printf("Queue capacity %ld -> %ld\n", old_size - 1, new_size -1);
-
     void **new_queue = malloc(sizeof(void*) * new_size);
     if (new_queue == NULL) {
         perror("malloc failed.");

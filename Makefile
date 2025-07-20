@@ -1,9 +1,13 @@
 # your raylib location here
 RAYLIB=/usr
 
+ifndef LOG_LEVEL
+LOG_LEVEL = LOG_BASIC
+endif
+
 CC = gcc
 MPICC = mpicc
-CFLAGS = -I$(RAYLIB)/include -Wall -Wextra -Iinclude -pthread -g -fsanitize=address
+CFLAGS = -I$(RAYLIB)/include -Wall -Wextra -Iinclude -pthread -g -fsanitize=address -DLOG_LEVEL=$(LOG_LEVEL)
 
 SRC_DIR = src
 OBJ_DIR = obj

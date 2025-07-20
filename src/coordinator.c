@@ -31,6 +31,7 @@ along with "Fractal @ PCAD". If not, see
 #include "queue.h"
 #include "mpi_comm.h"
 #include "timing.h"
+#include "logging.h"
 
 static queue_t incoming_payload_queue;  // Raw payloads from network
 static queue_t payload_to_workers_queue; // Discretized payloads for workers
@@ -38,7 +39,6 @@ static queue_t response_queue;
 
 pthread_mutex_t latest_generation_mutex = PTHREAD_MUTEX_INITIALIZER;
 int latest_generation = PAYLOAD_GENERATION_DONE;
-
 
 /*
   net_thread_receive_payload: the sole goal is to receive one payload
@@ -281,35 +281,52 @@ int main_worker(int argc, char* argv[])
 
   while (1) { // Loop through rounds of work
     MPI_Barrier(MPI_COMM_WORLD); // Synchronize all workers and coordinator
+    
+#if LOG_LEVEL >= LOG_BASIC
+    long total_iterations = 0;
     struct timespec total_time = {0}, total_compute_time = {0};
     struct timespec start_time, end_time, compute_start_time, compute_end_time;
     clock_gettime(CLOCK_MONOTONIC, &start_time);
+#endif
     
     while (1) { // Loop through individual payloads
       // Send rank and receive payload
       MPI_Ssend(&rank, 1, MPI_INT, 0, FRACTAL_MPI_PAYLOAD_REQUEST, MPI_COMM_WORLD);
       payload_t *payload = mpi_payload_receive(0);
 
-      if (payload->generation == -1) { // Poison pill, signal worker done
+      if (payload->generation == PAYLOAD_GENERATION_DONE) { // Poison pill, signal worker done
         free(payload);
         MPI_Ssend(&rank, 1, MPI_INT, 0, FRACTAL_MPI_RESPONSE_REQUEST, MPI_COMM_WORLD);
         mpi_response_send(&done_flag);
         break;
       }
 
+#if LOG_LEVEL >= LOG_BASIC
       clock_gettime(CLOCK_MONOTONIC, &compute_start_time);
+#endif
+
       create_response_return_t response_result = create_response_for_payload(payload);
+
+#if LOG_LEVEL >= LOG_BASIC
       clock_gettime(CLOCK_MONOTONIC, &compute_end_time);
+#endif
 
       response_t *response = response_result.response;
-      printf("[WORKER %d PAYLOAD_LOG]: Computed %d depth values in %lld iterations in %0.9fs]\n", 
+
+#if LOG_LEVEL >= LOG_BASIC
+#if LOG_LEVEL >= LOG_FULL
+      printf("[WORKER_%d]: Computed %d values (%lld iter.) in %0.9fs]\n", 
              rank,
              response->payload.granularity * response->payload.granularity,
              response_result.total_iterations, 
              timespec_to_double(timespec_diff(compute_start_time, compute_end_time)));
+#endif // LOG_FULL
 
       total_compute_time = timespec_add(total_compute_time, 
                                         timespec_diff(compute_start_time, compute_end_time));
+      total_iterations += response_result.total_iterations;
+
+#endif // LOG_BASIC
 
       response->max_worker_id = size;
       response->worker_id = rank;
@@ -321,13 +338,17 @@ int main_worker(int argc, char* argv[])
       free(response);
       free(payload);
     }
+
+#if LOG_LEVEL >= LOG_BASIC
     clock_gettime(CLOCK_MONOTONIC, &end_time);
     total_time = timespec_diff(start_time, end_time);
-    
-    printf("[WORKER %d FINAL_LOG]: Total elapsed time for payload = %.9fs [Total compute time: %.9fs]\n", 
+
+    printf("[WORKER_%d]: Time = %.9fs | Compute = %.9fs | Iterations = %ld\n", 
            rank, 
            timespec_to_double(total_time), 
-           timespec_to_double(total_compute_time));
+           timespec_to_double(total_compute_time),
+           total_iterations);
+#endif
   }
   return 0;
 }

@@ -31,6 +31,7 @@ along with "Fractal @ PCAD". If not, see
 #include "fractal.h"
 #include "connection.h"
 #include "queue.h"
+#include "logging.h"
 
 atomic_int shutdown_requested;
 
@@ -145,7 +146,6 @@ void *net_thread_send_payload (void *arg)
     free(payload);
 
     if (shutdown_coordinator) {
-      printf("Sent shutdown payload to coordinator.\n");
       request_shutdown(connection);
       break;
     }
@@ -256,27 +256,33 @@ int main(int argc, char* argv[])
   int amount_y = (payload->s_ur.y - 1  + payload->granularity-1) / payload->granularity;
   int expected_responses = amount_x * amount_y;
 
+#if LOG_LEVEL >= LOG_BASIC
   struct timespec start_time, first_response_time, end_time;
-  
   clock_gettime(CLOCK_MONOTONIC, &start_time);
+#endif
+
   queue_enqueue(&payload_queue, payload);
   payload = NULL;
 
   response_t *response = (response_t *)queue_dequeue(&response_queue);
   free_response(response);
-  clock_gettime(CLOCK_MONOTONIC, &first_response_time);
 
+#if LOG_LEVEL >= LOG_BASIC
+  clock_gettime(CLOCK_MONOTONIC, &first_response_time);
+#endif
 
   for (int i = 1; i < expected_responses; i++) {
     response = (response_t *)queue_dequeue(&response_queue);
     free_response(response);
   }
-  clock_gettime(CLOCK_MONOTONIC, &end_time);
 
+#if LOG_LEVEL >= LOG_BASIC
+  clock_gettime(CLOCK_MONOTONIC, &end_time);
   printf("[CLIENT_LOG] Time to dequeue first response: %.9fs\n", 
          timespec_to_double(timespec_diff(start_time, first_response_time)));
   printf("[CLIENT_LOG] Time to dequeue all responses: %.9fs\n", 
          timespec_to_double(timespec_diff(start_time, end_time)));
+#endif
 
   payload_t *poison = calloc(1, sizeof(payload_t));
   poison->generation = PAYLOAD_GENERATION_SHUTDOWN;
