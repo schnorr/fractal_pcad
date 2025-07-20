@@ -47,6 +47,10 @@ typedef struct {
   screen_coord_t s_ur; // the screen upper-right corner
 } payload_t;
 
+// Special poison pill payloads
+#define PAYLOAD_GENERATION_DONE -1 // Signals to workers that the current round is done
+#define PAYLOAD_GENERATION_SHUTDOWN -2 // Signals that the coordinator is shutting down
+
 /* the response obtained from the coordinator */
 typedef struct {
   payload_t payload; // the origin of this response

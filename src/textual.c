@@ -27,6 +27,7 @@ along with "Fractal @ PCAD". If not, see
 #include <sys/types.h>
 #include <signal.h>
 #include <stdatomic.h>
+#include "timing.h"
 #include "fractal.h"
 #include "connection.h"
 #include "queue.h"
@@ -57,6 +58,7 @@ void request_shutdown(int connection){
   new generation. This payload must then be queued in the
   payload_queue using the queue_enqueue function.
 */
+/*
 void *ui_thread_function () {
   static int generation = 0;
   //This action is guided by the user
@@ -97,7 +99,8 @@ void *ui_thread_function () {
 
   pthread_exit(NULL);
 }
-
+*/
+/*
 void *render_thread_function () {
   // This action is guided by the responses from the coordinator
 
@@ -118,13 +121,16 @@ void *render_thread_function () {
 
   pthread_exit(NULL);
 }
+*/
 
 void *net_thread_send_payload (void *arg)
 {
   int connection = *(int *)arg;
   while(!atomic_load(&shutdown_requested)) {
     payload_t *payload = (payload_t *)queue_dequeue(&payload_queue);
-    if (payload == NULL) break; // Poison pill
+    if (payload == NULL) break; 
+
+    bool shutdown_coordinator = (payload->generation == PAYLOAD_GENERATION_SHUTDOWN);
     
     if (send(connection, payload, sizeof(*payload), 0) <= 0) {
       fprintf(stderr, "Send failed. Killing thread...\n");
@@ -137,6 +143,12 @@ void *net_thread_send_payload (void *arg)
 #endif
 
     free(payload);
+
+    if (shutdown_coordinator) {
+      printf("Sent shutdown payload to coordinator.\n");
+      request_shutdown(connection);
+      break;
+    }
   }
 
   pthread_exit(NULL);
@@ -185,12 +197,39 @@ void *net_thread_receive_response (void *arg)
   pthread_exit(NULL);
 }
 
+payload_t *parse_args(int argc, char *argv[])
+{
+  if (argc != 11) {
+    fprintf(stderr, "Wrong format. Format:\n"
+      "%s <host> <port> <granularity> <fractal_depth> "
+      "<screen width> <screen height> "
+      "<ll_real> <ll_imag> <ur_real> <ur_imag>\n", argv[0]);
+    exit(1);
+  }
+
+  payload_t *payload = malloc(sizeof(payload_t));
+  if (payload == NULL) {
+    fprintf(stderr, "malloc failed.\n");
+    exit(1);
+  }
+  payload->generation = 1;
+  payload->granularity = atoi(argv[3]);
+  payload->fractal_depth = atoi(argv[4]);
+  payload->s_ll.x = 0;
+  payload->s_ll.y = 0;
+  payload->s_ur.x = atoi(argv[5]);
+  payload->s_ur.y = atoi(argv[6]);
+  payload->ll.real = strtold(argv[7], NULL);
+  payload->ll.imag = strtold(argv[8], NULL);
+  payload->ur.real = strtold(argv[9], NULL);
+  payload->ur.imag = strtold(argv[10], NULL);
+
+  return payload;
+}
+
 int main(int argc, char* argv[])
 {
-  if (argc != 3) {
-    printf("Missing arguments. Format:\n%s <host> <port>\n", argv[0]);
-    return 1;
-  }
+  payload_t *payload = parse_args(argc, argv);
 
   atomic_init(&shutdown_requested, 0);
   signal(SIGPIPE, SIG_IGN); // Ignore SIGPIPE (failed send)
@@ -200,30 +239,53 @@ int main(int argc, char* argv[])
 
   int connection = open_connection(argv[1], atoi(argv[2]));
 
-  pthread_t ui_thread = 0;
-  pthread_t render_thread = 0;
+  //pthread_t ui_thread = 0;
+  //pthread_t render_thread = 0;
   pthread_t payload_thread = 0;
   pthread_t response_thread = 0;
 
-  pthread_create(&ui_thread, NULL, ui_thread_function, NULL);
-  pthread_create(&render_thread, NULL, render_thread_function, NULL);
+  //pthread_create(&ui_thread, NULL, ui_thread_function, NULL);
+  //pthread_create(&render_thread, NULL, render_thread_function, NULL);
   pthread_create(&payload_thread, NULL, net_thread_send_payload, &connection);
   pthread_create(&response_thread, NULL, net_thread_receive_response, &connection);
 
-  char input[64];
-  while (!atomic_load(&shutdown_requested)){
-    if (fgets(input, sizeof(input), stdin) == NULL){
-      request_shutdown(connection);
-      break;
-    }
-    input[strcspn(input, "\n")] = '\0';
-    if (strcmp(input, "quit") == 0 || strcmp(input, "exit") == 0) {
-      request_shutdown(connection);
-    }
-  }
+  // send payload to coordinator, wait for all responses
+  // then send poison pill to coordinator, shut down
 
-  pthread_join(ui_thread, NULL);
-  pthread_join(render_thread, NULL);
+  int amount_x = (payload->s_ur.x - 1  + payload->granularity-1) / payload->granularity;
+  int amount_y = (payload->s_ur.y - 1  + payload->granularity-1) / payload->granularity;
+  int expected_responses = amount_x * amount_y;
+
+  struct timespec start_time, first_response_time, end_time;
+  
+  clock_gettime(CLOCK_MONOTONIC, &start_time);
+  queue_enqueue(&payload_queue, payload);
+  payload = NULL;
+
+  response_t *response = (response_t *)queue_dequeue(&response_queue);
+  free_response(response);
+  clock_gettime(CLOCK_MONOTONIC, &first_response_time);
+
+
+  for (int i = 1; i < expected_responses; i++) {
+    response = (response_t *)queue_dequeue(&response_queue);
+    free_response(response);
+  }
+  clock_gettime(CLOCK_MONOTONIC, &end_time);
+
+  printf("[CLIENT_LOG] Time to dequeue first response: %.9fs\n", 
+         timespec_to_double(timespec_diff(start_time, first_response_time)));
+  printf("[CLIENT_LOG] Time to dequeue all responses: %.9fs\n", 
+         timespec_to_double(timespec_diff(start_time, end_time)));
+
+  payload_t *poison = calloc(1, sizeof(payload_t));
+  poison->generation = PAYLOAD_GENERATION_SHUTDOWN;
+
+  queue_enqueue(&payload_queue, poison); // shut down coordinator and client
+  poison = NULL;
+
+  //pthread_join(ui_thread, NULL);
+  //pthread_join(render_thread, NULL);
   pthread_join(payload_thread, NULL);
   pthread_join(response_thread, NULL);
 

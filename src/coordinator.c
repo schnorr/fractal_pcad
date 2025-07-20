@@ -37,7 +37,7 @@ static queue_t payload_to_workers_queue; // Discretized payloads for workers
 static queue_t response_queue;
 
 pthread_mutex_t latest_generation_mutex = PTHREAD_MUTEX_INITIALIZER;
-int latest_generation = -1;
+int latest_generation = PAYLOAD_GENERATION_DONE;
 
 
 /*
@@ -69,6 +69,9 @@ void *net_thread_receive_payload(void *arg)
 #ifdef PAYLOAD_DEBUG
     payload_print(__func__, "received payload", payload);
 #endif
+
+    bool coordinator_shutdown = (payload->generation == PAYLOAD_GENERATION_SHUTDOWN);
+    if (coordinator_shutdown) continue; // TODO: shutdown sequence
 
     queue_clear(&payload_to_workers_queue);
     queue_clear(&incoming_payload_queue);
@@ -111,7 +114,7 @@ void *main_thread_mpi_recv_responses ()
       if (response->payload.generation == latest_generation) {
         queue_enqueue(&response_queue, response);
       } else {
-        if (response->payload.generation == -1) {
+        if (response->payload.generation == PAYLOAD_GENERATION_DONE) {
           workers_done++;
         }
         free(response->values);
@@ -125,8 +128,8 @@ void *main_thread_mpi_recv_responses ()
 
 void *main_thread_mpi_send_payloads ()
 {
-  payload_t done_flag; // This payload will be sent to workers to signal end of current round
-  done_flag.generation = -1;
+  payload_t done_flag = {0}; // This payload will be sent to workers to signal end of current round
+  done_flag.generation = PAYLOAD_GENERATION_DONE;
 
   int world_size;
   MPI_Comm_size(MPI_COMM_WORLD, &world_size);
@@ -269,7 +272,7 @@ int main_coordinator(int argc, char* argv[])
 int main_worker(int argc, char* argv[])
 {
   response_t done_flag = {0};
-  done_flag.payload.generation = -1;
+  done_flag.payload.generation = PAYLOAD_GENERATION_DONE;
 
   int rank, size;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
