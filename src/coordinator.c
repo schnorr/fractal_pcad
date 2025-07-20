@@ -26,20 +26,19 @@ along with "Fractal @ PCAD". If not, see
 #include <mpi.h>
 #include <sys/time.h>
 #include <signal.h>
-#include <stdatomic.h>
 #include "fractal.h"
 #include "connection.h"
 #include "queue.h"
 #include "mpi_comm.h"
 #include "timing.h"
 
-static payload_t *newest_payload = NULL;
-static atomic_int latest_generation = ATOMIC_VAR_INIT(-1);
-static pthread_mutex_t newest_payload_mutex;
-static pthread_cond_t new_payload_cond;
-
-// Queue for responses to be sent to the grafica client
+static queue_t incoming_payload_queue;  // Raw payloads from network
+static queue_t payload_to_workers_queue; // Discretized payloads for workers
 static queue_t response_queue;
+
+pthread_mutex_t latest_generation_mutex = PTHREAD_MUTEX_INITIALIZER;
+int latest_generation = -1;
+
 
 /*
   net_thread_receive_payload: the sole goal is to receive one payload
@@ -71,14 +70,9 @@ void *net_thread_receive_payload(void *arg)
     payload_print(__func__, "received payload", payload);
 #endif
 
-    pthread_mutex_lock(&newest_payload_mutex);
-    if (newest_payload) {
-        free(newest_payload);
-    }
-    newest_payload = payload;
-    atomic_store(&latest_generation, payload->generation);
-    pthread_cond_signal(&new_payload_cond);  // Wake up MPI thread
-    pthread_mutex_unlock(&newest_payload_mutex);
+    queue_clear(&payload_to_workers_queue);
+    queue_clear(&incoming_payload_queue);
+    queue_enqueue(&incoming_payload_queue, payload);
   }
   pthread_exit(NULL);
 }
@@ -114,7 +108,7 @@ void *main_thread_mpi_recv_responses ()
       MPI_Recv(&worker, 1, MPI_INT, MPI_ANY_SOURCE, FRACTAL_MPI_RESPONSE_REQUEST, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
       response_t *response = mpi_response_receive(worker);
-      if (response->payload.generation == atomic_load(&latest_generation)) {
+      if (response->payload.generation == latest_generation) {
         queue_enqueue(&response_queue, response);
       } else {
         if (response->payload.generation == -1) {
@@ -138,22 +132,11 @@ void *main_thread_mpi_send_payloads ()
   MPI_Comm_size(MPI_COMM_WORLD, &world_size);
   int num_workers = world_size - 1;
 
-  queue_t payload_to_workers_queue;
-  queue_init(&payload_to_workers_queue, 65536, free);
-
   while (1) { // Loop through rounds of work
-    // Wait for a new payload to be received
-    pthread_mutex_lock(&newest_payload_mutex);
-    while (newest_payload == NULL) {
-        pthread_cond_wait(&new_payload_cond, &newest_payload_mutex);
-    }
-    payload_t *current_payload = newest_payload;
-    newest_payload = NULL;  // Clear for next payload
-    pthread_mutex_unlock(&newest_payload_mutex);
-        
-    queue_clear(&payload_to_workers_queue);
-    compute_create_blocks(current_payload, &payload_to_workers_queue);
-    free(current_payload);
+    payload_t *new_payload = (payload_t *)queue_dequeue(&incoming_payload_queue);
+    if (new_payload == NULL) break; // shutdown
+
+    compute_create_blocks(new_payload, &payload_to_workers_queue);
 
     MPI_Barrier(MPI_COMM_WORLD);
 
@@ -163,19 +146,16 @@ void *main_thread_mpi_send_payloads ()
       MPI_Recv(&worker, 1, MPI_INT, MPI_ANY_SOURCE, FRACTAL_MPI_PAYLOAD_REQUEST, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
       payload_t *payload = queue_try_dequeue(&payload_to_workers_queue); // Non blocking dequeue
-      if (payload) {
-        if (payload->generation == atomic_load(&latest_generation)) {
-          mpi_payload_send(payload, worker);
-        }
+      if (payload){
+        latest_generation = payload->generation;
+        mpi_payload_send(payload, worker);
         free(payload);
       } else {
-        mpi_payload_send(&done_flag, worker);
         workers_done++;
+        mpi_payload_send(&done_flag, worker);
       }
     }
   }
-
-  queue_destroy(&payload_to_workers_queue);
 
   pthread_exit(NULL);
 }
@@ -241,6 +221,8 @@ int main_coordinator(int argc, char* argv[])
   socklen_t client_len = sizeof(client_addr);
   int socket = open_server_socket(atoi(argv[1]));
 
+  queue_init(&incoming_payload_queue, 1, free);
+  queue_init(&payload_to_workers_queue, 65536, free);
   queue_init(&response_queue, 65536, free_response);
   
   pthread_t mpi_send = 0;
@@ -265,6 +247,8 @@ int main_coordinator(int argc, char* argv[])
     pthread_join(response_send_thread, NULL);
     printf("TCP connection lost. Awaiting new connection...\n");
 
+    queue_clear(&incoming_payload_queue);
+    queue_clear(&payload_to_workers_queue);
     queue_clear(&response_queue);
 
     close(connection);
@@ -276,6 +260,8 @@ int main_coordinator(int argc, char* argv[])
   shutdown(socket, SHUT_RDWR);
   close(socket);
   
+  queue_destroy(&incoming_payload_queue);
+  queue_destroy(&payload_to_workers_queue);
   queue_destroy(&response_queue);
   return 0;
 }
