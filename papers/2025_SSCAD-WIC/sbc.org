@@ -195,16 +195,15 @@ WordPress & Designed by Bizberg Themes
 \title{\orgtitle}
 
 \author{
-   Lucas Mello Schnorr\inst{1},
-   Somebody Else\inst{2}}
+Francisco Pegoraro Etcheverria\inst{1},
+Lucas Mello Schnorr\inst{1},
+Rayan Raddatz de Matos\inst{1},\\
+Kenichi Brumati\inst{1}}
 
 \address{
    Institute of Informatics, Federal University of Rio Grande do Sul (UFRGS)\\
    Caixa Postal 15.064 -- 91.501-970 -- Porto Alegre -- RS -- Brazil
-   \nextinstitute
-   Somebody else's Institution,
-   Adress --  Brazil
-   \email{schnorr@inf.ufrgs.br}}
+   \email{\{francisco.etcheverria, schnorr, rayan.raddatz, kenichi.brumati\}@inf.ufrgs.br}}
 #+END_EXPORT
 
 #+LaTeX: \maketitle
@@ -220,16 +219,19 @@ Coloque o resumo aqui.
 #+end_resumo
 
 ** Introduction                                                      :RA:KE:
+
+*Context*
 - Mandelbrot
-*** Related Work
+- Load Balancing
 
-Example of citation:
-cite:schnorr2013visualizing
+*What is this work?*
+- What we will do about the things we introduced?
 
-Section [[sec.materials]] discusses all the materials and methods about
-our work, including the detailed description of the observerd system. 
-
-sol.sbc.org.br
+This paper is organized as follow. Section [[sec.materials]] discusses all
+the materials and methods about our work, including the detailed
+description of the observerd system. Section [[sec.results]] present the
+results of ours experiments. Finally, Section [[sec.conclusion]] concludes
+this works.
 
 ** Materials and Methods                                             :FR:LU:
 <<sec.materials>>
@@ -250,15 +252,15 @@ sol.sbc.org.br
 *** Experimental Project
 **** Input parameters
 - Resolução 1920x1080 (FullHD)
-  
+
 - Granularidade [5, 10, 20, 40, 60, 120], que resultam em [82944,
   20736, 5184, 1296, 576, 144] responses (Esses valores foram
   escolhidos porque dividem a largura e altura exatamente). Talvez 5
   seja baixo demais, já que quase 50% de um response é o payload.
-  
+
 - Número de núcleos 1:6 (saltos na quantidade de cores)
   - Ajuster para a máquina
-  
+
 - Sobre as coordenadas, acho que a coordenada inicial
   - easy, um ponto/zoom onde todas as coordenadas escapam rapidamente
     (o laço iterativo que calculo o ponto termina com 1 ou 2 iterações)
