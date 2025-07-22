@@ -407,7 +407,7 @@ int main_worker(int argc, char* argv[])
 
 #if LOG_LEVEL >= LOG_BASIC
     if (payload->generation == PAYLOAD_GENERATION_DONE) {
-      fprintf(stdout, "[WORKER_%d]: %.9fs computing fractal | %lldpx | %lld iter.\n", 
+      fprintf(stdout, "[WORKER_%d]: %.9fs total spent computing responses | %lldpx | %lld iter.\n", 
               rank, 
               timespec_to_double(total_compute_time),
               total_pixels,
@@ -435,7 +435,7 @@ int main_worker(int argc, char* argv[])
 
 #if LOG_LEVEL >= LOG_BASIC
 #if LOG_LEVEL >= LOG_FULL
-      printf("[WORKER_%d]: %.9f spent computing responses | %dpx | %lld iter.\n", 
+      printf("[WORKER_%d]: %.9fs spent computing response | %dpx | %lld iter.\n", 
              rank,
              timespec_to_double(timespec_diff(compute_start_time, compute_end_time)),
              response->payload.granularity * response->payload.granularity,
