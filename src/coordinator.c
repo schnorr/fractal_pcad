@@ -155,6 +155,7 @@ void *compute_create_blocks()
       payload_vector[i] = NULL; //transfer ownership to the queue
     }
     free(payload_vector); //no longer necessary as all members have been queued
+    free(newest_payload);
     newest_payload = NULL; // Ownership transferred to queue
     pthread_mutex_unlock(&newest_payload_mutex);
   }
