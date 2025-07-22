@@ -130,8 +130,6 @@ void *net_thread_send_payload (void *arg)
   while(!atomic_load(&shutdown_requested)) {
     payload_t *payload = (payload_t *)queue_dequeue(&payload_queue);
     if (payload == NULL) break; 
-
-    bool shutdown_coordinator = (payload->generation == PAYLOAD_GENERATION_SHUTDOWN);
     
     if (send(connection, payload, sizeof(*payload), 0) <= 0) {
       fprintf(stderr, "Send failed. Killing thread...\n");
@@ -144,11 +142,6 @@ void *net_thread_send_payload (void *arg)
 #endif
 
     free(payload);
-
-    if (shutdown_coordinator) {
-      request_shutdown(connection);
-      break;
-    }
   }
 
   pthread_exit(NULL);
@@ -289,11 +282,13 @@ int main(int argc, char* argv[])
 
   queue_enqueue(&payload_queue, poison); // shut down coordinator and client
   poison = NULL;
-
+  
+  pthread_join(response_thread, NULL); // Response thread exits first when coordinator shuts down
+  request_shutdown(connection);
+  pthread_join(payload_thread, NULL);
   //pthread_join(ui_thread, NULL);
   //pthread_join(render_thread, NULL);
-  pthread_join(payload_thread, NULL);
-  pthread_join(response_thread, NULL);
+  
 
   close(connection);
 
