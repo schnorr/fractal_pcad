@@ -435,7 +435,7 @@ int main_worker(int argc, char* argv[])
 
 #if LOG_LEVEL >= LOG_BASIC
 #if LOG_LEVEL >= LOG_FULL
-      printf("[WORKER_%d]: %.9f computing payload | %dpx | %lld iter.\n", 
+      printf("[WORKER_%d]: %.9f spent computing responses | %dpx | %lld iter.\n", 
              rank,
              timespec_to_double(timespec_diff(compute_start_time, compute_end_time)),
              response->payload.granularity * response->payload.granularity,
