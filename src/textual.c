@@ -59,7 +59,6 @@ void request_shutdown(int connection){
   new generation. This payload must then be queued in the
   payload_queue using the queue_enqueue function.
 */
-/*
 void *ui_thread_function () {
   static int generation = 0;
   //This action is guided by the user
@@ -100,8 +99,7 @@ void *ui_thread_function () {
 
   pthread_exit(NULL);
 }
-*/
-/*
+
 void *render_thread_function () {
   // This action is guided by the responses from the coordinator
 
@@ -122,7 +120,6 @@ void *render_thread_function () {
 
   pthread_exit(NULL);
 }
-*/
 
 void *net_thread_send_payload (void *arg)
 {
@@ -242,9 +239,9 @@ int main(int argc, char* argv[])
   pthread_create(&payload_thread, NULL, net_thread_send_payload, &connection);
   pthread_create(&response_thread, NULL, net_thread_receive_response, &connection);
 
+  // Instead of using ui_thread and render_thread, we directly
   // send payload to coordinator, wait for all responses
-  // then send poison pill to coordinator, shut down
-
+  // then send poison pill to coordinator and shut down
   int amount_x = (payload->s_ur.x - 1  + payload->granularity-1) / payload->granularity;
   int amount_y = (payload->s_ur.y - 1  + payload->granularity-1) / payload->granularity;
   int expected_responses = amount_x * amount_y;
