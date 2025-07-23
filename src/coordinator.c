@@ -336,6 +336,8 @@ int main_coordinator(int argc, char* argv[])
   printf("%s: \t There are %d workers\n", argv[0], size-1);
 
   signal(SIGPIPE, SIG_IGN); // ignoring SIGPIPE (failed send)
+
+  MPI_Barrier(MPI_COMM_WORLD); // Wait for all mpi workers to be ready before accepting connections
   
   struct sockaddr_in client_addr; // client ip address after connect
   socklen_t client_len = sizeof(client_addr);
@@ -394,6 +396,8 @@ int main_worker(int argc, char* argv[])
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   printf("%s: Worker (rank %d) with %d arguments\n", argv[0], rank, argc);
+
+  MPI_Barrier(MPI_COMM_WORLD); // Sync with coordinator before starting
 
 #if LOG_LEVEL >= LOG_BASIC
   long long total_iterations = 0;
