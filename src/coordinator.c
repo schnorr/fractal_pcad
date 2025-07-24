@@ -46,6 +46,9 @@ static queue_t payload_to_workers_queue;
 static queue_t response_queue;
 
 #if LOG_LEVEL >= LOG_BASIC
+// These variables measure time spent on each payload.
+// It is assumed that the user will not interrupt a payload 
+// with another during processing when logging times
 static struct timespec payload_received_time;
 static struct timespec first_response_sent_time;
 static struct timespec last_response_sent_time;
@@ -53,6 +56,9 @@ static struct timespec payload_discretized_time;
 static struct timespec first_response_received_time;
 static struct timespec last_response_received_time;
 int expected_payloads;
+int responses_received_from_workers = 0;
+int payloads_sent_to_workers = 0;
+int responses_sent_to_client = 0;
 #endif
 
 /*
@@ -145,6 +151,9 @@ void *compute_create_blocks()
             timespec_to_double(timespec_diff(payload_received_time, payload_discretized_time)),
             length);
     expected_payloads = length;
+    responses_received_from_workers = 0;
+    responses_sent_to_client = 0;
+    payloads_sent_to_workers = 0;
 #endif
 
     for (i = 0; i < length; i++){
@@ -164,10 +173,6 @@ void *compute_create_blocks()
 
 void *main_thread_mpi_recv_responses ()
 {
-#if LOG_LEVEL >= LOG_BASIC
-  int responses_received = 0;
-#endif
-
   while(1) {
     int worker;
     
@@ -181,17 +186,16 @@ void *main_thread_mpi_recv_responses ()
     response_t *response = mpi_response_receive (worker);
 
 #if LOG_LEVEL >= LOG_BASIC
-    responses_received++;
-    if (responses_received == 1) {
+    responses_received_from_workers++;
+    if (responses_received_from_workers == 1) {
       clock_gettime(CLOCK_MONOTONIC, &first_response_received_time);
       fprintf(stdout, "[MPI_RECV]: t=%.9fs First response received from worker.\n", 
         timespec_to_double(timespec_diff(payload_received_time, first_response_received_time)));
-    } else if (responses_received == expected_payloads) {
+    } else if (responses_received_from_workers == expected_payloads) {
       clock_gettime(CLOCK_MONOTONIC, &last_response_received_time);
       fprintf(stdout, "[MPI_RECV]: t=%.9fs Received all %d responses.\n", 
         timespec_to_double(timespec_diff(payload_received_time, last_response_received_time)),
-        responses_received);
-      responses_received = 0;
+        responses_received_from_workers);
     }
 #endif
 
@@ -222,7 +226,6 @@ void *main_thread_mpi_send_payloads ()
   done_flag.generation = PAYLOAD_GENERATION_DONE;
   int world_size;
   MPI_Comm_size(MPI_COMM_WORLD, &world_size);
-  int payloads_sent= 0;
 #endif
 
   while(1) {
@@ -245,8 +248,8 @@ void *main_thread_mpi_send_payloads ()
     payload = NULL;    
 
 #if LOG_LEVEL >= LOG_BASIC
-    payloads_sent++;
-    if (payloads_sent == expected_payloads) {
+    payloads_sent_to_workers++;
+    if (payloads_sent_to_workers == expected_payloads) {
       for (int i = 1; i < world_size; i++) {
         MPI_Recv(&worker, 1, MPI_INT,
 	        i, // receive request from worker i
@@ -254,7 +257,6 @@ void *main_thread_mpi_send_payloads ()
 	        MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         mpi_payload_send(&done_flag, i); // Signal it to print times
       }
-      payloads_sent = 0;
     }
 #endif
 
@@ -266,9 +268,6 @@ void *main_thread_mpi_send_payloads ()
 void *net_thread_send_response(void *arg)
 {
   int connection = *(int *)arg;
-#if LOG_LEVEL >= LOG_BASIC
-  int responses_sent = 0;
-#endif
   while(1) {
     response_t *response = (response_t *)queue_dequeue(&response_queue);
     if (response == NULL) break; // poison pill
@@ -297,17 +296,16 @@ void *net_thread_send_response(void *arg)
     }
   
 #if LOG_LEVEL >= LOG_BASIC
-    responses_sent++;
-    if (responses_sent == 1) {
+    responses_sent_to_client++;
+    if (responses_sent_to_client == 1) {
       clock_gettime(CLOCK_MONOTONIC, &first_response_sent_time);
       fprintf(stdout, "[NET_SEND]: t=%.9fs First response sent.\n", 
         timespec_to_double(timespec_diff(payload_received_time, first_response_sent_time)));
-    } else if (responses_sent == expected_payloads) {
+    } else if (responses_sent_to_client == expected_payloads) {
       clock_gettime(CLOCK_MONOTONIC, &last_response_sent_time);
       fprintf(stdout, "[NET_SEND]: t=%.9fs Sent all %d responses.\n", 
         timespec_to_double(timespec_diff(payload_received_time, last_response_sent_time)),
-        responses_sent);
-      responses_sent = 0;
+        responses_sent_to_client);
     }
 #endif 
 
@@ -424,12 +422,8 @@ int main_worker(int argc, char* argv[])
       total_compute_time = (struct timespec) {0};
       continue;
     }
-#endif
-
-#if LOG_LEVEL >= LOG_BASIC
     clock_gettime(CLOCK_MONOTONIC, &compute_start_time);
 #endif
-
     create_response_return_t response_result = create_response_for_payload(payload);
 
 #if LOG_LEVEL >= LOG_BASIC
