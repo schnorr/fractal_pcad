@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # -*- mode: org -*-
 
-#+TITLE: Article Title
-#+AUTHOR: Lucas Mello Schnorr
+#+TITLE: Load Balancing Mandelbrot Article
+#+AUTHOR: Lucas Mello Schnorr, Francisco Pegoraro Etcheverria, Rayan Raddatz de Matos, Kenichi Brumati
 
 #+STARTUP: overview indent
 #+LANGUAGE: en
@@ -191,19 +191,20 @@ WordPress & Designed by Bizberg Themes
 \makeatletter
 \let\orgtitle\@title
 \makeatother
-
 \title{\orgtitle}
 
 \author{
 Francisco Pegoraro Etcheverria\inst{1},
 Lucas Mello Schnorr\inst{1},
 Rayan Raddatz de Matos\inst{1},\\
-Kenichi Brumati\inst{1}}
+Kenichi Brumati\inst{1}
+}
 
 \address{
    Institute of Informatics, Federal University of Rio Grande do Sul (UFRGS)\\
    Caixa Postal 15.064 -- 91.501-970 -- Porto Alegre -- RS -- Brazil
-   \email{\{francisco.etcheverria, schnorr, rayan.raddatz, kenichi.brumati\}@inf.ufrgs.br}}
+   \email{\{francisco.etcheverria, schnorr, rayan.raddatz, kenichi.brumati\}@inf.ufrgs.br}
+   }
 #+END_EXPORT
 
 #+LaTeX: \maketitle
@@ -220,18 +221,39 @@ Coloque o resumo aqui.
 
 ** Introduction                                                      :RA:KE:
 
-*Context*
-- Mandelbrot
-- Load Balancing
+High Performance Computing (HPC) systems have becoming more and more
+complex and parallels over the years to accommodate the
+applications that are usually irregulars and computationally
+demanding. When dealing with this type of irregular applications, one
+of the major concerns is the workload distribution among the
+computational resources available in order to maximize the performance
+and stability. This task, called load balancing, performs
+a important role in the performance of a system when executing a
+parallel application, ensuring that each processor in the systems does
+approximately the same work during the programs execution.   *[Context/Load Balancing]*
 
-*What is this work?*
-- What we will do about the things we introduced?
+_We used the Mandelbrot application in order to verify the load
+balancing of a MPI system *[Change later with our objective]*_. The Mandelbrot Set is a set of points $c$
+in the complex plane for which the application of the function $f(z) =
+z^2 + c$
+starting from $z = 0$ is bounded and does not diverge to
+infinity cite:mandelbrot1980. To compute and generate this set, an
+application needs to, for each pixel in a 2D image, calculate the
+value based on the equation previously showned. The application that
+does calculation work is highly parallelizable and computacionally
+intensive, often serving as benchmark for HPC used to measure the
+performance a computational system. *[Mandelbrot]*
 
-This paper is organized as follow. Section [[sec.materials]] discusses all
-the materials and methods about our work, including the detailed
-description of the observerd system. Section [[sec.results]] present the
-results of ours experiments. Finally, Section [[sec.conclusion]] concludes
-this works.
+*[What is this work?/What we will do about the things we introduced?]*
+
+This paper is organized as follows. Section [[sec.related]] presents related
+work. Section [[sec.materials]] discusses all
+the materials and methods of our work, including the detailed
+description of the observed system. Section [[sec.results]] presents the
+experimental results. Finally, Section [[sec.conclusion]] concludes
+this work.
+** Related Work
+<<sec.related>>
 
 ** Materials and Methods                                             :FR:LU:
 <<sec.materials>>
@@ -370,6 +392,25 @@ Tangle this file with C-c C-v t
   pages={149--162},
   year={2013},
   publisher={Springer}
+}
+
+@inproceedings{mohammed2020two,
+  title={Two-level dynamic load balancing for high performance scientific applications},
+  author={Mohammed, Ali and Cavelan, Aur{\'e}lien and Ciorba, Florina M and Cabez{\'o}n, Rub{\'e}n M and Banicescu, Ioana},
+  booktitle={Proceedings of the 2020 SIAM Conference on Parallel Processing for Scientific Computing},
+  pages={69--80},
+  year={2020},
+  organization={SIAM}
+}
+
+@article{mandelbrot1980,
+author = {Mandelbrot, Benoit B.},
+title = { “Fractal Aspects of the Iteration of Z → z $\Lambda$(1-Z) for Complex $\Lambda$ and Z”},
+journal = {Annals of the New York Academy of Sciences},
+volume = {357},
+number = {1},
+pages = {249-259},
+year = {1980}
 }
 #+end_src
 * Emacs setup                                                      :noexport:
