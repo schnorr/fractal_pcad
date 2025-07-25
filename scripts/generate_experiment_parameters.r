@@ -56,7 +56,7 @@ fac.design(nfactors = 3,
     )
   ) |>
   
-  mutate(across(granularity:upper_right_y, ~ format(.x, scientific = FALSE, digits = 22))) |>
+  mutate(across(where(is.numeric), ~ format(.x, scientific = FALSE, trim = TRUE))) |>
   select(nodes, granularity, max_depth,
          screen_width, screen_height,
          lower_left_x, lower_left_y,
