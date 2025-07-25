@@ -100,11 +100,6 @@ void *net_thread_receive_payload(void *arg)
       exit(0); // Not cleaning up for now
     }
 
-#if LOG_LEVEL >= LOG_BASIC
-    // Don't print shutdown payload
-    fprintf(stdout, "[NET_RECV]: t=0.000000000s Payload received from network\n");
-#endif
-
     pthread_mutex_lock(&newest_payload_mutex);
     // Checking if there's a previous payload that hasn't been used in compute_create_blocks yet
     if (newest_payload != NULL) {
@@ -147,9 +142,8 @@ void *compute_create_blocks()
 
 #if LOG_LEVEL >= LOG_BASIC
     clock_gettime(CLOCK_MONOTONIC, &payload_discretized_time);
-    fprintf(stdout, "[DISCRTZE]: t=%.9fs Discretized payload into %d blocks.\n", 
-            timespec_to_double(timespec_diff(payload_received_time, payload_discretized_time)),
-            length);
+    fprintf(stdout, "[DISCRETIZED]: %.9f\n", 
+            timespec_to_double(timespec_diff(payload_received_time, payload_discretized_time)));
     expected_payloads = length;
     responses_received_from_workers = 0;
     responses_sent_to_client = 0;
@@ -189,13 +183,12 @@ void *main_thread_mpi_recv_responses ()
     responses_received_from_workers++;
     if (responses_received_from_workers == 1) {
       clock_gettime(CLOCK_MONOTONIC, &first_response_received_time);
-      fprintf(stdout, "[MPI_RECV]: t=%.9fs First response received from worker.\n", 
+      fprintf(stdout, "[MPI_RECV_FIRST]: %.9f\n", 
         timespec_to_double(timespec_diff(payload_received_time, first_response_received_time)));
     } else if (responses_received_from_workers == expected_payloads) {
       clock_gettime(CLOCK_MONOTONIC, &last_response_received_time);
-      fprintf(stdout, "[MPI_RECV]: t=%.9fs Received all %d responses.\n", 
-        timespec_to_double(timespec_diff(payload_received_time, last_response_received_time)),
-        responses_received_from_workers);
+      fprintf(stdout, "[MPI_RECV_ALL]: %.9f\n", 
+        timespec_to_double(timespec_diff(payload_received_time, last_response_received_time)));
     }
 #endif
 
@@ -299,13 +292,12 @@ void *net_thread_send_response(void *arg)
     responses_sent_to_client++;
     if (responses_sent_to_client == 1) {
       clock_gettime(CLOCK_MONOTONIC, &first_response_sent_time);
-      fprintf(stdout, "[NET_SEND]: t=%.9fs First response sent.\n", 
+      fprintf(stdout, "[NET_SEND_FIRST]: %.9f\n", 
         timespec_to_double(timespec_diff(payload_received_time, first_response_sent_time)));
     } else if (responses_sent_to_client == expected_payloads) {
       clock_gettime(CLOCK_MONOTONIC, &last_response_sent_time);
-      fprintf(stdout, "[NET_SEND]: t=%.9fs Sent all %d responses.\n", 
-        timespec_to_double(timespec_diff(payload_received_time, last_response_sent_time)),
-        responses_sent_to_client);
+      fprintf(stdout, "[NET_SEND_ALL]: %.9f\n", 
+        timespec_to_double(timespec_diff(payload_received_time, last_response_sent_time)));
     }
 #endif 
 
@@ -410,7 +402,7 @@ int main_worker(int argc, char* argv[])
 
 #if LOG_LEVEL >= LOG_BASIC
     if (payload->generation == PAYLOAD_GENERATION_DONE) {
-      fprintf(stdout, "[WORKER_%d]: %.9fs total spent computing responses | %lldpx | %lld iter.\n", 
+      fprintf(stdout, "[WORKER_%d_TOTAL]: %.9f, %lld, %lld\n", 
               rank, 
               timespec_to_double(total_compute_time),
               total_pixels,
@@ -434,7 +426,7 @@ int main_worker(int argc, char* argv[])
 
 #if LOG_LEVEL >= LOG_BASIC
 #if LOG_LEVEL >= LOG_FULL
-      printf("[WORKER_%d]: %.9fs spent computing response | %dpx | %lld iter.\n", 
+      printf("[WORKER_%d_PAYLOAD]: %.9f, %d, %lld\n", 
              rank,
              timespec_to_double(timespec_diff(compute_start_time, compute_end_time)),
              response->payload.granularity * response->payload.granularity,

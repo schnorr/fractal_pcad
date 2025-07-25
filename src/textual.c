@@ -247,9 +247,8 @@ int main(int argc, char* argv[])
   int expected_responses = amount_x * amount_y;
 
 #if LOG_LEVEL >= LOG_BASIC
-  struct timespec start_time, first_response_time, end_time;
-  clock_gettime(CLOCK_MONOTONIC, &start_time);
-  printf("[CLIENT_LOG] t=0.000000000s Enqueuing payload\n");
+  struct timespec enqueue_time, first_response_time, end_time;
+  clock_gettime(CLOCK_MONOTONIC, &enqueue_time);
 #endif
 
   queue_enqueue(&payload_queue, payload);
@@ -260,8 +259,8 @@ int main(int argc, char* argv[])
 
 #if LOG_LEVEL >= LOG_BASIC
   clock_gettime(CLOCK_MONOTONIC, &first_response_time);
-  printf("[CLIENT_LOG] t=%.9fs Time to dequeue first response\n", 
-         timespec_to_double(timespec_diff(start_time, first_response_time)));
+  printf("[DEQUEUE_FIRST] %.9f\n", 
+         timespec_to_double(timespec_diff(enqueue_time, first_response_time)));
 #endif
 
   for (int i = 1; i < expected_responses; i++) {
@@ -271,8 +270,8 @@ int main(int argc, char* argv[])
 
 #if LOG_LEVEL >= LOG_BASIC
   clock_gettime(CLOCK_MONOTONIC, &end_time);
-  printf("[CLIENT_LOG] t=%.9fs Time to dequeue all %d responses\n", 
-         timespec_to_double(timespec_diff(start_time, end_time)), expected_responses);
+  printf("[DEQUEUE_ALL] %.9f\n", 
+         timespec_to_double(timespec_diff(enqueue_time, end_time)));
 #endif
 
   payload_t *poison = calloc(1, sizeof(payload_t));
