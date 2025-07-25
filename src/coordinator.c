@@ -34,6 +34,8 @@ along with "Fractal @ PCAD". If not, see
 #include "timing.h"
 #include "logging.h"
 
+static atomic_int shutdown_requested = ATOMIC_VAR_INIT(0);
+
 // Raw payload from the client
 static payload_t *newest_payload = NULL;
 static atomic_int latest_generation = ATOMIC_VAR_INIT(-1);
@@ -61,6 +63,27 @@ int payloads_sent_to_workers = 0;
 int responses_sent_to_client = 0;
 #endif
 
+/* Shutdown function. Shuts down the TCP connection and sends "poison pills" to queues.*/
+void request_shutdown(int connection){
+  // Atomic exchange tests the variable and sets it atomically
+  if (atomic_exchange(&shutdown_requested, 1) == 1){
+    return; // Already shutting down
+  }
+  printf("Shutdown requested.\n");
+  shutdown(connection, SHUT_RDWR);
+  // Send "poison pills" to queues, making threads dequeuing them quit
+  queue_enqueue(&payload_to_workers_queue, NULL);
+  queue_enqueue(&response_queue, NULL);
+  // Signal compute_create_blocks to stop waiting for new payloads
+  pthread_mutex_lock(&newest_payload_mutex);
+  if (newest_payload != NULL) {
+    free(newest_payload);
+    newest_payload = NULL; // Ownership transferred to queue
+  }
+  pthread_cond_signal(&new_payload);
+  pthread_mutex_unlock(&newest_payload_mutex);
+}
+
 /*
   net_thread_receive_payload: the sole goal is to receive one payload
   from the grafica client. Then, it updates the "newest_payload"
@@ -72,7 +95,7 @@ void *net_thread_receive_payload(void *arg)
 {
   int connection = *(int *)arg;
 
-  while(1) {
+  while(!atomic_load(&shutdown_requested)) {
     // Allocate new payload
     payload_t *payload = malloc(sizeof(payload_t)); 
     if (payload == NULL) {
@@ -97,7 +120,8 @@ void *net_thread_receive_payload(void *arg)
 
     if (payload->generation == PAYLOAD_GENERATION_SHUTDOWN) {
       free(payload);
-      exit(0); // Not cleaning up for now
+      request_shutdown(connection);
+      break;
     }
 
     pthread_mutex_lock(&newest_payload_mutex);
@@ -122,10 +146,14 @@ void *net_thread_receive_payload(void *arg)
 */
 void *compute_create_blocks()
 {
-  while(1) {
+  while(!atomic_load(&shutdown_requested)) {
     pthread_mutex_lock(&newest_payload_mutex);
-    while (newest_payload == NULL) { // Wait for new payload to arrive
+    while (newest_payload == NULL && !atomic_load(&shutdown_requested)) { // Wait for new payload to arrive
       pthread_cond_wait(&new_payload, &newest_payload_mutex);
+    }
+    if (atomic_load(&shutdown_requested)) {
+      pthread_mutex_unlock(&newest_payload_mutex);
+      pthread_exit(NULL);
     }
 
 #ifdef PAYLOAD_DEBUG
@@ -167,7 +195,12 @@ void *compute_create_blocks()
 
 void *main_thread_mpi_recv_responses ()
 {
-  while(1) {
+  int workers_exited = 0;
+  int num_workers;
+  MPI_Comm_size(MPI_COMM_WORLD, &num_workers);
+  num_workers--;
+
+  while(workers_exited < num_workers) { // wait for all workers to exit
     int worker;
     
     // verify who wants to send us a response
@@ -178,6 +211,13 @@ void *main_thread_mpi_recv_responses ()
 
     // receive response from this worker
     response_t *response = mpi_response_receive (worker);
+
+    if (response->payload.generation == PAYLOAD_GENERATION_SHUTDOWN) {
+      free(response->values);
+      free(response);
+      workers_exited++;
+      continue;
+    }
 
 #if LOG_LEVEL >= LOG_BASIC
     responses_received_from_workers++;
@@ -214,6 +254,9 @@ void *main_thread_mpi_recv_responses ()
 */
 void *main_thread_mpi_send_payloads ()
 {
+  payload_t shutdown_flag = {0}; 
+  shutdown_flag.generation = PAYLOAD_GENERATION_SHUTDOWN;
+
 #if LOG_LEVEL >= LOG_BASIC
   payload_t done_flag = {0};
   done_flag.generation = PAYLOAD_GENERATION_DONE;
@@ -226,6 +269,16 @@ void *main_thread_mpi_send_payloads ()
 
     // Get the payload (the queue-dequeue blocks this thread)
     payload_t *payload = (payload_t *)queue_dequeue(&payload_to_workers_queue);
+    if (payload == NULL) { // Send shutdown signal to workers if poison pill received
+      for (int i = 1; i < world_size; i++) {
+        MPI_Recv(&worker, 1, MPI_INT,
+	               MPI_ANY_SOURCE,
+	               FRACTAL_MPI_PAYLOAD_REQUEST,
+	               MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        mpi_payload_send(&shutdown_flag, i);
+      }
+      pthread_exit(NULL);
+    }
 
     // after getting a payload to do, check which worker is available
     MPI_Recv(&worker, 1, MPI_INT,
@@ -261,7 +314,7 @@ void *main_thread_mpi_send_payloads ()
 void *net_thread_send_response(void *arg)
 {
   int connection = *(int *)arg;
-  while(1) {
+  while(!atomic_load(&shutdown_requested)) { 
     response_t *response = (response_t *)queue_dequeue(&response_queue);
     if (response == NULL) break; // poison pill
 
@@ -346,7 +399,7 @@ int main_coordinator(int argc, char* argv[])
   pthread_create(&mpi_send, NULL, main_thread_mpi_send_payloads, NULL);
   pthread_create(&mpi_recv, NULL, main_thread_mpi_recv_responses, NULL);
 
-  while(true) { // No shutdown logic yet, loop infinitely
+  while(!atomic_load(&shutdown_requested)) {
     int connection = accept(socket, (struct sockaddr *)&client_addr, &client_len);
     printf("Accepted client connection.\n");
     
@@ -387,6 +440,9 @@ int main_worker(int argc, char* argv[])
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   printf("%s: Worker (rank %d) with %d arguments\n", argv[0], rank, argc);
 
+  response_t shutdown_response = {0};
+  shutdown_response.payload.generation = PAYLOAD_GENERATION_SHUTDOWN;
+
   MPI_Barrier(MPI_COMM_WORLD); // Sync with coordinator before starting
 
 #if LOG_LEVEL >= LOG_BASIC
@@ -399,6 +455,13 @@ int main_worker(int argc, char* argv[])
   while (1) {    
     MPI_Ssend(&rank, 1, MPI_INT, 0, FRACTAL_MPI_PAYLOAD_REQUEST, MPI_COMM_WORLD);
     payload_t *payload = mpi_payload_receive(0);
+
+    if (payload->generation == PAYLOAD_GENERATION_SHUTDOWN) {
+      free(payload);
+      MPI_Ssend(&rank, 1, MPI_INT, 0, FRACTAL_MPI_RESPONSE_REQUEST, MPI_COMM_WORLD);
+      mpi_response_send(&shutdown_response);
+      break; // Exit the loop and terminate the worker
+    }
 
 #if LOG_LEVEL >= LOG_BASIC
     if (payload->generation == PAYLOAD_GENERATION_DONE) {
