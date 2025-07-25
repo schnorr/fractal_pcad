@@ -461,12 +461,12 @@ int main_worker(int argc, char* argv[])
   shutdown_response.payload.generation = PAYLOAD_GENERATION_SHUTDOWN;
 
 #if LOG_LEVEL >= LOG_BASIC
-  if (mkdir("logs_workers", 0777) == -1 && errno != EEXIST) {
+  if (mkdir("worker_logs", 0777) == -1 && errno != EEXIST) {
     fprintf(stderr, "Failed to create worker logs directory.\n");
     exit(1);
   }
   char log_filename[64];
-  snprintf(log_filename, sizeof(log_filename), "logs_workers/worker_%d.txt", rank);
+  snprintf(log_filename, sizeof(log_filename), "worker_logs/worker_%d.txt", rank);
   FILE *worker_log = fopen(log_filename, "w");
   if (worker_log == NULL) {
     fprintf(stderr, "Failed to create worker log file.\n");
