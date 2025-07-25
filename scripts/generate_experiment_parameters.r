@@ -28,32 +28,31 @@ fac.design(nfactors = 3,
   # copy difficulty level so it's easy to identify
   mutate(difficulty = coordinates) |>
 
-  # palceholder values for now
   mutate(
     max_depth = case_when(
       coordinates == "easy" ~ 1024,
-      coordinates == "default" ~ 1024,
-      coordinates == "hard" ~ 1024
+      coordinates == "default" ~ 150000,
+      coordinates == "hard" ~ 300000
     ),
     lower_left_x = case_when(
-      coordinates == "easy" ~ -2.0,
+      coordinates == "easy" ~ -0.005873612866112004283,
       coordinates == "default" ~ -2.0,
-      coordinates == "hard" ~ -2.0
+      coordinates == "hard" ~ 0.250455424878192725363
     ),
     lower_left_y = case_when(
-      coordinates == "easy" ~ -1.125,
+      coordinates == "easy" ~ -1.007323566937334392824,
       coordinates == "default" ~ -1.125,
-      coordinates == "hard" ~ -1.125
+      coordinates == "hard" ~ 0.000015964345669804373
     ),
     upper_right_x = case_when(
-      coordinates == "easy" ~ 2.0,
+      coordinates == "easy" ~ 0.003830416542916253462,
       coordinates == "default" ~  2.0,
-      coordinates == "hard" ~  2.0
+      coordinates == "hard" ~  0.250455424878194101568
     ),
     upper_right_y = case_when(
-      coordinates == "easy" ~ 1.125,
+      coordinates == "easy" ~ -1.001865048436934870673,
       coordinates == "default" ~ 1.125,
-      coordinates == "hard" ~ 1.125
+      coordinates == "hard" ~  0.000015964345670578497
     )
   ) |>
   mutate_at(vars(granularity:upper_right_y), as.character) |>
