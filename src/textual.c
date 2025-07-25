@@ -302,7 +302,6 @@ int main(int argc, char* argv[])
 
 #if LOG_LEVEL >= LOG_BASIC
   fclose(client_log);
-  printf("Client log saved to logs/client_log\n");
 #endif
 
   return 0;
