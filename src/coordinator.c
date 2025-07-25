@@ -27,6 +27,8 @@ along with "Fractal @ PCAD". If not, see
 #include <sys/time.h>
 #include <signal.h>
 #include <stdatomic.h>
+#include <errno.h>
+#include <sys/stat.h>
 #include "fractal.h"
 #include "connection.h"
 #include "queue.h"
@@ -51,6 +53,7 @@ static queue_t response_queue;
 // These variables measure time spent on each payload.
 // It is assumed that the user will not interrupt a payload 
 // with another during processing when logging times
+FILE *coordinator_log = NULL;
 static struct timespec payload_received_time;
 static struct timespec first_response_sent_time;
 static struct timespec last_response_sent_time;
@@ -170,7 +173,7 @@ void *compute_create_blocks()
 
 #if LOG_LEVEL >= LOG_BASIC
     clock_gettime(CLOCK_MONOTONIC, &payload_discretized_time);
-    fprintf(stdout, "[DISCRETIZED]: %.9f\n", 
+    fprintf(coordinator_log, "[DISCRETIZED]: %.9f\n", 
             timespec_to_double(timespec_diff(payload_received_time, payload_discretized_time)));
     expected_payloads = length;
     responses_received_from_workers = 0;
@@ -223,11 +226,11 @@ void *main_thread_mpi_recv_responses ()
     responses_received_from_workers++;
     if (responses_received_from_workers == 1) {
       clock_gettime(CLOCK_MONOTONIC, &first_response_received_time);
-      fprintf(stdout, "[MPI_RECV_FIRST]: %.9f\n", 
+      fprintf(coordinator_log, "[MPI_RECV_FIRST]: %.9f\n", 
         timespec_to_double(timespec_diff(payload_received_time, first_response_received_time)));
     } else if (responses_received_from_workers == expected_payloads) {
       clock_gettime(CLOCK_MONOTONIC, &last_response_received_time);
-      fprintf(stdout, "[MPI_RECV_ALL]: %.9f\n", 
+      fprintf(coordinator_log, "[MPI_RECV_ALL]: %.9f\n", 
         timespec_to_double(timespec_diff(payload_received_time, last_response_received_time)));
     }
 #endif
@@ -256,12 +259,12 @@ void *main_thread_mpi_send_payloads ()
 {
   payload_t shutdown_flag = {0}; 
   shutdown_flag.generation = PAYLOAD_GENERATION_SHUTDOWN;
+  int world_size;
+  MPI_Comm_size(MPI_COMM_WORLD, &world_size);
 
 #if LOG_LEVEL >= LOG_BASIC
   payload_t done_flag = {0};
   done_flag.generation = PAYLOAD_GENERATION_DONE;
-  int world_size;
-  MPI_Comm_size(MPI_COMM_WORLD, &world_size);
 #endif
 
   while(1) {
@@ -345,14 +348,15 @@ void *net_thread_send_response(void *arg)
     responses_sent_to_client++;
     if (responses_sent_to_client == 1) {
       clock_gettime(CLOCK_MONOTONIC, &first_response_sent_time);
-      fprintf(stdout, "[NET_SEND_FIRST]: %.9f\n", 
+      fprintf(coordinator_log, "[NET_SEND_FIRST]: %.9f\n", 
         timespec_to_double(timespec_diff(payload_received_time, first_response_sent_time)));
     } else if (responses_sent_to_client == expected_payloads) {
       clock_gettime(CLOCK_MONOTONIC, &last_response_sent_time);
-      fprintf(stdout, "[NET_SEND_ALL]: %.9f\n", 
+      fprintf(coordinator_log, "[NET_SEND_ALL]: %.9f\n", 
         timespec_to_double(timespec_diff(payload_received_time, last_response_sent_time)));
     }
-#endif 
+    fflush(coordinator_log); // Final log for a payload, write it immediately
+#endif
 
 #ifdef RESPONSE_DEBUG
     response_print(__func__, "response sent", response);
@@ -380,7 +384,16 @@ int main_coordinator(int argc, char* argv[])
 
   signal(SIGPIPE, SIG_IGN); // ignoring SIGPIPE (failed send)
 
+#if LOG_LEVEL >= LOG_BASIC
+  coordinator_log = fopen("coordinator_log.txt", "w");
+  if (coordinator_log == NULL) {
+    fprintf(stderr, "Failed to create coordinator log file.\n");
+    exit(1);
+  }
+#endif 
+
   MPI_Barrier(MPI_COMM_WORLD); // Wait for all mpi workers to be ready before accepting connections
+  printf("All %d ranks ready.\n", size);
   
   struct sockaddr_in client_addr; // client ip address after connect
   socklen_t client_len = sizeof(client_addr);
@@ -430,6 +443,10 @@ int main_coordinator(int argc, char* argv[])
   queue_destroy(&response_queue);
   queue_destroy(&payload_to_workers_queue);
 
+#if LOG_LEVEL >= LOG_BASIC
+  fclose(coordinator_log);
+#endif
+
   return 0;
 }
 
@@ -438,19 +455,30 @@ int main_worker(int argc, char* argv[])
   int rank, size;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
-  printf("%s: Worker (rank %d) with %d arguments\n", argv[0], rank, argc);
+  //printf("%s: Worker (rank %d) with %d arguments\n", argv[0], rank, argc);
 
   response_t shutdown_response = {0};
   shutdown_response.payload.generation = PAYLOAD_GENERATION_SHUTDOWN;
 
-  MPI_Barrier(MPI_COMM_WORLD); // Sync with coordinator before starting
-
 #if LOG_LEVEL >= LOG_BASIC
+  if (mkdir("logs_workers", 0777) == -1 && errno != EEXIST) {
+    fprintf(stderr, "Failed to create worker logs directory.\n");
+    exit(1);
+  }
+  char log_filename[64];
+  snprintf(log_filename, sizeof(log_filename), "logs_workers/worker_%d.txt", rank);
+  FILE *worker_log = fopen(log_filename, "w");
+  if (worker_log == NULL) {
+    fprintf(stderr, "Failed to create worker log file.\n");
+    exit(1);
+  }
   long long total_iterations = 0;
   long long total_pixels = 0;
   struct timespec total_compute_time = {0};
   struct timespec compute_start_time, compute_end_time;
 #endif
+
+  MPI_Barrier(MPI_COMM_WORLD); // Sync with coordinator before starting
 
   while (1) {    
     MPI_Ssend(&rank, 1, MPI_INT, 0, FRACTAL_MPI_PAYLOAD_REQUEST, MPI_COMM_WORLD);
@@ -465,12 +493,12 @@ int main_worker(int argc, char* argv[])
 
 #if LOG_LEVEL >= LOG_BASIC
     if (payload->generation == PAYLOAD_GENERATION_DONE) {
-      fprintf(stdout, "[WORKER_%d_TOTAL]: %.9f, %lld, %lld\n", 
+      fprintf(worker_log, "[WORKER_%d_TOTAL]: %.9f, %lld, %lld\n", 
               rank, 
               timespec_to_double(total_compute_time),
               total_pixels,
               total_iterations);
-      fflush(stdout);
+      fflush(worker_log);
       free(payload);
       total_iterations = 0;
       total_pixels = 0;
@@ -489,11 +517,11 @@ int main_worker(int argc, char* argv[])
 
 #if LOG_LEVEL >= LOG_BASIC
 #if LOG_LEVEL >= LOG_FULL
-      printf("[WORKER_%d_PAYLOAD]: %.9f, %d, %lld\n", 
-             rank,
-             timespec_to_double(timespec_diff(compute_start_time, compute_end_time)),
-             response->payload.granularity * response->payload.granularity,
-             response_result.total_iterations);
+      fprintf(worker_log, "[WORKER_%d_PAYLOAD]: %.9f, %d, %lld\n", 
+              rank,
+              timespec_to_double(timespec_diff(compute_start_time, compute_end_time)),
+              response->payload.granularity * response->payload.granularity,
+              response_result.total_iterations);
 #endif // LOG_FULL
 
     total_compute_time = timespec_add(total_compute_time, 
@@ -513,6 +541,11 @@ int main_worker(int argc, char* argv[])
     free(response);
     free(payload);
   }
+
+#if LOG_LEVEL >= LOG_BASIC
+  fclose(worker_log);
+#endif
+
   return 0;
 }
 

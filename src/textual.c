@@ -227,6 +227,14 @@ int main(int argc, char* argv[])
   queue_init(&payload_queue, 1, free);
   queue_init(&response_queue, 256, free_response);
 
+#if LOG_LEVEL >= LOG_BASIC
+  FILE *client_log = fopen("client_log.txt", "w");
+  if (client_log == NULL) {
+    fprintf(stderr, "Failed to open log file.\n");
+    exit(1);
+  }
+#endif
+
   int connection = open_connection(argv[1], atoi(argv[2]));
 
   //pthread_t ui_thread = 0;
@@ -259,7 +267,7 @@ int main(int argc, char* argv[])
 
 #if LOG_LEVEL >= LOG_BASIC
   clock_gettime(CLOCK_MONOTONIC, &first_response_time);
-  printf("[DEQUEUE_FIRST] %.9f\n", 
+  fprintf(client_log, "[DEQUEUE_FIRST] %.9f\n", 
          timespec_to_double(timespec_diff(enqueue_time, first_response_time)));
 #endif
 
@@ -270,7 +278,7 @@ int main(int argc, char* argv[])
 
 #if LOG_LEVEL >= LOG_BASIC
   clock_gettime(CLOCK_MONOTONIC, &end_time);
-  printf("[DEQUEUE_ALL] %.9f\n", 
+  fprintf(client_log, "[DEQUEUE_ALL] %.9f\n", 
          timespec_to_double(timespec_diff(enqueue_time, end_time)));
 #endif
 
@@ -291,6 +299,11 @@ int main(int argc, char* argv[])
 
   queue_destroy(&payload_queue);
   queue_destroy(&response_queue);
+
+#if LOG_LEVEL >= LOG_BASIC
+  fclose(client_log);
+  printf("Client log saved to logs/client_log\n");
+#endif
 
   return 0;
 }
