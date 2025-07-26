@@ -75,7 +75,6 @@ for line in "${csv_lines[@]}"; do
     NP=$(np_from_hostfile "$EXPERIMENT_HOSTFILE")
     echo "Launching coordinator on $nodes nodes with $NP CPUs"
 
-    # Only outputting to files
     mpirun \
         --mca oob_tcp_if_include 192.168.30.0/24 \
         --mca btl_tcp_if_include 192.168.30.0/24 \
