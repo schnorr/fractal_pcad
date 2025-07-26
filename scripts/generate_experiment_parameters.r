@@ -2,12 +2,12 @@ options(crayon.enabled=FALSE)
 library(DoE.base)
 library(tidyverse)
 
-fator_granularity = c(10, 120)
-fator_nodes = 1:2
+fator_granularity = c(5, 10, 20, 40, 60, 120)
+fator_nodes = 1:6
 fator_coordinates = c("easy", "default", "hard")
 
 fac.design(nfactors = 3,
-           replications = 2,
+           replications = 10,
            repeat.only = FALSE,
            randomize = TRUE,
            seed=0,
