@@ -267,7 +267,7 @@ int main(int argc, char* argv[])
 
 #if LOG_LEVEL >= LOG_BASIC
   clock_gettime(CLOCK_MONOTONIC, &first_response_time);
-  fprintf(client_log, "[DEQUEUE_FIRST] %.9f\n", 
+  fprintf(client_log, "[DEQUEUE_FIRST]: %.9f\n", 
          timespec_to_double(timespec_diff(enqueue_time, first_response_time)));
 #endif
 
@@ -278,7 +278,7 @@ int main(int argc, char* argv[])
 
 #if LOG_LEVEL >= LOG_BASIC
   clock_gettime(CLOCK_MONOTONIC, &end_time);
-  fprintf(client_log, "[DEQUEUE_ALL] %.9f\n", 
+  fprintf(client_log, "[DEQUEUE_ALL]: %.9f\n", 
          timespec_to_double(timespec_diff(enqueue_time, end_time)));
 #endif
 

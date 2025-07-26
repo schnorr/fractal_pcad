@@ -2,6 +2,6 @@
 /obj
 /.vscode
 /results
-/logs_workers
+/worker_logs
 client.txt
 coordinator.txt
