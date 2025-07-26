@@ -215,10 +215,6 @@ Kenichi Brumati\inst{1}
 Put the abstract here.
 #+end_abstract
 
-#+begin_resumo
-Coloque o resumo aqui.
-#+end_resumo
-
 ** Introduction                                                      :RA:KE:
 
 High Performance Computing (HPC) systems have becoming more and more
@@ -230,17 +226,17 @@ computational resources available in order to maximize the performance
 and stability. This task, called load balancing, performs
 a important role in the performance of a system when executing a
 parallel application, ensuring that each processor in the systems does
-approximately the same work during the programs execution.   *[Context/Load Balancing]*
+approximately the same work during the programs execution. *[Context/Load Balancing]*
 
-_We used the Mandelbrot application in order to verify the load
-balancing of a MPI system *[Change later with our objective]*_. The Mandelbrot Set is a set of points $c$
+_We used a MPI implementation of the Mandelbrot application in order to
+study the load balancing and scalability of a HPC Systems *[Change later with our objective]*_. The Mandelbrot Set is a set of points $c$
 in the complex plane for which the application of the function $f(z) =
 z^2 + c$
 starting from $z = 0$ is bounded and does not diverge to
 infinity cite:mandelbrot1980. To compute and generate this set, an
 application needs to, for each pixel in a 2D image, calculate the
-value based on the equation previously showned. The application that
-does calculation work is highly parallelizable and computacionally
+value based on the equation previously showed. The application that
+does calculation work is highly parallelizable and computationally
 intensive, often serving as benchmark for HPC used to measure the
 performance a computational system. *[Mandelbrot]*
 
@@ -253,6 +249,20 @@ description of the observed system. Section [[sec.results]] presents the
 experimental results. Finally, Section [[sec.conclusion]] concludes
 this work.
 ** Related Work
+Load balancing is a widely studied field, cite:sandeep2008 analyzes
+different load balancing algorithms and concludes that while dynamic
+distributed load balancing algorithms are always generally considered
+better, the static algorithms are more stables and predictable.
+cite:mohammed2020two proposes a two-level dynamic load balancing to
+scientific applications that operate with MPI+OpenMP and uses the
+Mandelbrot application as one of its test cases because of the application irregularity.
+*[References about load balancing]*
+
+The Mandelbrot application is also vastly studied and used as a
+benchmark in a variety of works for its computationally intensive,
+parallizable and irregular nature.
+*[References about the mandelbrot implementation]*
+
 <<sec.related>>
 
 ** Materials and Methods                                             :FR:LU:
@@ -369,31 +379,6 @@ bibliographystyle:sbc.bst
 
 Tangle this file with C-c C-v t
 #+begin_src bibtex :tangle refs.bib
-@article{orgmode,
-  author =	"Eric Schulte and Dan Davison and Thomas Dye and Carsten Dominik",
-  title =	"A Multi-Language Computing Environment for Literate Programming and Reproducible Research",
-  journal =	"J. of Stat. Soft.",
-  volume =	"46",
-  number =	"3",
-  day =  	"25",
-  year = 	"2012",
-  CODEN =	"JSSOBK",
-  ISSN = 	"1548-7660",
-  bibdate =	"2011-10-03",
-  accepted =	"2011-10-03",
-  acknowledgement = "",
-  submitted =	"2010-12-22",
-}
-
-@incollection{schnorr2013visualizing,
-  title={Visualizing More Performance Data Than What Fits on Your Screen},
-  author={Schnorr, Lucas M and Legrand, Arnaud},
-  booktitle={Tools for High Performance Computing 2012},
-  pages={149--162},
-  year={2013},
-  publisher={Springer}
-}
-
 @inproceedings{mohammed2020two,
   title={Two-level dynamic load balancing for high performance scientific applications},
   author={Mohammed, Ali and Cavelan, Aur{\'e}lien and Ciorba, Florina M and Cabez{\'o}n, Rub{\'e}n M and Banicescu, Ioana},
@@ -412,6 +397,28 @@ number = {1},
 pages = {249-259},
 year = {1980}
 }
+
+
+
+@article{sandeep2008,
+  title     = {Performance Analysis of Load Balancing Algorithms},
+  author    = {Sandeep Sharma and  Sarabjit Singh and  Meenakshi Sharma},
+  country	= {},
+  institution	= {},
+  journal   = {International Journal of Civil and Environmental Engineering},
+  volume    = {2},
+  number    = {2},
+  year      = {2008},
+  pages     = {367 - 370},
+  ee        = {https://publications.waset.org/pdf/5537},
+  url   	= {https://publications.waset.org/vol/14},
+  bibsource = {https://publications.waset.org/},
+  issn  	= {eISSN: 1307-6892},
+  publisher = {World Academy of Science, Engineering and Technology},
+  index 	= {Open Science Index 14, 2008},
+}
+
+
 #+end_src
 * Emacs setup                                                      :noexport:
 # Local Variables:
