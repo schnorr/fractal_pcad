@@ -269,8 +269,28 @@ parallizable and irregular nature.
 <<sec.materials>>
 *** Observed System
 **** General overview
-- A figure with the design, the threads
-  - The role of each thread
+
+The implemented system adopts a client–server architecture designed to parallelize 
+the computation of the Mandelbrot set while enabling efficient load balancing across 
+multiple computing nodes. The client is responsible for managing user interactions and 
+rendering the fractal image produced by the server. When the user requests a new region, 
+the client issues a request to the server. A central coordinator on the server receives 
+this request, discretizes the workload into smaller tasks, and dynamically distributes 
+the resulting tasks to a pool of MPI workers, which perform the numerical computations 
+for the Mandelbrot set.
+
+Figure [[fig:system-architecture]] illustrates the overall 
+architecture, highlighting the main threads, communication queues, and data flow between 
+components.
+
+#+CAPTION: System overview with processes, threads, and queues.
+#+NAME: fig:system-architecture
+[[./figures/system_architecture.png]]
+
+(go into detail about individual threads here)
+(explain data flow)
+(mention payload/response contents)
+
 **** Computational aspects
 - Workload discretization etc
 - MPI implementation
