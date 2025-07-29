@@ -6,7 +6,7 @@
 #+EXPORT_EXCLUDE_TAGS: noexport
 #+TAGS: noexport(n)
 
-#+PROPERTY: header-args :tangle "analysis.R" :tangle-mode (identity #o755) :shebang "#!/usr/bin/Rscript"
+#+PROPERTY: header-args :tangle "analysis-speedup.R" :tangle-mode (identity #o755) :shebang "#!/usr/bin/Rscript"
 
 C-c C-v b
 
@@ -103,28 +103,28 @@ df.mean.par |>
 # Groups:   difficulty, granularity, name, cores [24]
    difficulty granularity name         cores mean.par mean.simulated.seq speedup
    <chr>            <dbl> <chr>        <dbl>    <dbl>              <dbl>   <dbl>
- 1 hard                10 client_dequ…    24    19.8                517.    26.0
- 2 hard                10 client_dequ…    48     9.77               517.    52.9
- 3 hard                10 client_dequ…    72     6.52               517.    79.3
- 4 hard                10 client_dequ…    96     5.13               517.   101. 
- 5 hard                10 client_dequ…   120     4.28               517.   121. 
- 6 hard                10 client_dequ…   144     3.59               517.   144  
- 7 hard                20 client_dequ…    24    19.9                472.    23.8
- 8 hard                20 client_dequ…    48     9.74               472.    48.5
- 9 hard                20 client_dequ…    72     6.48               472.    72.8
-10 hard                20 client_dequ…    96     4.88               472.    96.8
-11 hard                20 client_dequ…   120     3.92               472.   121. 
-12 hard                20 client_dequ…   144     3.28               472.   144  
-13 hard                40 client_dequ…    24    19.9                501.    25.2
-14 hard                40 client_dequ…    48     9.89               501.    50.7
-15 hard                40 client_dequ…    72     6.66               501.    75.3
-16 hard                40 client_dequ…    96     5.07               501.    98.8
-17 hard                40 client_dequ…   120     4.12               501.   122. 
-18 hard                40 client_dequ…   144     3.48               501.   144  
-19 hard                60 client_dequ…    24    20.2                567.    28.1
-20 hard                60 client_dequ…    48    10.3                567.    55.2
-21 hard                60 client_dequ…    72     7.06               567.    80.4
-22 hard                60 client_dequ…    96     5.50               567.   103. 
-23 hard                60 client_dequ…   120     4.51               567.   126. 
-24 hard                60 client_dequ…   144     3.94               567.   144
+ 1 hard                10 client_dequ…    24    19.8                476.    24  
+ 2 hard                10 client_dequ…    48     9.77               476.    48.7
+ 3 hard                10 client_dequ…    72     6.52               476.    73.1
+ 4 hard                10 client_dequ…    96     5.13               476.    92.8
+ 5 hard                10 client_dequ…   120     4.28               476.   111. 
+ 6 hard                10 client_dequ…   144     3.59               476.   133. 
+ 7 hard                20 client_dequ…    24    19.9                477.    24  
+ 8 hard                20 client_dequ…    48     9.74               477.    49.0
+ 9 hard                20 client_dequ…    72     6.48               477.    73.6
+10 hard                20 client_dequ…    96     4.88               477.    97.8
+11 hard                20 client_dequ…   120     3.92               477.   122. 
+12 hard                20 client_dequ…   144     3.28               477.   145. 
+13 hard                40 client_dequ…    24    19.9                478.    24  
+14 hard                40 client_dequ…    48     9.89               478.    48.3
+15 hard                40 client_dequ…    72     6.66               478.    71.7
+16 hard                40 client_dequ…    96     5.07               478.    94.1
+17 hard                40 client_dequ…   120     4.12               478.   116. 
+18 hard                40 client_dequ…   144     3.48               478.   137. 
+19 hard                60 client_dequ…    24    20.2                485.    24  
+20 hard                60 client_dequ…    48    10.3                485.    47.1
+21 hard                60 client_dequ…    72     7.06               485.    68.7
+22 hard                60 client_dequ…    96     5.50               485.    88.1
+23 hard                60 client_dequ…   120     4.51               485.   108. 
+24 hard                60 client_dequ…   144     3.94               485.   123.
 #+end_example
