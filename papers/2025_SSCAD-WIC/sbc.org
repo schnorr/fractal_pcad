@@ -2,7 +2,7 @@
 # -*- mode: org -*-
 
 #+TITLE: Load Balancing Mandelbrot Article
-#+AUTHOR: Lucas Mello Schnorr, Francisco Pegoraro Etcheverria, Rayan Raddatz de Matos, Kenichi Brumati
+#+AUTHOR: Francisco Pegoraro Etcheverria, Rayan Raddatz de Matos, Kenichi Brumati, Lucas Mello Schnorr
 
 #+STARTUP: overview indent
 #+LANGUAGE: en
@@ -195,15 +195,15 @@ WordPress & Designed by Bizberg Themes
 
 \author{
 Francisco Pegoraro Etcheverria\inst{1},
-Lucas Mello Schnorr\inst{1},
-Rayan Raddatz de Matos\inst{1},\\
-Kenichi Brumati\inst{1}
+Rayan Raddatz de Matos\inst{1},
+Kenichi Brumati\inst{1},\\
+Lucas Mello Schnorr\inst{1}
 }
 
 \address{
    Institute of Informatics, Federal University of Rio Grande do Sul (UFRGS)\\
    Caixa Postal 15.064 -- 91.501-970 -- Porto Alegre -- RS -- Brazil
-   \email{\{francisco.etcheverria, schnorr, rayan.raddatz, kenichi.brumati\}@inf.ufrgs.br}
+   \email{\{francisco.etcheverria, rayan.raddatz, kenichi.brumati, schnorr\}@inf.ufrgs.br}
    }
 #+END_EXPORT
 
@@ -270,17 +270,17 @@ parallizable and irregular nature.
 *** Observed System
 **** General overview
 
-The implemented system adopts a client–server architecture designed to parallelize 
-the computation of the Mandelbrot set while enabling efficient load balancing across 
-multiple computing nodes. The client is responsible for managing user interactions and 
-rendering the fractal image produced by the server. When the user requests a new region, 
-the client issues a request to the server. A central coordinator on the server receives 
-this request, discretizes the workload into smaller tasks, and dynamically distributes 
-the resulting tasks to a pool of MPI workers, which perform the numerical computations 
+The implemented system adopts a client–server architecture designed to parallelize
+the computation of the Mandelbrot set while enabling efficient load balancing across
+multiple computing nodes. The client is responsible for managing user interactions and
+rendering the fractal image produced by the server. When the user requests a new region,
+the client issues a request to the server. A central coordinator on the server receives
+this request, discretizes the workload into smaller tasks, and dynamically distributes
+the resulting tasks to a pool of MPI workers, which perform the numerical computations
 for the Mandelbrot set.
 
-Figure [[fig:system-architecture]] illustrates the overall 
-architecture, highlighting the main threads, communication queues, and data flow between 
+Figure [[fig:system-architecture]] illustrates the overall
+architecture, highlighting the main threads, communication queues, and data flow between
 components.
 
 #+CAPTION: System overview with processes, threads, and queues.
