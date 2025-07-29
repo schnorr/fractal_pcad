@@ -1,0 +1,130 @@
+#+TITLE: Analysis
+#+STARTUP: overview indent
+#+OPTIONS: toc:nil
+#+LaTeX_CLASS_OPTIONS: [a3paper,10pt]
+#+LATEX_HEADER: \usepackage[margin=2cm,a4paper,bottom=1cm]{geometry}
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+TAGS: noexport(n)
+
+#+PROPERTY: header-args :tangle "analysis.R" :tangle-mode (identity #o755) :shebang "#!/usr/bin/Rscript"
+
+C-c C-v b
+
+* Pacotes
+
+#+begin_src R :results output :session *R* :exports both :noweb yes :colnames yes
+options(crayon.enabled=FALSE)
+suppressMessages(library(tidyverse))
+suppressMessages(library(lubridate))
+suppressMessages(library(readxl))
+#+end_src
+
+#+RESULTS:
+
+* Read, Pivot, Filter
+
+#+begin_src R :results output :session *R* :exports both :noweb yes :colnames yes
+read_csv("experiment_results.csv", progress=FALSE, show_col_types=FALSE) |>
+  pivot_longer(-c(difficulty, num_nodes, granularity, trial_id)) |>
+  filter(name == "client_dequeue_all") |>
+  group_by(difficulty, num_nodes, granularity, name) |>
+  mutate(cores.per.node = 24) |>
+  mutate(cores = num_nodes * cores.per.node) -> df
+#+end_src
+
+#+RESULTS:
+
+* Get "1 core" run
+** Prepare
+
+#+begin_src R :results output :session *R* :exports both :noweb yes :colnames yes
+df |>
+  # To obtain the seq time, multiply the parallel time by the number of cores
+  mutate(simulated.seq = value * cores) -> df.sim.seq
+#+end_src
+
+#+RESULTS:
+
+** See the histograms
+
+#+begin_src R :results file output graphics :file simulated-seq-histogram.png :exports both :width 600 :height 600 :session *R*
+df.sim.seq |>
+#  filter(difficulty == "default", granularity == 20) |>
+  ggplot(aes(x = simulated.seq, fill=as.factor(num_nodes))) +
+  geom_histogram() +
+  ylim(0, NA) +
+  facet_grid(granularity~difficulty)
+#+end_src
+
+#+RESULTS:
+[[file:simulated-seq-histogram.png]]
+
+Well, numbers are rather stable, except for granularity 5 and 120.
+
+** Calculate the mean seq
+
+So let's compute speedup for those cases which the simulated seq is
+rather stable.
+
+#+begin_src R :results output :session *R* :exports both :noweb yes :colnames yes
+df.sim.seq |>
+  filter(!(granularity %in% c(5, 120))) |>
+  filter(num_nodes == 1) |>
+  group_by(difficulty, granularity, name) |>
+  summarize(mean.simulated.seq = mean(simulated.seq), .groups="keep") -> df.mean.sim.seq
+#+end_src
+
+#+RESULTS:
+
+** Calculate the mean par time
+
+#+begin_src R :results output :session *R* :exports both :noweb yes :colnames yes
+df |>
+  group_by(difficulty, granularity, name, cores) |>
+  summarize(mean.par = mean(value), .groups="keep") -> df.mean.par
+#+end_src
+
+#+RESULTS:
+
+** Join and calculate speedup
+
+#+begin_src R :results output :session *R* :exports both :noweb yes :colnames yes
+df.mean.par |>
+  filter(difficulty == "hard") |>
+  left_join(df.mean.sim.seq, by = join_by(difficulty, granularity, name)) |>
+  mutate(speedup = mean.simulated.seq / mean.par) |>
+  filter(!is.na(speedup)) |>
+  print(n=100)
+#+end_src
+
+#+RESULTS:
+#+begin_example
+# A tibble: 24 × 7
+# Groups:   difficulty, granularity, name, cores [24]
+   difficulty granularity name         cores mean.par mean.simulated.seq speedup
+   <chr>            <dbl> <chr>        <dbl>    <dbl>              <dbl>   <dbl>
+ 1 hard                10 client_dequ…    24    19.8                517.    26.0
+ 2 hard                10 client_dequ…    48     9.77               517.    52.9
+ 3 hard                10 client_dequ…    72     6.52               517.    79.3
+ 4 hard                10 client_dequ…    96     5.13               517.   101. 
+ 5 hard                10 client_dequ…   120     4.28               517.   121. 
+ 6 hard                10 client_dequ…   144     3.59               517.   144  
+ 7 hard                20 client_dequ…    24    19.9                472.    23.8
+ 8 hard                20 client_dequ…    48     9.74               472.    48.5
+ 9 hard                20 client_dequ…    72     6.48               472.    72.8
+10 hard                20 client_dequ…    96     4.88               472.    96.8
+11 hard                20 client_dequ…   120     3.92               472.   121. 
+12 hard                20 client_dequ…   144     3.28               472.   144  
+13 hard                40 client_dequ…    24    19.9                501.    25.2
+14 hard                40 client_dequ…    48     9.89               501.    50.7
+15 hard                40 client_dequ…    72     6.66               501.    75.3
+16 hard                40 client_dequ…    96     5.07               501.    98.8
+17 hard                40 client_dequ…   120     4.12               501.   122. 
+18 hard                40 client_dequ…   144     3.48               501.   144  
+19 hard                60 client_dequ…    24    20.2                567.    28.1
+20 hard                60 client_dequ…    48    10.3                567.    55.2
+21 hard                60 client_dequ…    72     7.06               567.    80.4
+22 hard                60 client_dequ…    96     5.50               567.   103. 
+23 hard                60 client_dequ…   120     4.51               567.   126. 
+24 hard                60 client_dequ…   144     3.94               567.   144
+#+end_example
