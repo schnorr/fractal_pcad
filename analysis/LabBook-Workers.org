@@ -1,0 +1,134 @@
+#+TITLE: Analysis
+#+STARTUP: overview indent
+#+OPTIONS: toc:nil
+#+LaTeX_CLASS_OPTIONS: [a3paper,10pt]
+#+LATEX_HEADER: \usepackage[margin=2cm,a4paper,bottom=1cm]{geometry}
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+TAGS: noexport(n)
+
+#+PROPERTY: header-args :tangle "analysis-workers.R" :tangle-mode (identity #o755) :shebang "#!/usr/bin/Rscript"
+
+C-c C-v b
+
+* Deal with files
+
+#+begin_src shell :results output :exports both :tangle clean-worker-to-csv.sh :tangle-mode (identity #o755) :shebang "#!/usr/bin/bash"
+OUTPUT=workers.csv
+echo 'worker,duration,pixels,depth,case,nodes,granularity,repetition' > $OUTPUT
+for f in $(find experiment -name *worker*.txt)
+do
+    KEY=$(echo $f | sed -e 's#/#-#g')
+    cat $f | \
+	grep -v TOTAL | \
+	sed \
+	    -e 's/.*WORKER_//' \
+	    -e 's/_PAYLOAD]: /,/' \
+	    -e 's/ //g' \
+	    -e "s/$/,$KEY/" \
+	    -e 's/experiment-results_raw-//' \
+	    -e 's/-n/,/' \
+	    -e 's/-g/,/' \
+	    -e 's/-r/,/' \
+	    -e 's/-worker_.*$//'
+done >> $OUTPUT
+#+end_src
+
+* Pacotes
+
+#+begin_src R :results output :session *R* :exports both :noweb yes :colnames yes
+options(crayon.enabled=FALSE)
+suppressMessages(library(tidyverse))
+suppressMessages(library(lubridate))
+suppressMessages(library(readxl))
+#+end_src
+
+#+RESULTS:
+
+* Functions
+
+#+begin_src R :results output :session *R* :exports both :noweb yes :colnames yes
+meu_estilo <- function() {
+  list(
+    theme_bw(base_size = 16),
+    theme(
+      legend.title = element_blank(),
+      plot.margin = unit(c(0, 0, 0, 0), "cm"),
+      legend.spacing = unit(1, "mm"),
+      legend.position = "right",
+      legend.justification = "left",
+      legend.box.spacing = unit(0, "pt"),
+      legend.box.margin = margin(0, 0, 0, 0),
+      axis.text.x = element_text(angle=45, vjust=1, hjust=1)    
+    ))
+}
+#+end_src
+
+#+RESULTS:
+
+* Read
+
+#+begin_src R :results output :session *R* :exports both :noweb yes :colnames yes
+read_csv("workers.csv", progress=FALSE, show_col_types=FALSE) |>
+  group_by(case, nodes, granularity, worker, repetition) -> df
+#+end_src
+
+#+RESULTS:
+
+* Get totals per worker
+
+#+begin_src R :results output :session *R* :exports both :noweb yes :colnames yes
+df |>
+  summarize(duration = sum(duration),
+            pixels = sum(pixels),
+            depth = sum(depth),
+            .groups = "keep") |>
+  write_csv("worker_totals.csv") -> df.totals
+#+end_src
+
+#+RESULTS:
+
+* Compute some imbalance metrics
+
+#+begin_src R :results output :session *R* :exports both :noweb yes :colnames yes
+df.totals |>
+#  filter(case == "default") |>
+#  filter(nodes == 1) |>
+#  filter(granularity == 5) |>
+#  filter(repetition == 2) |>
+  group_by(case, nodes, granularity, repetition) |>
+  summarize(imbalance.time = max(duration) / mean(duration),
+            percent.imbalance = (max(duration)/mean(duration) - 1) * 100,
+            imbalance.percentage = ((max(duration) - mean(duration)) / max(duration)) * n() / (n() - 1),
+            std.deviation = sqrt(sum((duration - mean(duration))**2) / (n() - 1)),
+            .groups="keep") |>
+  print() |>
+  ggplot(aes(x = repetition, y = imbalance.percentage, color = as.factor(nodes))) +
+  geom_point() +
+  facet_grid(case~granularity) +
+  meu_estilo() +
+  theme(legend.position = "top")
+#+end_src
+
+#+RESULTS:
+#+begin_example
+# A tibble: 1,080 × 8
+# Groups:   case, nodes, granularity, repetition [1,080]
+   case    nodes granularity repetition imbalance.time percent.imbalance
+   <chr>   <dbl>       <dbl>      <dbl>          <dbl>             <dbl>
+ 1 default     1           5          1           1.00             0.270
+ 2 default     1           5          2           1.00             0.196
+ 3 default     1           5          3           1.00             0.275
+ 4 default     1           5          4           1.00             0.441
+ 5 default     1           5          5           1.00             0.267
+ 6 default     1           5          6           1.00             0.273
+ 7 default     1           5          7           1.00             0.205
+ 8 default     1           5          8           1.00             0.475
+ 9 default     1           5          9           1.00             0.337
+10 default     1           5         10           1.00             0.334
+# ℹ 1,070 more rows
+# ℹ 2 more variables: imbalance.percentage <dbl>, std.deviation <dbl>
+# ℹ Use `print(n = ...)` to see more rows
+#+end_example
+
+
+
