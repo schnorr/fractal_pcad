@@ -3,5 +3,5 @@
 /.vscode
 /results
 /worker_logs
-client.txt
-coordinator.txt
+client_log.txt
+coordinator_log.txt
