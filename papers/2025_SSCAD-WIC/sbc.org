@@ -464,8 +464,8 @@ communication overhead while also balancing work between workers well.
 In contrast, the /easy/ case shows the opposite trend: higher granularities consistently perform 
 better, and increasing node counts worsen performance. Because most points in this region escape 
 in only a few iterations, computation becomes inexpensive, and the bottleneck is communication. 
-As such, lower granularities lead to higher overhead, which grows worse as more nodes are added. 
-This effect is especially visible at granularity 5: in the /default/ and /hard/ cases, 
+As such, lower granularities lead to higher overhead, which seems to grow worse as more nodes are 
+added. This effect is especially visible at granularity 5: in the /default/ and /hard/ cases, 
 performance worsens past 3 nodes, nearly matching the times observed in the /easy/ case. This 
 suggests that the performance is being capped by communication overhead rather than computation 
 time in those cases.
