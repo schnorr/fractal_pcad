@@ -346,8 +346,9 @@ For each run, the following parameters varied:
   load balancing but increase communication overhead, while larger granularities may lead to load 
   imbalance.
 
-- **Number of Server Nodes:** [1, 2, 3, 4, 5, 6] nodes were tested, each contributing
-  24 physical cores. This allows us to measure how well the system scales with more resources.
+- **Number of Server Nodes:** We evaluated setups using 1 to 6 nodes, each contributing 24 physical
+  cores. This corresponds to a total of 24 to 144 MPI ranks, allowing us to evaluate how well the 
+  server scales as resources are added.
 
 - **Fractal regions:** Three sets of coordinates and max depth values were chosen.
   - **Default:** A typical unbalanced Mandelbrot fractal region, containing both points that are 
