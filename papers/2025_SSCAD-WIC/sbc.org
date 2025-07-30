@@ -235,7 +235,7 @@ z^2 + c$
 starting from $z = 0$ is bounded and does not diverge to
 infinity cite:mandelbrot1980. To compute and generate this set, an
 application needs to, for each pixel in a 2D image, calculate the
-value based on the equation previously showed. The application that
+value based on the equation previously shown. The application that
 does calculation work is highly parallelizable and computationally
 intensive, often serving as benchmark for HPC used to measure the
 performance a computational system. *[Mandelbrot]*
@@ -287,54 +287,100 @@ components.
 #+NAME: fig:system-architecture
 [[./figures/system_architecture.png]]
 
-(go into detail about individual threads here)
-(explain data flow)
-(mention payload/response contents)
+Each interaction between the client and the server consists of the exchange of /payload/ and 
+/response/ objects. A /payload/ is a data structure that specifies the region of the Mandelbrot 
+set to be computed, including the bounds in the complex plane, the corresponding screen 
+coordinates, the maximum number of iterations to apply in the Mandelbrot algorithm, 
+and the /granularity/, which determines the size of the square blocks into which the server 
+partitions the workload. For example, a granularity of 5 means that the server will split the
+fractal space into several 5x5 square blocks. Each payload also includes an increasing generation 
+number to identify it.
+
+The server replies to a /payload/ with several /response/ objects, each carrying its corresponding
+payload, as well as the calculated iteration count at each pixel position. In
+addition to the iteration counts, responses also include some metadata, such as the id of the worker 
+that computed it. By delivering results block by block, the server enables the client to view the
+partial fractal regions without waiting for the entire computation to complete.
+
+The client was designed to be responsive and highly interactive. As shown in figure
+[[fig:system-architecture]], the client contains four concurrent threads. The main thread manages 
+both rendering of the fractal image and collection of user input. When a new region is selected,
+the main thread constructs the corresponding payload and pushes it to a dedicated queue. 
+The sender thread dequeues payloads from this queue and transmits them to the server over a 
+TCP connection. Meanwhile, the receiver thread listens for incoming responses, and enqueues them 
+into a response queue. Finally, the response processing thread retrieves these responses and 
+integrates them into the displayed image by applying a coloring function to the calculated 
+iteration count for each pixel, updating the pixel buffer incrementally as results arrive.
+
+(server threads/workers explanation here)
 
 **** Computational aspects
 - Workload discretization etc
 - MPI implementation
+
+
 *** Hardware & Software configuration
-- cei, 6 nodes with 24 hw cores each (144 cores)
-- cei + software (mpi version, etc)
-  - guix https://guix.gnu.org
-    #+begin_src bash
-    guix shell openmpi
-    #+end_src
+
+All experiments were conducted at the PCAD cluster at UFRGS. The client ran on a single /draco/
+node, while the server ran on 1 to 6 /cei/ nodes. 
+
+- Each cei node was equipped with two Intel Xeon Silver 4116 processors at 2.10 GHz, providing a
+  total of 24 physical cores. Within this server setup, both the central coordinator and each MPI 
+  worker process were pinned to a CPU core. The MPI implementation was OpenMPI version 4.1.4.
+
+- The client ran on a draco node with two Intel Xeon E5‑2640 v2 processors at 2.00 GHz.
+
 *** Experimental Project
 **** Input parameters
-- Resolução 1920x1080 (FullHD)
 
-- Granularidade [5, 10, 20, 40, 60, 120], que resultam em [82944,
-  20736, 5184, 1296, 576, 144] responses (Esses valores foram
-  escolhidos porque dividem a largura e altura exatamente). Talvez 5
-  seja baixo demais, já que quase 50% de um response é o payload.
+To evaluate the performance, scalability and load balancing of the system, we designed a set of 
+experiments with various input parameters. These parameters were chosen to test different 
+computational characteristics of the application, allowing us to assess how the system behaves 
+under different workloads.
 
-- Número de núcleos 1:6 (saltos na quantidade de cores)
-  - Ajuster para a máquina
+The experiments consisted of rendering different fractal images at **1920x1080** pixels.
+For each run, the following parameters varied:
 
-- Sobre as coordenadas, acho que a coordenada inicial
-  - easy, um ponto/zoom onde todas as coordenadas escapam rapidamente
-    (o laço iterativo que calculo o ponto termina com 1 ou 2 iterações)
-  - default -> [f_ll(-2, -1.125), f_ur(2, 1.125)] é uma boa, já que tem
-    vários pontos fáceis
-  e difíceis.
-  - hard -> Uma coordanada onde todo ponto é relativamente difícil
-    seria [f_ll(0.25012917440406966100,
-    0.0000022362858728693646947011080050658587),
-    f_ur(0.25012917440406976709,
-    0.0000022362858729754443477445676967781596)], que é bastante
-    profunda, e não tem muitos pontos que escapam. A profundidade máxima
-    poderia ser ajustada dependendo do tempo que vamos alocar aos
-    testes.
+- **Granularity:** Values of [5, 10, 20, 40, 60, 120] were tested, resulting in [82,944, 20,736,
+  5,184, 1,296, 576, 144] tasks for workers, respectively. Smaller block sizes improve
+  load balancing but increase communication overhead, while larger granularities may lead to load 
+  imbalance.
 
-- Talvez seja interessante ter um ponto relativemente fácil, mas não
-  tenho certeza.
+- **Number of Server Nodes:** [1, 2, 3, 4, 5, 6] nodes were tested, each contributing
+  24 physical cores. This allows us to measure how well the system scales with more resources.
 
-- Neste caso testaria mais a latência da comunicação
-  entre workers e o coordenador.
+- **Fractal regions:** Three sets of coordinates and max depth values were chosen.
+  - **Default:** A typical unbalanced Mandelbrot fractal region, containing both points that are 
+    computationally intensive, as well as many points that escape quickly, stressing load 
+    balancing.
+  - **Easy:** A region where most points escape in only a few iterations, testing the communication
+    overhead, rather than computational speed.
+  - **Hard:** A deep region that is computationally intensive but balanced, testing computational
+    throughput.
+  These regions can be seen in figures [[fig:region-default]], [[fig:region-easy]], and [[fig:region-hard]].
+
+#+CAPTION: Default fractal region - Max depth of 150,000
+#+NAME: fig:region-default
+#+ATTR_LATEX: :width 0.45\textwidth :placement [htbp]
+[[./figures/region_default.png]]
+
+#+CAPTION: Easy fractal region - Max depth of 1024
+#+NAME: fig:region-easy
+#+ATTR_LATEX: :width 0.45\textwidth :placement [htbp]
+[[./figures/region_easy.png]]
+
+#+CAPTION: Hard fractal region - Max depth of 300,000
+#+NAME: fig:region-hard
+#+ATTR_LATEX: :width 0.45\textwidth :placement [htbp]
+[[./figures/region_hard.png]]
+
+
 **** Observability (/aka/ Instrumentation Techniques)
+
+
 **** Design of Experiments (DoE)
+
+
 ***** Text                                                       :ignore:
 
 Description of the design of experiments.
@@ -378,8 +424,14 @@ fac.design(nfactors = 3,
 *** Evaluation procedure
 ** Results
 <<sec.results>>
+
+
+
 ** Conclusion
 <<sec.conclusion>>
+
+
+
 ** Acknowledgments
 :PROPERTIES:
 :UNNUMBERED: t
