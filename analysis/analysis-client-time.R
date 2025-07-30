@@ -6,7 +6,7 @@ suppressMessages(library(readxl))
 
 meu_estilo <- function() {
   list(
-    theme_bw(base_size = 16),
+    theme_bw(base_size = 14),
     theme(
       legend.title = element_blank(),
       plot.margin = unit(c(0, 0, 0, 0), "cm"),
@@ -20,7 +20,8 @@ meu_estilo <- function() {
 }
 
 df <- read_csv("experiment_results.csv", progress=FALSE, show_col_types=FALSE) |>
-  rename(case = difficulty)
+  rename(case = difficulty) |>
+  mutate(case = factor(case, levels = c("easy", "default", "hard"))) # explicitly order easy-default-hard
 
 # Baseline at 1 node for each case/granularity
 baselines <- df |>
@@ -35,38 +36,41 @@ df <- df |>
     efficiency = speedup / num_nodes
   )
 
-# Average across trials
+# Get averages and standard deviations for error bars
 agg_df <- df |>
   group_by(case, granularity, num_nodes) |>
   summarise(
-    time_mean = mean(client_dequeue_all),
+    time_mean    = mean(client_dequeue_all),
+    time_ci      = 1.96 * sd(client_dequeue_all) / sqrt(n()),
     speedup_mean = mean(speedup),
-    eff_mean = mean(efficiency),
+    speedup_ci   = 1.96 * sd(speedup) / sqrt(n()),
+    eff_mean     = mean(efficiency),
+    eff_ci       = 1.96 * sd(efficiency) / sqrt(n()),
     .groups = "drop"
   )
 
-plot_df <- agg_df |>
-  pivot_longer(
-    cols = c(time_mean, speedup_mean, eff_mean),
-    names_to = "metric",
-    values_to = "mean"
-  ) |>
-  mutate(
-    metric_label = recode(metric,
-      "time_mean" = "Time (seconds)",
-      "speedup_mean" = "Speedup",
-      "eff_mean" = "Efficiency"
-    ),
-    metric_label = factor(metric_label, levels = c("Time (seconds)", "Speedup", "Efficiency"))
-  )
+create_plot <- function(data, metric, y_label) {
+  mean_columns <- paste0(metric, "_mean")
+  confidence_columns <- paste0(metric, "_ci")
+  
+  ggplot(data, aes(x = num_nodes, y = .data[[mean_columns]], 
+                   color = factor(granularity), group = granularity)) +
+    geom_line(linewidth = 0.7) +
+    geom_errorbar(aes(ymin = .data[[mean_columns]] - .data[[confidence_columns]], 
+                      ymax = .data[[mean_columns]] + .data[[confidence_columns]]),
+                      width = 0.2, alpha = 0.7) +
+    geom_point(size = 2) +
+    facet_wrap(~ case) +
+    labs(x = "Node Count", y = y_label, color = "Gran.") +
+    meu_estilo() +
+    theme(legend.title = element_text())
+}
 
-p <- ggplot(plot_df, aes(x = num_nodes, y = mean,
-                         color = factor(granularity), group = granularity)) +
-  geom_line(linewidth = 0.8) +
-  geom_point(size = 2) +
-  facet_grid(metric_label ~ case, scales = "free_y") +
-  labs(x = "Node Count", y = NULL, color = "Granularity") +
-  scale_y_continuous(expand = expansion(mult = c(0.02, 0.05)), limits = c(0, NA)) +
-  meu_estilo()
+time_plot <- create_plot(agg_df, "time", "Time (s)")
+speedup_plot <- create_plot(agg_df, "speedup", "Speedup")
+efficiency_plot <- create_plot(agg_df, "eff", "Efficiency") +
+  geom_hline(yintercept = 1.0, linetype = "dashed", color = "gray50", alpha = 0.7)
 
-ggsave("client_metrics.png", plot = p, dpi = 300, width = 8, height = 8)
+ggsave("client_time.png", plot = time_plot, dpi = 300, width = 6.5, height = 3.0)
+ggsave("client_speedup.png", plot = speedup_plot, dpi = 300, width = 6.5, height = 3.0)
+ggsave("client_efficiency.png", plot = efficiency_plot, dpi = 300, width = 6.5, height = 3.0)

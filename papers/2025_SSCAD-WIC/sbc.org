@@ -440,27 +440,40 @@ fac.design(nfactors = 3,
 This section presents the performance evaluation of our fractal rendering system based on the 
 experiments described earlier. We focus on four key metrics:
 
-- Client time: The average total time taken for the client to receive the fully computed fractal
+- Client time: The total time taken for the client to receive the fully computed fractal
   for each setting.
 
-- Speedup: The ratio of the baseline time (average single-node client time for each granularity 
-  value) to the time with multiple nodes.
+- Speedup: The ratio of the baseline time to the time with multiple nodes, where the baseline
+  is calculated as the average client time when using one node for the same case and granularity 
+  setting. Note that the speedup is calculated relative to the number of nodes, not cores.
 
-- Efficiency: The speedup normalized by the number of nodes, indicating how well the system scales.
+- Efficiency: The speedup normalized by the number of nodes, indicating how well the system 
+  scales with more nodes.
 
 - Imbalance Percentage: ...
 
-#+CAPTION: Client time, speedup and efficiency for each node/granularity configuration
-#+NAME: fig:client-metrics
-[[./figures/client_metrics.png]]
+Note that the graphs for client time, speedup and efficiency report the mean across the 10
+trials for each setting. Error bars indicate 95% confidence intervals for the mean.
 
-Examining Figure [[fig:client-metrics]], 
+#+CAPTION: Average client time for each setting.
+#+NAME: fig:client-time
+[[./figures/client_time.png]]
+
+#+CAPTION: Average client speedup relative to 1 node for each setting.
+#+NAME: fig:client-speedup
+[[./figures/client_speedup.png]]
+
+#+CAPTION: Average client efficiency relative to 1 node for each setting.
+#+NAME: fig:client-efficiency
+[[./figures/client_efficiency.png]]
+
+Examining Figures [[fig:client-time]], [[fig:client-speedup]] and [[fig:client-efficiency]]
 performance appears to scale well with the addition of nodes for the /default/ and /hard/ cases, 
 provided the granularity is not too low or too high. In particular, granularity 20 appears to 
 perform the best in those cases, with an efficiency close to 1 in the /hard/ case, and 
 approximately 0.88 in the /default/ case. This is likely due to there being a good trade‑off 
-between the payload size and the number of payloads assigned to each worker, keeping a low 
-communication overhead while also balancing work between workers well.
+between the payload size and the number of payloads, keeping a low communication overhead while 
+also balancing work between workers well.
 
 In contrast, the /easy/ case shows the opposite trend: higher granularities consistently perform 
 better, and increasing node counts worsen performance. Because most points in this region escape 
@@ -470,6 +483,8 @@ added. This effect is especially visible at granularity 5: in the /default/ and 
 performance worsens past 3 nodes, nearly matching the times observed in the /easy/ case. This 
 suggests that the performance is being capped by communication overhead rather than computation 
 time in those cases.
+
+(add imbalance figure and discussion)
 
 ** Conclusion
 <<sec.conclusion>>
