@@ -27,38 +27,27 @@ df <- read_csv("experiment_results.csv", progress=FALSE, show_col_types=FALSE) |
 baselines <- df |>
   filter(num_nodes == 1) |>
   group_by(case, granularity) |>
-  summarise(base_time = mean(client_dequeue_all), .groups = "drop")
+  summarise(baseline_time = mean(client_dequeue_all), .groups = "drop")
 
-df <- df |>
-  left_join(baselines, by = c("case", "granularity")) |>
-  mutate(
-    speedup = base_time / client_dequeue_all,
-    efficiency = speedup / num_nodes
-  )
-
-# Get averages and standard deviations for error bars
+# Get time average grouped by case, granularity and nodes
 agg_df <- df |>
   group_by(case, granularity, num_nodes) |>
   summarise(
-    time_mean    = mean(client_dequeue_all),
-    time_ci      = 1.96 * sd(client_dequeue_all) / sqrt(n()),
-    speedup_mean = mean(speedup),
-    speedup_ci   = 1.96 * sd(speedup) / sqrt(n()),
-    eff_mean     = mean(efficiency),
-    eff_ci       = 1.96 * sd(efficiency) / sqrt(n()),
+    time_mean = mean(client_dequeue_all),
     .groups = "drop"
+  ) |>
+  # Compute speedup/efficiency compared to baseline time
+  left_join(baselines, by = c("case", "granularity")) |>
+  mutate(
+    speedup_mean = baseline_time / time_mean,
+    eff_mean = speedup_mean / num_nodes
   )
 
 create_plot <- function(data, metric, y_label) {
-  mean_columns <- paste0(metric, "_mean")
-  confidence_columns <- paste0(metric, "_ci")
-  
-  ggplot(data, aes(x = num_nodes, y = .data[[mean_columns]], 
+  mean_column <- paste0(metric, "_mean")
+  ggplot(data, aes(x = num_nodes, y = .data[[mean_column]], 
                    color = factor(granularity), group = granularity)) +
     geom_line(linewidth = 0.7) +
-    geom_errorbar(aes(ymin = .data[[mean_columns]] - .data[[confidence_columns]], 
-                      ymax = .data[[mean_columns]] + .data[[confidence_columns]]),
-                      width = 0.2, alpha = 0.7) +
     geom_point(size = 2) +
     facet_wrap(~ case) +
     labs(x = "Node Count", y = y_label, color = "Gran.") +

@@ -440,30 +440,27 @@ fac.design(nfactors = 3,
 This section presents the performance evaluation of our fractal rendering system based on the 
 experiments described earlier. We focus on four key metrics:
 
-- Client time: The total time taken for the client to receive the fully computed fractal
-  for each setting.
+- Mean client time: The total time taken for the client to receive the fully computed fractal
+  for each setting, averaged across the 10 trials. 
 
-- Speedup: The ratio of the baseline time to the time with multiple nodes, where the baseline
-  is calculated as the average client time when using one node for the same case and granularity 
-  setting. Note that the speedup is calculated relative to the number of nodes, not cores.
+- Speedup: The ratio of the mean client time with a single node for a given region and granularity
+  setting (the baseline), to the mean client time with multiple nodes for that same setting. 
+  Note that the speedup is calculated relative to the number of nodes, not cores.
 
 - Efficiency: The speedup normalized by the number of nodes, indicating how well the system 
   scales with more nodes.
 
 - Imbalance Percentage: ...
 
-Note that the graphs for client time, speedup and efficiency report the mean across the 10
-trials for each setting. Error bars indicate 95% confidence intervals for the mean.
-
-#+CAPTION: Average client time for each setting.
+#+CAPTION: Mean client time for each setting.
 #+NAME: fig:client-time
 [[./figures/client_time.png]]
 
-#+CAPTION: Average client speedup relative to 1 node for each setting.
+#+CAPTION: Client speedup relative to 1 node for each setting.
 #+NAME: fig:client-speedup
 [[./figures/client_speedup.png]]
 
-#+CAPTION: Average client efficiency relative to 1 node for each setting.
+#+CAPTION: Client efficiency relative to 1 node for each setting.
 #+NAME: fig:client-efficiency
 [[./figures/client_efficiency.png]]
 
