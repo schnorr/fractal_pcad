@@ -492,10 +492,14 @@ time in those cases.
 :PROPERTIES:
 :UNNUMBERED: t
 :END:
+We would like to express our sincere gratitude to the Rio Grande do Sul Research Foundation (FAPERGS) and the Brazilian National Council for Scientific and
+Technological Development (CNPq) for their financial support, which included scientific initiation scholarships from both FAPERGS (PROBIC) and CNPq (PBIC).
+We thank the Federal University of Rio Grande do Sul (UFRGS) for all institutional support. We also extend our thanks to the Parallel and Distributed
+Processing Research Group (GPPD) for access to the PCAD cluster resources, which were essential for carrying out this work.
 
 Who paid for this?
-- PCAD
-- Scholarships
+- PCAD             OK
+- Scholarships     OK
 
 ** References                                                        :ignore:
 
