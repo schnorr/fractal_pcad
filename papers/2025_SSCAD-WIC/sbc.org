@@ -507,7 +507,9 @@ provided the granularity is not too low or too high. In particular, granularity 
 perform the best in those cases, with an efficiency close to 1 in the /hard/ case, and 
 approximately 0.88 in the /default/ case. This is likely due to there being a good trade‑off 
 between the payload size and the number of payloads, keeping a low communication overhead while 
-also balancing work between workers well. This is supported by Figure [[fig:imbalance-percentage]],
+also balancing work between workers well. 
+
+This is supported by Figure [[fig:imbalance-percentage]],
 which shows consistently better load balancing for lower granularities, with performance degrading 
 at values over 40. This effect is higher the more nodes, and therefore workers, are present.
 The /default/ case in particular seems to suffer from more worker imbalance
@@ -520,7 +522,9 @@ As such, lower granularities lead to higher overhead, which seems to grow worse 
 added. This effect is especially visible at granularity 5: in the /default/ and /hard/ cases, 
 performance worsens past 3 nodes, nearly matching the times observed in the /easy/ case. This 
 suggests that the performance is being capped by communication overhead rather than computation 
-time at such low granularities. Imbalance is also high across granularities in the /easy/ case, as 
+time at such low granularities. 
+
+Imbalance is also high across granularities in the /easy/ case, as 
 the work is so light that some workers can finish a payload and request another, while other 
 workers are still waiting for their next payload.
 
