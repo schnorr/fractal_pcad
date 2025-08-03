@@ -60,6 +60,6 @@ speedup_plot <- create_plot(agg_df, "speedup", "Speedup")
 efficiency_plot <- create_plot(agg_df, "eff", "Efficiency") +
   geom_hline(yintercept = 1.0, linetype = "dashed", color = "gray50", alpha = 0.7)
 
-ggsave("client_time.png", plot = time_plot, dpi = 300, width = 6.5, height = 3.0)
-ggsave("client_speedup.png", plot = speedup_plot, dpi = 300, width = 6.5, height = 3.0)
-ggsave("client_efficiency.png", plot = efficiency_plot, dpi = 300, width = 6.5, height = 3.0)
+ggsave("client_time.png", plot = time_plot, dpi = 300, width = 6.5, height = 2.5)
+ggsave("client_speedup.png", plot = speedup_plot, dpi = 300, width = 6.5, height = 2.5)
+ggsave("client_efficiency.png", plot = efficiency_plot, dpi = 300, width = 6.5, height = 2.5)

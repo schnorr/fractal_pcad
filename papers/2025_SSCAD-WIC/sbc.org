@@ -329,15 +329,14 @@ waiting for the entire region to be completed.
 - Workload discretization etc
 - MPI implementation
 
-
 *** Hardware & Software configuration
 
 All experiments were conducted at the PCAD cluster at UFRGS. The client ran on a single /draco/
 node, while the server ran on 1 to 6 /cei/ nodes. 
 
 - Each cei node was equipped with two Intel Xeon Silver 4116 processors at 2.10 GHz, providing a
-  total of 24 physical cores. Within this server setup, both the central coordinator and each MPI 
-  worker process were pinned to a CPU core. The MPI implementation was OpenMPI version 4.1.4.
+  total of 24 physical cores. Within this server setup, each MPI Rank was pinned to a CPU core. 
+  The MPI implementation was OpenMPI version 4.1.4.
 
 - The client ran on a draco node with two Intel Xeon E5‑2640 v2 processors at 2.00 GHz.
 
@@ -369,7 +368,6 @@ For each run, the following parameters varied:
     overhead, rather than computational speed.
   - **Hard:** A deep region that is computationally intensive but balanced, testing computational
     throughput.
-  These regions can be seen in Figure [[fig:fractal-regions]].
 
 #+CAPTION: Default, Easy, and Hard fractal regions side by side
 #+NAME: fig:fractal-regions
@@ -397,22 +395,18 @@ For each run, the following parameters varied:
 
 **** Observability
 
-To measure performance, the client and server were modified to collect and log times.
-All measurements were performed using ~clock_gettime~ with the ~CLOCK_MONOTONIC~ clock, ensuring 
-that results were not affected by system clock adjustments.
+To measure performance and load balancing, the client and server were modified to collect and 
+log times and other metrics.
 
 On the client, we recorded the elapsed time between the creation of each payload 
-and the arrival of the first response, as well as the last response. These metrics capture the system's
-visible performance to the user, reflecting the user experience.
+and the arrival of the first response, as well as the last response.
 
 On the server, we measured the time between a payload being received and its discretization, as 
 well as the first and last responses being received by the ~MPI Recv~ thread, and the times these
-were sent to the client in the ~Net Send~ thread. These measurements provide insight into the 
-server’s throughput and the responsiveness of its task distribution pipeline.
+were sent to the client in the ~Net Send~ thread.
 
 On each worker, we measured the individual times to compute each payload, their pixel counts and
-iteration counts, as well as the aggregate sum of these values. This analysis of load balancing 
-across workers to evaluate how effectively the discretization strategy distributed the workload.
+iteration counts, as well as the aggregate sum of these values.
 
 **** Design of Experiments
 
@@ -421,11 +415,10 @@ rendering, and did not capture user mouse/keyboard input, instead receiving para
 the command line. As such, the ~Process Response~ thread was removed, and the ~Main~ thread simply 
 enqueued the payload and dequeued responses from the ~Net Recv~ thread.
 
-The design followed a full factorial design across the parameters described above: six values of 
-granularity, three fractal regions, and one to six server nodes. All possible combinations of 
-these factors were evaluated, resulting in 108 distinct configurations. Each configuration was 
-executed 10 times to reduce the impact of variability from network or system noise, and the 
-order of runs was randomized to avoid potential bias.
+The design followed a full factorial design across the parameters. All possible combinations of 
+factors were evaluated, resulting in 108 distinct configurations. Each configuration was 
+executed 10 times to reduce the impact of variability, and the order of runs was randomized to 
+avoid potential bias.
 
 ***** Code                                                     :noexport:
 #+begin_src R :results output :session *R* :exports none :noweb yes :colnames yes
@@ -480,11 +473,16 @@ experiments described earlier. We focus on four key metrics:
 - Efficiency: The speedup normalized by the number of nodes, indicating how well the system 
   scales with more nodes.
 
-- Imbalance Percentage: ...
+- Imbalance Percentage: A measure of how unevenly the computational workload is distributed
+  among workers. Lower values are better. It is calculated as:
+  \begin{equation}
+  \text{Imbalance Percentage} = \frac{L_{\text{max}} - L_{\text{avg}}}{L_{\text{max}}} \times \frac{n}{n-1}
+  \end{equation}
+  where $L_{\text{max}}$ is the computation time of the slowest worker, $L_{\text{avg}}$ is the average 
+  computation time across all workers, and $n$ is the number of workers.
 
-Although coordinator metrics were collected, such as discretization latency and MPI
-thread timings these exhibited minimal variation across runs and are therefore omitted here.
-Our analysis instead focuses on client times, which directly reflect user-perceived performance,
+Although coordinator metrics were collected, they closely mirrored the client-side metrics.
+We therefore focus on client times, which directly reflect user-perceived performance,
 and worker-level timings, which reveal the degree of load balancing achieved.
 
 #+CAPTION: Mean client time for each setting.
@@ -499,24 +497,31 @@ and worker-level timings, which reveal the degree of load balancing achieved.
 #+NAME: fig:client-efficiency
 [[./figures/client_efficiency.png]]
 
-Examining Figures [[fig:client-time]], [[fig:client-speedup]] and [[fig:client-efficiency]]
+#+CAPTION: Imbalance percentage across trials on each setting.
+#+NAME: fig:imbalance-percentage
+[[./figures/imbalance_percentage.png]]
+
+Examining Figures [[fig:client-time]], [[fig:client-speedup]] and [[fig:client-efficiency]],
 performance appears to scale well with the addition of nodes for the /default/ and /hard/ cases, 
 provided the granularity is not too low or too high. In particular, granularity 20 appears to 
 perform the best in those cases, with an efficiency close to 1 in the /hard/ case, and 
 approximately 0.88 in the /default/ case. This is likely due to there being a good trade‑off 
 between the payload size and the number of payloads, keeping a low communication overhead while 
-also balancing work between workers well.
+also balancing work between workers well. This is supported by Figure [[fig:imbalance-percentage]],
+which shows consistently better load balancing for lower granularities, with performance degrading 
+at values over 40. This effect is higher the more nodes, and therefore workers, are present.
+The /default/ case in particular seems to suffer from more worker imbalance
+than the /hard/ case, due to the fractal region having a mix of very easy and very hard regions.
 
-In contrast, the /easy/ case shows the opposite trend: higher granularities consistently perform 
+In contrast, the /easy/ case shows a different trend: higher granularities consistently perform 
 better, and increasing node counts worsen performance. Because most points in this region escape 
 in only a few iterations, computation becomes inexpensive, and the bottleneck is communication. 
 As such, lower granularities lead to higher overhead, which seems to grow worse as more nodes are 
 added. This effect is especially visible at granularity 5: in the /default/ and /hard/ cases, 
 performance worsens past 3 nodes, nearly matching the times observed in the /easy/ case. This 
 suggests that the performance is being capped by communication overhead rather than computation 
-time in those cases.
-
-(add imbalance figure and discussion)
+time in those cases. Imbalance is also high across granularities in this region, as the work is 
+so light that some workers can complete multiple payloads before others receive their first.
 
 ** Conclusion
 <<sec.conclusion>>

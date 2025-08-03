@@ -19,21 +19,23 @@ meu_estilo <- function() {
     ))
 }
 
-read_csv("workers.csv", progress=FALSE, show_col_types=FALSE) |>
-  group_by(case, nodes, granularity, worker, repetition) -> df
+read_csv("worker_totals.csv", progress=FALSE, show_col_types=FALSE) |>
+  group_by(difficulty, num_nodes, granularity, trial_id, worker_id) -> df
 
-df |>
-  summarize(duration = sum(duration),
-            pixels = sum(pixels),
-            depth = sum(depth),
-            .groups = "keep") |>
-  write_csv("worker_totals.csv") -> df.totals
+df <- df |>
+  rename(
+    case = difficulty,
+    nodes = num_nodes,
+    repetition = trial_id
+  )
 
-df.totals |>
-#  filter(case == "default") |>
-#  filter(nodes == 1) |>
-#  filter(granularity == 5) |>
-#  filter(repetition == 2) |>
+df <- df |>
+  summarize(duration = sum(compute_time),
+            pixels = sum(pixel_count),
+            depth = sum(iterations),
+            .groups = "keep")
+
+plot <- df |>
   group_by(case, nodes, granularity, repetition) |>
   summarize(imbalance.time = max(duration) / mean(duration),
             percent.imbalance = (max(duration)/mean(duration) - 1) * 100,
@@ -46,3 +48,5 @@ df.totals |>
   facet_grid(case~granularity) +
   meu_estilo() +
   theme(legend.position = "top")
+
+ggsave("imbalance_percentage.png", plot = plot, width = 8, height = 6, dpi = 300)
