@@ -529,7 +529,7 @@ the work is so light that some workers can finish a payload and request another,
 workers are still waiting for their next payload.
 
 These results show that scaling depends on the balance between computation
-and communication costs. For harder fractal regions regions, the system scales very well 
+and communication costs. For harder fractal regions, the system scales very well 
 with additional nodes when granularity is appropriately chosen, with granularity 20 striking 
 the best balance. However, for simpler regions, communication overhead dominates 
 and additional nodes can even reduce performance.
