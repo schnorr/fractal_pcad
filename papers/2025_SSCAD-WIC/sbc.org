@@ -319,8 +319,8 @@ with outdated tasks and their pending responses being discarded to prevent worke
 regions that are no longer relevant to the client’s current view. As workers become available, they
 request a new task from the coordinator. The ~MPI Send~ thread dynamically assigns them new 
 payloads from the queue. Each worker independently computes its assigned payload, 
-producing iteration counts for all pixels in that subregion. Once a block is completed, the results
-are collected by the ~MPI Recv~ thread, which enqueues them into a response queue. These responses 
+producing iteration counts for all pixels in that subregion. Once the response is computed, it is 
+sent to the ~MPI Recv~ thread, which enqueues it to a response queue. These responses 
 are then collected by ~Net Send~, which sends them back to the client. By returning 
 results incrementally, the server ensures that the client can begin updating the display without 
 waiting for the entire region to be completed.
