@@ -313,10 +313,10 @@ integrates them into the displayed image by applying a coloring function to the 
 iteration count for each pixel, updating the pixel buffer incrementally as results arrive.
 
 On the server side, the ~Net Recv~ thread listens for client payloads, forwarding them to the 
-~Discretize payloads~, which divides the requested region into several payloads, each covering 
+~Discretize payloads~ thread, which divides the requested region into several payloads, each covering 
 a smaller square area according to the specified granularity. These are then placed into a queue, 
-with outdated tasks and their pending responses being discarded to prevent workers from computing
-regions that are no longer relevant to the client’s current view. As workers become available, they
+with outdated payloads being discarded to prevent workers from computing
+regions that are no longer relevant to the client. As workers become available, they
 request a new task from the coordinator. The ~MPI Send~ thread dynamically assigns them new 
 payloads from the queue. Each worker independently computes its assigned payload, 
 producing iteration counts for all pixels in that subregion. Once the response is computed, it is 
