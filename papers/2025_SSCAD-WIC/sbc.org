@@ -520,8 +520,9 @@ As such, lower granularities lead to higher overhead, which seems to grow worse 
 added. This effect is especially visible at granularity 5: in the /default/ and /hard/ cases, 
 performance worsens past 3 nodes, nearly matching the times observed in the /easy/ case. This 
 suggests that the performance is being capped by communication overhead rather than computation 
-time in those cases. Imbalance is also high across granularities in this region, as the work is 
-so light that some workers can complete multiple payloads before others receive their first.
+time at such low granularities. Imbalance is also high across granularities in the /easy/ case, as 
+the work is so light that some workers can finish a payload and request another, while other 
+workers are still waiting for their next payload.
 
 ** Conclusion
 <<sec.conclusion>>
