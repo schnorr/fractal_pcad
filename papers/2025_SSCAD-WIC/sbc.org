@@ -303,25 +303,25 @@ that computed it. By delivering results block by block, the server enables the c
 partial fractal regions without waiting for the entire computation to complete.
 
 The client was designed to be responsive and highly interactive. As shown in figure
-[[fig:system-architecture]], the client contains four concurrent threads. The main thread manages 
-both rendering of the fractal image and collection of user input. When a new region is selected,
-the main thread constructs the corresponding payload and pushes it to a dedicated queue. 
-The sender thread dequeues payloads from this queue and transmits them to the server over a 
-TCP connection. Meanwhile, the receiver thread listens for incoming responses, and enqueues them 
-into a response queue. Finally, the response processing thread retrieves these responses and 
+[[fig:system-architecture]], the client contains four concurrent threads. The ~Main~ thread manages 
+both rendering of the fractal image and collection of user mouse and keyboard input. When a new region is selected,
+~Main~ constructs the corresponding payload and pushes it to a dedicated queue. 
+The ~Net Send~ thread dequeues payloads from this queue and transmits them to the server over a 
+TCP connection. Meanwhile, ~Net Recv~ listens for incoming responses, and enqueues them 
+into a response queue. Finally, the ~Process Response~ thread retrieves these responses and 
 integrates them into the displayed image by applying a coloring function to the calculated 
 iteration count for each pixel, updating the pixel buffer incrementally as results arrive.
 
-On the server side, the receiving thread listens for client payloads, forwarding them to the 
-discretizing thread, which divides the requested region into several payloads, each covering 
+On the server side, the ~Net Recv~ thread listens for client payloads, forwarding them to the 
+~Discretize payloads~, which divides the requested region into several payloads, each covering 
 a smaller square area according to the specified granularity. These are then placed into a queue, 
 with outdated tasks and their pending responses being discarded to prevent workers from computing
 regions that are no longer relevant to the client’s current view. As workers become available, they
-request a new task from the coordinator. The MPI send thread dynamically assigns them new 
-payloads from the discretizer's queue. Each worker independently computes its assigned payload, 
+request a new task from the coordinator. The ~MPI Send~ thread dynamically assigns them new 
+payloads from the queue. Each worker independently computes its assigned payload, 
 producing iteration counts for all pixels in that subregion. Once a block is completed, the results
-are collected by the MPI receive thread, which enqueues them into a response queue. These responses 
-are then collected by a network sender thread, which sends them back to the client. By returning 
+are collected by the ~MPI Recv~ thread, which enqueues them into a response queue. These responses 
+are then collected by ~Net Send~, which sends them back to the client. By returning 
 results incrementally, the server ensures that the client can begin updating the display without 
 waiting for the entire region to be completed.
 
@@ -395,18 +395,37 @@ For each run, the following parameters varied:
 \end{minipage}
 \end{figure}
 
-All combinations of the above parameters were tested in a randomized order, with 10 repetitions
-each to ensure reliability.
+**** Observability
 
-**** Observability (/aka/ Instrumentation Techniques)
+To measure performance, the client and server were modified to collect and log times.
+All measurements were performed using ~clock_gettime~ with the ~CLOCK_MONOTONIC~ clock, ensuring 
+that results were not affected by system clock adjustments.
 
+On the client, we recorded the elapsed time between the creation of each payload 
+and the arrival of the first response, as well as the last response. These metrics capture the system's
+visible performance to the user, reflecting the user experience.
 
-**** Design of Experiments (DoE)
+On the server, we measured the time between a payload being received and its discretization, as 
+well as the first and last responses being received by the ~MPI Recv~ thread, and the times these
+were sent to the client in the ~Net Send~ thread. These measurements provide insight into the 
+server’s throughput and the responsiveness of its task distribution pipeline.
 
+On each worker, we measured the individual times to compute each payload, their pixel counts and
+iteration counts, as well as the aggregate sum of these values. This analysis of load balancing 
+across workers to evaluate how effectively the discretization strategy distributed the workload.
 
-***** Text                                                       :ignore:
+**** Design of Experiments
 
-Description of the design of experiments.
+Experiments were conducted using a modified experimental client, which did not perform graphical 
+rendering, and did not capture user mouse/keyboard input, instead receiving parameters through 
+the command line. As such, the ~Process Response~ thread was removed, and the ~Main~ thread simply 
+enqueued the payload and dequeued responses from the ~Net Recv~ thread.
+
+The design followed a full factorial design across the parameters described above: six values of 
+granularity, three fractal regions, and one to six server nodes. All possible combinations of 
+these factors were evaluated, resulting in 108 distinct configurations. Each configuration was 
+executed 10 times to reduce the impact of variability from network or system noise, and the 
+order of runs was randomized to avoid potential bias.
 
 ***** Code                                                     :noexport:
 #+begin_src R :results output :session *R* :exports none :noweb yes :colnames yes
@@ -462,6 +481,11 @@ experiments described earlier. We focus on four key metrics:
   scales with more nodes.
 
 - Imbalance Percentage: ...
+
+Although coordinator metrics were collected, such as discretization latency and MPI
+thread timings these exhibited minimal variation across runs and are therefore omitted here.
+Our analysis instead focuses on client times, which directly reflect user-perceived performance,
+and worker-level timings, which reveal the degree of load balancing achieved.
 
 #+CAPTION: Mean client time for each setting.
 #+NAME: fig:client-time
