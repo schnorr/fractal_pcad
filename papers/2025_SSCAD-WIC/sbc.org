@@ -312,7 +312,18 @@ into a response queue. Finally, the response processing thread retrieves these r
 integrates them into the displayed image by applying a coloring function to the calculated 
 iteration count for each pixel, updating the pixel buffer incrementally as results arrive.
 
-(server threads/workers explanation here)
+On the server side, the receiving thread listens for client payloads, forwarding them to the 
+discretizing thread, which divides the requested region into several payloads, each covering 
+a smaller square area according to the specified granularity. These are then placed into a queue, 
+with outdated tasks and their pending responses being discarded to prevent workers from computing
+regions that are no longer relevant to the client’s current view. As workers become available, they
+request a new task from the coordinator. The MPI send thread dynamically assigns them new 
+payloads from the discretizer's queue. Each worker independently computes its assigned payload, 
+producing iteration counts for all pixels in that subregion. Once a block is completed, the results
+are collected by the MPI receive thread, which enqueues them into a response queue. These responses 
+are then collected by a network sender thread, which sends them back to the client. By returning 
+results incrementally, the server ensures that the client can begin updating the display without 
+waiting for the entire region to be completed.
 
 **** Computational aspects
 - Workload discretization etc
@@ -492,14 +503,10 @@ time in those cases.
 :PROPERTIES:
 :UNNUMBERED: t
 :END:
-We would like to express our sincere gratitude to the Rio Grande do Sul Research Foundation (FAPERGS) and the Brazilian National Council for Scientific and
-Technological Development (CNPq) for their financial support, which included scientific initiation scholarships from both FAPERGS (PROBIC) and CNPq (PBIC).
-We thank the Federal University of Rio Grande do Sul (UFRGS) for all institutional support. We also extend our thanks to the Parallel and Distributed
-Processing Research Group (GPPD) for access to the PCAD cluster resources, which were essential for carrying out this work.
 
 Who paid for this?
-- PCAD             OK
-- Scholarships     OK
+- PCAD
+- Scholarships
 
 ** References                                                        :ignore:
 
