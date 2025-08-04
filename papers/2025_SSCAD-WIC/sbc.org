@@ -381,10 +381,6 @@ the ~MPI Recv~ thread, which enqueues it to a response queue. These
 responses are then collected by ~Net Send~, which sends them back to the
 Client.
 
-**** Computational aspects
-- Workload discretization etc
-- MPI implementation
-
 *** Hardware & Software configuration
 
 All experiments were conducted at the PCAD cluster at UFRGS. The Client ran on a single /draco/
