@@ -385,7 +385,7 @@ Client.
 
 We run all experiments at the /Parque Computacional de Alto Desempenho/
 (PCAD) at INF/UFRGS. The Client executes on a single /draco/ node, while
-the server executes on 1 to 6 /cei/ nodes. The draco node on which the
+the server executes on one to six /cei/ nodes. The draco node on which the
 Client executes has two Intel Xeon E5‑2640 v2 processors at 2.00 GHz.
 Each cei node, used for the compute-bound part, has two Intel Xeon
 Silver 4116 processors at 2.10 GHz, providing 24 physical cores each
