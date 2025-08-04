@@ -503,22 +503,25 @@ fac.design(nfactors = 3,
 #+RESULTS:
 : creating full factorial with 108 runs ...
 
-**** Observability
+*** Observability
 
-To measure performance and load balancing, the Client and server were modified to collect and 
-log times and other metrics.
+We manually instrument the code of the Client and Server to collect
+and combine specific events and derive both execution time and load
+balancing metrics. In the Client, we register the elapsed time between
+the creation of each payload and the arrival of the first response, as
+well as the last response. These metrics enable us to verify the
+latency of the application as well as total perceived time from the
+user perspective. In the server, we measured the time between a
+payload being received and its discretization, the first and last
+responses being received by the ~MPI Recv~ thread, and the moments these
+responses are sent to the Client in the ~Net Send~ thread. This
+information allow us to verify the discretization cost, and the amount
+of compute time from the perspective of the coordinator. Finally, in
+each MPI worker, we measured the individual times to compute each
+payload, their pixel and depth counts, as well as the aggregate sum of
+these values. This information allow us to verify the load balance
+among workers.
 
-On the Client, we recorded the elapsed time between the creation of each payload 
-and the arrival of the first response, as well as the last response.
-
-On the server, we measured the time between a payload being received and its discretization, as 
-well as the first and last responses being received by the ~MPI Recv~ thread, and the times these
-were sent to the Client in the ~Net Send~ thread.
-
-On each worker, we measured the individual times to compute each payload, their pixel counts and
-iteration counts, as well as the aggregate sum of these values.
-
-*** Evaluation procedure
 ** Results
 <<sec.results>>
 
