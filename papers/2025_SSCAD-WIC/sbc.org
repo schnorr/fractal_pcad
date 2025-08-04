@@ -331,41 +331,55 @@ the Server the /responses/, which are then redirected to the Client.
 #+NAME: fig:system-architecture
 [[./figures/system_architecture.png]]
 
-Each interaction between the client and the server consists of the exchange of /payload/ and 
-/response/ objects. A /payload/ is a data structure that specifies the region of the Mandelbrot 
-set to be computed, including the bounds in the complex plane, the corresponding screen 
-coordinates, the maximum number of iterations to apply in the Mandelbrot algorithm, 
-and the /granularity/, which determines the size of the square blocks into which the server 
-partitions the workload. For example, a granularity of 5 means that the server will split the
-fractal space into several 5x5 square blocks. Each payload also includes an increasing generation 
-number to identify it.
 
-The server replies to a /payload/ with several /response/ objects, each carrying its corresponding
-payload, as well as the calculated iteration count at each pixel position. In
-addition to the iteration counts, responses also include some metadata, such as the id of the worker 
-that computed it. By delivering results block by block, the server enables the client to view the
-partial fractal regions without waiting for the entire computation to complete.
+Each interaction between the Client and the Server consists of the
+exchange of /payload/ and /response/ objects. A /payload/ is a data
+structure that specifies the region of the Mandelbrot Set to be
+computed, including the bounds in the complex plane, the corresponding
+screen coordinates, the /depth/, which is maximum number of iterations
+to apply in the Mandelbrot algorithm, and the /granularity/, which
+determines the size of the square blocks into which the server
+partitions the workload. For example, a granularity of 5 means that
+the server will split the fractal space into several 5\times5 square
+blocks. Each payload also includes an increasing generation number to
+identify it in the case the Client sends several /payloads/ in after the
+another.
 
-The client was designed to be responsive and highly interactive. As shown in figure
-[[fig:system-architecture]], the client contains four concurrent threads. The ~Main~ thread manages 
-both rendering of the fractal image and collection of user mouse and keyboard input. When a new region is selected,
-~Main~ constructs the corresponding payload and pushes it to a dedicated queue. 
-The ~Net Send~ thread dequeues payloads from this queue and transmits them to the server over a 
-TCP connection. Meanwhile, ~Net Recv~ listens for incoming responses, and enqueues them 
-into a response queue. Finally, the ~Process Response~ thread retrieves these responses and 
-integrates them into the displayed image by applying a coloring function to the calculated 
-iteration count for each pixel, updating the pixel buffer incrementally as results arrive.
+The Server replies to a single /payload/ with several /response/ objects,
+each carrying its corresponding payload, as well as the calculated
+depth count at each pixel position. In addition to the depth counts,
+the responses also include some metadata, such as the id of the worker
+that computed it. By delivering results block by block, the Server
+enables the Client to view the partial fractal regions without waiting
+for the entire computation to complete.
 
-On the server side, the ~Net Recv~ thread listens for client payloads, forwarding them to the 
-~Discretize payloads~ thread, which divides the requested region into several payloads sized
-according to the specified granularity. These are then placed into a queue, 
-with outdated payloads being discarded to prevent workers from computing
+We designed the Client to be responsive and highly interactive. As
+shown in figure [[fig:system-architecture]], the Client contains four
+concurrent threads. The ~Main~ thread manages both rendering of the
+fractal image and collection of user mouse and keyboard input. When a
+new region is selected, ~Main~ constructs the corresponding payload and
+pushes it to a dedicated queue.  The ~Net Send~ thread dequeues payloads
+from this queue and transmits them to the Server over a TCP
+connection. Meanwhile, ~Net Recv~ listens for incoming responses, and
+enqueues them into a response queue. Finally, the ~Process Response~
+thread retrieves these responses and integrates them into the
+displayed image by applying a coloring function to the calculated
+depth count for each pixel, updating the pixel buffer
+incrementally as results arrive.
+
+On the Server side, the ~Net Recv~ thread listens for Client payloads,
+forwarding them to the ~Discretize payloads~ thread, which divides the
+requested region into several payloads sized according to the
+specified granularity. These are then placed into a queue, with
+outdated payloads being discarded to prevent workers from computing
 regions that are no longer relevant. As workers become available, they
-request a new payload from the coordinator. The ~MPI Send~ thread dynamically assigns them
-payloads from the queue. Each worker independently computes a response, 
-producing iteration counts for all pixels in that subregion. Once the response is computed, it is 
-sent to the ~MPI Recv~ thread, which enqueues it to a response queue. These responses 
-are then collected by ~Net Send~, which sends them back to the Client.
+request a new payload from the coordinator. The ~MPI Send~ thread
+dynamically assigns them payloads from the queue. Each worker
+independently computes a response, producing the depth counts for all
+pixels in that subregion. Once the response becomes ready, it is sent to
+the ~MPI Recv~ thread, which enqueues it to a response queue. These
+responses are then collected by ~Net Send~, which sends them back to the
+Client.
 
 **** Computational aspects
 - Workload discretization etc
