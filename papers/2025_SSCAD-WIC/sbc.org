@@ -525,30 +525,36 @@ among workers.
 ** Results
 <<sec.results>>
 
-This section presents the performance evaluation of our fractal rendering system based on the 
-experiments described earlier. We focus on four key metrics:
+We present the performance evaluation of our multi-thread MPI
+applicaton based on the experiments described earlier. We focus on
+four key metrics: the mean client time, speedup, efficiency, and
+imbalance percentage. The *Mean Client Time* represents the total time
+taken for the Client to receive the fully computed fractal for each
+setting. The *Speedup*, a common metric in HPC, represents the ratio of
+the mean Client time with a single node for a given region and
+granularity setting (the baseline), to the mean Client time with
+multiple nodes for that same setting.  We emphasize that our speedup
+metric is relative to the number of nodes. The *Efficiency* represents
+the speedup normalized by the number of nodes, indicating how well the
+system scales with more nodes. Finally, the *Imbalance Percentage*
+cite:derose2007detecting depicts how unevenly the computational
+workload is distributed among workers. Lower values are better. It is
+calculated as:
+#+begin_export latex
+\begin{equation}
+\text{Imbalance Percentage} = \frac{L_{\text{max}} - L_{\text{avg}}}{L_{\text{max}}} \times \frac{n}{n-1}
+\end{equation}
+#+end_export
+where $L_{\text{max}}$ is the computation time of the slowest worker,
+$L_{\text{avg}}$ is the average computation time across all workers, and
+$n$ is the number of workers.
+#+latex: %
+In our analysis we focus solely on Client times, which directly
+reflect user-perceived performance, as the coordinator metrics closely
+mirror client-side values. We also focus on worker-level timings,
+which reveal the degree of load balancing achieved.
 
-- Mean Client time: The total time taken for the Client to receive the fully computed fractal
-  for each setting, averaged across the 10 trials. 
 
-- Speedup: The ratio of the mean Client time with a single node for a given region and granularity
-  setting (the baseline), to the mean Client time with multiple nodes for that same setting. 
-  Note that the speedup is calculated relative to the number of nodes, not cores.
-
-- Efficiency: The speedup normalized by the number of nodes, indicating how well the system 
-  scales with more nodes.
-
-- Imbalance Percentage: A measure of how unevenly the computational workload is distributed
-  among workers. Lower values are better. It is calculated as:
-  \begin{equation}
-  \text{Imbalance Percentage} = \frac{L_{\text{max}} - L_{\text{avg}}}{L_{\text{max}}} \times \frac{n}{n-1}
-  \end{equation}
-  where $L_{\text{max}}$ is the computation time of the slowest worker, $L_{\text{avg}}$ is the average 
-  computation time across all workers, and $n$ is the number of workers.
-
-Although coordinator metrics were collected, they closely mirrored the Client-side metrics.
-We therefore focus on Client times, which directly reflect user-perceived performance,
-and worker-level timings, which reveal the degree of load balancing achieved.
 
 #+CAPTION: Mean Client time for each setting.
 #+NAME: fig:client-time
@@ -718,6 +724,14 @@ Tangle this file with C-c C-v t
     index 	= {Open Science Index 14, 2008},
   }
 
+@inproceedings{derose2007detecting,
+  title={Detecting application load imbalance on high end massively parallel systems},
+  author={DeRose, Luiz and Homer, Bill and Johnson, Dean},
+  booktitle={European Conference on Parallel Processing},
+  pages={150--159},
+  year={2007},
+  organization={Springer}
+}
 
 #+end_src
 * Emacs setup                                                      :noexport:
