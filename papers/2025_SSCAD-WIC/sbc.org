@@ -216,16 +216,16 @@ Put the abstract here.
 
 ** Introduction                                                      :RA:KE:
 
-High Performance Computing (HPC) systems have becoming more and more
-complex and parallels over the years to accommodate the
-applications that are usually irregulars and computationally
-demanding. When dealing with this type of irregular applications, one
-of the major concerns is the workload distribution among the
-computational resources available in order to maximize the performance
-and stability. This task, called load balancing, performs
-a important role in the performance of a system when executing a
-parallel application, ensuring that each processor in the systems does
-approximately the same work during the programs execution. *[Context/Load Balancing]*
+# *[Context/Load Balancing]*
+High Performance Computing (HPC) systems are increasingly complex and
+large. They accommodate applications that frequently have irregular
+workloads and are computationally demanding. When dealing with
+irregular workloads, one of the major concerns is to achieve a
+balanced workload distribution among the computational resources
+available, to maximize both the performance and resource usage. The
+load balancing task has an major role in the application performance
+when executing it in the cluster, ensuring that each process in the
+system does approximately the same work during the program execution.
 
 _We used a MPI implementation of the Mandelbrot application in order to
 study the load balancing and scalability of a HPC Systems *[Change later with our objective]*_. The Mandelbrot Set is a set of points $c$
