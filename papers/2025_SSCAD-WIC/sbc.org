@@ -201,9 +201,7 @@ Lucas Mello Schnorr\inst{1}
 }
 
 \address{Institute of Informatics, Federal University of Rio Grande do Sul (UFRGS)\\
-   Caixa Postal 15.064 -- 91.501-970 -- Porto Alegre -- RS -- Brazil
-   \email{\{francisco.etcheverria, rayan.raddatz, kenichi.brumati, schnorr\}@inf.ufrgs.br}
-   }
+   Caixa Postal 15.064 -- 91.501-970 -- Porto Alegre -- RS -- Brazil}
 #+END_EXPORT
 
 #+LaTeX: \maketitle
