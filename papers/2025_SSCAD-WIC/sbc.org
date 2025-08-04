@@ -590,84 +590,92 @@ bibliographystyle:sbc.bst
 Tangle this file with C-c C-v t
 
 #+begin_src bibtex :tangle refs.bib
-@article{yang2011performance,
-  title={Performance-based parallel loop self-scheduling using hybrid OpenMP and MPI programming on multicore SMP clusters},
-  author={Yang, Chao-Tung and Wu, Chao-Chin and Chang, Jen-Hsiang},
-  journal={Concurrency and Computation: Practice and Experience},
-  volume={23},
-  number={8},
-  pages={721--744},
-  year={2011},
-  publisher={Wiley Online Library}
-}
+  @article{yang2011performance,
+    title={Performance-based parallel loop self-scheduling using hybrid OpenMP and MPI programming on multicore SMP clusters},
+    author={Yang, Chao-Tung and Wu, Chao-Chin and Chang, Jen-Hsiang},
+    journal={Concurrency and Computation: Practice and Experience},
+    volume={23},
+    number={8},
+    pages={721--744},
+    year={2011},
+    publisher={Wiley Online Library}
+  }
 
 
-@inproceedings{ozen2015exploring,
-  title={Exploring dynamic parallelism in openmp},
-  author={Ozen, Guray and Ayguad{\'e}, Eduard and Labarta, Jes{\'u}s},
-  booktitle={Proceedings of the Second Workshop on Accelerator Programming using Directives},
-  pages={1--8},
-  year={2015}
-}
+  @inproceedings{ozen2015exploring,
+    title={Exploring dynamic parallelism in openmp},
+    author={Ozen, Guray and Ayguad{\'e}, Eduard and Labarta, Jes{\'u}s},
+    booktitle={Proceedings of the Second Workshop on Accelerator Programming using Directives},
+    pages={1--8},
+    year={2015}
+  }
+
+  @article{dongarra2024,
+    author    = {Dongarra, Jack and Keyes, David E.},
+    title     = {The co-evolution of computational physics and high-performance computing},
+    journal   = {Nature Reviews Physics},
+    year      = {2024},
+    url       = {https://www.nature.com/articles/s42254-024-00750-z}
+  }
 
 
-@article{gomez2020mpi,
-  title={MPI vs OpenMP: A case study on parallel generation of Mandelbrot set},
-  author={G{\'o}mez, Ernesto Soto},
-  journal={Innovation and Software},
-  volume={1},
-  number={2},
-  pages={12--26},
-  year={2020}
-}
+  @article{gomez2020mpi,
+    title={MPI vs OpenMP: A case study on parallel generation of Mandelbrot set},
+    author={G{\'o}mez, Ernesto Soto},
+    journal={Innovation and Software},
+    volume={1},
+    number={2},
+    pages={12--26},
+    year={2020}
+  }
 
 
-@book{xu2007load,
-  title={Load balancing in parallel computers: theory and practice},
-  author={Xu, Chenzhong and Lau, Francis CM},
-  volume={381},
-  year={2007},
-  publisher={Springer}
-}
+  @book{xu2007load,
+    title={Load balancing in parallel computers: theory and practice},
+    author={Xu, Chenzhong and Lau, Francis CM},
+    volume={381},
+    year={2007},
+    publisher={Springer}
+  }
 
-@inproceedings{mohammed2020two,
-  title={Two-level dynamic load balancing for high performance scientific applications},
-  author={Mohammed, Ali and Cavelan, Aur{\'e}lien and Ciorba, Florina M and Cabez{\'o}n, Rub{\'e}n M and Banicescu, Ioana},
-  booktitle={Proceedings of the 2020 SIAM Conference on Parallel Processing for Scientific Computing},
-  pages={69--80},
-  year={2020},
-  organization={SIAM}
-}
+  @inproceedings{mohammed2020two,
+    title={Two-level dynamic load balancing for high performance scientific applications},
+    author={Mohammed, Ali and Cavelan, Aur{\'e}lien and Ciorba, Florina M and Cabez{\'o}n, Rub{\'e}n M and Banicescu, Ioana},
+    booktitle={Proceedings of the 2020 SIAM Conference on Parallel Processing for Scientific Computing},
+    pages={69--80},
+    year={2020},
+    organization={SIAM}
+  }
 
-@article{mandelbrot1980,
-author = {Mandelbrot, Benoit B.},
-title = { “Fractal Aspects of the Iteration of Z → z $\Lambda$(1-Z) for Complex $\Lambda$ and Z”},
-journal = {Annals of the New York Academy of Sciences},
-volume = {357},
-number = {1},
-pages = {249-259},
-year = {1980}
-}
+  @article{mandelbrot1980,
+  author = {Mandelbrot, Benoit B.},
+  title = { “Fractal Aspects of the Iteration of Z → z $\Lambda$(1-Z) for Complex $\Lambda$ and Z”},
+  journal = {Annals of the New York Academy of Sciences},
+  volume = {357},
+  number = {1},
+  pages = {249-259},
+  year = {1980}
+  }
 
 
 
-@article{sandeep2008,
-  title     = {Performance Analysis of Load Balancing Algorithms},
-  author    = {Sandeep Sharma and  Sarabjit Singh and  Meenakshi Sharma},
-  country	= {},
-  institution	= {},
-  journal   = {International Journal of Civil and Environmental Engineering},
-  volume    = {2},
-  number    = {2},
-  year      = {2008},
-  pages     = {367 - 370},
-  ee        = {https://publications.waset.org/pdf/5537},
-  url   	= {https://publications.waset.org/vol/14},
-  bibsource = {https://publications.waset.org/},
-  issn  	= {eISSN: 1307-6892},
-  publisher = {World Academy of Science, Engineering and Technology},
-  index 	= {Open Science Index 14, 2008},
-}
+  @article{sandeep2008,
+    title     = {Performance Analysis of Load Balancing Algorithms},
+    author    = {Sandeep Sharma and  Sarabjit Singh and  Meenakshi Sharma},
+    country	= {},
+    institution	= {},
+    journal   = {International Journal of Civil and Environmental Engineering},
+    volume    = {2},
+    number    = {2},
+    year      = {2008},
+    pages     = {367 - 370},
+    ee        = {https://publications.waset.org/pdf/5537},
+    url   	= {https://publications.waset.org/vol/14},
+    bibsource = {https://publications.waset.org/},
+    issn  	= {eISSN: 1307-6892},
+    publisher = {World Academy of Science, Engineering and Technology},
+    index 	= {Open Science Index 14, 2008},
+  }
 
 
 #+end_src
