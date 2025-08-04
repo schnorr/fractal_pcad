@@ -306,25 +306,28 @@ analysis, employing general metrics (mean client time, speedup, and
 efficiency), and a metric specific to quantify the load imbalance
 (imbalance percentage), as we detail next.
 
-** Materials and Methods                                             :FR:LU:
+** Materials and Methods
 <<sec.materials>>
-*** Observed System
-**** General overview
+*** The multi-threaded client-server MPI application for the Mandelbrot Set
 
-The implemented system adopts a client–server architecture designed to parallelize
-the computation of the Mandelbrot set while enabling efficient load balancing across
-multiple computing nodes. The client is responsible for managing user interactions and
-rendering the fractal image produced by the server. When the user requests a new region,
-the client issues a request to the server. A central coordinator on the server receives
-this request, discretizes the workload into smaller tasks, and dynamically distributes
-the resulting tasks to a pool of MPI workers, which perform the numerical computations
-for the Mandelbrot set.
+The implemented multi-thread system adopts a Client--Server
+architecture designed to parallelize the computation of the Mandelbrot
+Set while enabling efficient load balancing across multiple computing
+nodes. Figure [[fig:system-architecture]] illustrates the overall
+architecture, highlighting the main threads, communication queues, and
+data flow between components. The Client is responsible for managing
+user interactions and rendering the fractal image produced by the
+server. When the user requests a new region, the client issues a
+payload to the server. The Server comprises a central MPI coordinator
+which receives such large payload from the client, discretizes the
+workload into smaller problems, and dynamically distributes these
+smaller problems to a pool of MPI workers by demand. From the start of
+the server, the workers approach the coordinator looking for work. By
+reception of a smaller problem, the workers carry out the numerical
+computations for each of them (Mandelbrot Set) before sending back to
+the Server the responses, which are then redirected to the Client.
 
-Figure [[fig:system-architecture]] illustrates the overall
-architecture, highlighting the main threads, communication queues, and data flow between
-components.
-
-#+CAPTION: System overview with processes, threads, and queues.
+#+CAPTION: Multi-thread system overview with processes, threads, and queues.
 #+NAME: fig:system-architecture
 [[./figures/system_architecture.png]]
 
