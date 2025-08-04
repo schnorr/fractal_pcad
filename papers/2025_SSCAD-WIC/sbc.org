@@ -226,6 +226,10 @@ available, to maximize both the performance and resource usage. The
 load balancing task has an major role in the application performance
 when executing it in the cluster, ensuring that each process in the
 system does approximately the same work during the program execution.
+The co-evolution of computational physics and high-performance
+computing has led to the development of infrastructures, algorithms
+and applications to address more complex computational challenges
+cite:dongarra2024 . 
 
 # *[Mandelbrot]*
 A common activity to study the correct usage of a HPC system is to
