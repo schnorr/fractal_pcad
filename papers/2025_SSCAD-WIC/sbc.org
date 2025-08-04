@@ -195,8 +195,8 @@ WordPress & Designed by Bizberg Themes
 
 \author{
 Francisco Pegoraro Etcheverria\inst{1},
-Rayan Raddatz de Matos\inst{1},
-Kenichi Brumati\inst{1},\\
+Rayan Raddatz de Matos\inst{1},\\
+Kenichi Brumati\inst{1},
 Lucas Mello Schnorr\inst{1}
 }
 
