@@ -508,7 +508,7 @@ between the payload size and the number of payloads, keeping a low communication
 also balancing work between workers well. 
 
 This is supported by Figure [[fig:imbalance-percentage]],
-which shows consistently better load balancing for lower granularities, with performance degrading 
+which shows generally better load balancing for lower granularities, with performance degrading 
 at values over 40. This effect is higher the more nodes, and therefore workers, are present.
 The /default/ case in particular seems to suffer from more worker imbalance
 than the /hard/ case, due to the fractal region having a mix of very easy and very hard regions.
