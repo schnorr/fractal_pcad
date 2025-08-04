@@ -211,7 +211,17 @@ Lucas Mello Schnorr\inst{1}
 ** Abstract                                                         :ignore:
 
 #+begin_abstract
-Put the abstract here.
+This work investigates load balancing and scalability in High
+Performance Computing (HPC) systems using the Mandelbrot Set as a
+benchmark. Due to its irregular and compute-intensive workload, the
+Mandelbrot Set is ideal for evaluating dynamic workload distribution
+strategies. We present a custom MPI-based implementation employing a
+client-server model with dynamic load balancing, where idle workers
+request new work from a coordinator. Our contributions include
+implementing this parallel application and a performance analysis
+highlighting load imbalance and system scalability. The main results
+indicate that the granularity factor has a major influence on load
+balance, and its choice depends on the selected the fractal region.
 #+end_abstract
 
 ** Introduction
