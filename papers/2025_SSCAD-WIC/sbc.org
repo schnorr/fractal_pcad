@@ -229,7 +229,7 @@ system does approximately the same work during the program execution.
 The co-evolution of computational physics and high-performance
 computing has led to the development of infrastructures, algorithms
 and applications to address more complex computational challenges
-cite:dongarra2024 . 
+cite:dongarra2024.
 
 # *[Mandelbrot]*
 A common activity to study the correct usage of a HPC system is to
