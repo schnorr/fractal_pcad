@@ -254,7 +254,8 @@ balancer where workers, when idle, contact the coordinator for a new
 set of points to work on. Our implementation is then used for our
 major goal which is to to study the load balancing and scalability of
 a HPC Systems from the perspective of this well-known benchmark. Our
-major contributions include: (1) X, (2) Y. Our main results is Z.
+major contributions include: (1) X, (2) Y. Our main results observed
+in a cluster with a W configuration is Z.
 
 This paper has the following organization. Section [[sec.related]]
 presents other load balancing performance analysis of the Mandelbrot
