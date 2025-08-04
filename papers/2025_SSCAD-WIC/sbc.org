@@ -266,6 +266,8 @@ results. Finally, Section [[sec.conclusion]] concludes this text with
 future work.
 
 ** Related Work
+<<sec.related>>
+
 Load balancing is a widely studied field, cite:sandeep2008 analyzes
 different load balancing algorithms and concludes that while dynamic
 distributed load balancing algorithms are always generally considered
@@ -280,7 +282,6 @@ benchmark in a variety of works for its computationally intensive,
 parallizable and irregular nature.
 *[References about the mandelbrot implementation]*
 
-<<sec.related>>
 
 ** Materials and Methods                                             :FR:LU:
 <<sec.materials>>
