@@ -617,6 +617,13 @@ bibliographystyle:sbc.bst
 Tangle this file with C-c C-v t
 
 #+begin_src bibtex :tangle refs.bib
+@book{jain1990art,
+  title={The art of computer systems performance analysis},
+  author={Jain, Raj},
+  year={1990},
+  publisher={john wiley \& sons}
+}
+
   @article{yang2011performance,
     title={Performance-based parallel loop self-scheduling using hybrid OpenMP and MPI programming on multicore SMP clusters},
     author={Yang, Chao-Tung and Wu, Chao-Chin and Chang, Jen-Hsiang},
