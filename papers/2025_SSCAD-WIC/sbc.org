@@ -399,86 +399,75 @@ distribution. The Client--Server Ethernet network is 1Gbps, while the
 MPI application executes in a 10Gbps Ethernet switch.
 
 *** Experimental Project
-**** Input parameters
 
-To evaluate the performance, scalability and load balancing of the system, we designed a set of 
-experiments with various input parameters. These parameters were chosen to test different 
-computational characteristics of the application, allowing us to assess how the system behaves 
-under different workloads.
+We designed a set of experiments with various input parameters to
+evaluate the performance, scalability and load balancing of the
+application on the target system. These parameters were chosen to test
+different computational characteristics of the application, enabling
+assessing how the system behaves under different workloads. The
+experiments consisted of rendering fractal images with a resolution of
+1920\times1080 pixels, typical for full high definition screens.  Each
+execution is the combination of a value of the following factors:
+Granularity, Number of Workers, and Fractal Cases. The *Granularity*
+factor has the six levels: [5\times5, 10\times10, 20\times20, 40\times40, 60\times60, 120\times120],
+respectively resulting in [82944, 20736, 5184, 1296, 576, 144] tasks
+for workers. Smaller blocks improve load balancing but increase
+communication overhead. Larger blocks may lead to severe load
+imbalance. The *Number of Workers* factor has also six levels: [1, 2, 3,
+4, 5, 6], derived from the limitations of our platform, where each
+number of worker /nodes/ contribute to 24 physical cores.  This
+corresponds to a total of 24 to 144 MPI ranks (step of 24 cores),
+enabling the evaluation of how well the application scales with
+additional resources. Finally, the *Fractal Cases* has three levels:
+[easy, default, hard]. Figure [[fig:fractal-regions]] illustrates
+representative images of the final result. The /easy/ (maximum depth
+of 1024) depicts a region where most points escape in only a few
+iterations, testing the communication overhead, rather than
+computational speed. The /default/ (150000) depicts a typical unbalanced
+Mandelbrot fractal region, containing both points that are
+computationally intensive, as well as many points that escape quickly,
+stressing requirements for active load balancing. Finally, the /hard/
+(300000) depicts a deep region that is computationally intensive but
+balanced, so we can assess computational throughput. We manually
+selected the three max depth values of each case so the execution time
+remains bounded to an acceptable value.
 
-The experiments consisted of rendering different fractal images at **1920x1080** pixels.
-For each run, the following parameters varied:
-
-- **Granularity:** Values of [5, 10, 20, 40, 60, 120] were tested, resulting in [82,944, 20,736,
-  5,184, 1,296, 576, 144] tasks for workers, respectively. Smaller block sizes improve
-  load balancing but increase communication overhead, while larger granularities may lead to load 
-  imbalance.
-
-- **Number of Server Nodes:** We evaluated setups using 1 to 6 nodes, each contributing 24 physical
-  cores. This corresponds to a total of 24 to 144 MPI ranks, allowing us to evaluate how well the 
-  server scales as resources are added.
-
-- **Fractal regions:** Three sets of coordinates and max depth values were chosen.
-  - **Default:** A typical unbalanced Mandelbrot fractal region, containing both points that are 
-    computationally intensive, as well as many points that escape quickly, stressing load 
-    balancing.
-  - **Easy:** A region where most points escape in only a few iterations, testing the communication
-    overhead, rather than computational speed.
-  - **Hard:** A deep region that is computationally intensive but balanced, testing computational
-    throughput.
-
-#+CAPTION: Default, Easy, and Hard fractal regions side by side
+#+CAPTION: Default, Easy, and Hard fractal regions, from left to right.
 #+NAME: fig:fractal-regions
 #+ATTR_LATEX: :placement [htbp]
 \begin{figure}[htbp]
 \centering
 \begin{minipage}{0.33\textwidth}
 \centering
-\includegraphics[width=\textwidth]{./figures/region_default.png}
-\caption*{Default - Max depth of 150,000}
-\end{minipage}%
-\hfill
+\includegraphics[width=\textwidth]{./figures/region_easy.png}
+\caption*{easy (1024)}
+\end{minipage}%\hfill
 \begin{minipage}{0.33\textwidth}
 \centering
-\includegraphics[width=\textwidth]{./figures/region_easy.png}
-\caption*{Easy - Max depth of 1024}
-\end{minipage}%
-\hfill
+\includegraphics[width=\textwidth]{./figures/region_default.png}
+\caption*{default (150000)}
+\end{minipage}%\hfill
 \begin{minipage}{0.33\textwidth}
 \centering
 \includegraphics[width=\textwidth]{./figures/region_hard.png}
-\caption*{Hard - Max depth of 300,000}
+\caption*{hard (300000)}
 \end{minipage}
 \end{figure}
 
-**** Observability
+With these factors, we adopt a Full Factorial Design cite:jain1990art, enabling the
+verification of all possible combinations of factors, resulting in 108
+distinct configurations (6\times6\times3). Each configuration has been executed
+ten times so we can assess the experimental variability, and the
+execution order has been randomized to avoid potential bias.
+#+LATEX: %
+All experiments consider a simplified experimental Client as we
+executed everything in the cluster without a graphical interface. Our
+textual Client instead receives parameters through the command
+line. As such, the ~Process Response~ thread is absent, and the ~Main~
+thread enqueues the payload and dequeues responses from the ~Net Recv~
+thread.
 
-To measure performance and load balancing, the Client and server were modified to collect and 
-log times and other metrics.
-
-On the Client, we recorded the elapsed time between the creation of each payload 
-and the arrival of the first response, as well as the last response.
-
-On the server, we measured the time between a payload being received and its discretization, as 
-well as the first and last responses being received by the ~MPI Recv~ thread, and the times these
-were sent to the Client in the ~Net Send~ thread.
-
-On each worker, we measured the individual times to compute each payload, their pixel counts and
-iteration counts, as well as the aggregate sum of these values.
-
-**** Design of Experiments
-
-Experiments were conducted using a modified experimental Client, which did not perform graphical 
-rendering, and did not capture user mouse/keyboard input, instead receiving parameters through 
-the command line. As such, the ~Process Response~ thread was removed, and the ~Main~ thread simply 
-enqueued the payload and dequeued responses from the ~Net Recv~ thread.
-
-The design followed a full factorial design across the parameters. All possible combinations of 
-factors were evaluated, resulting in 108 distinct configurations. Each configuration was 
-executed 10 times to reduce the impact of variability, and the order of runs was randomized to 
-avoid potential bias.
-
-***** Code                                                     :noexport:
+**** Code                                                       :noexport:
 #+begin_src R :results output :session *R* :exports none :noweb yes :colnames yes
 options(crayon.enabled=FALSE)
 library(DoE.base)
@@ -513,6 +502,21 @@ fac.design(nfactors = 3,
 
 #+RESULTS:
 : creating full factorial with 108 runs ...
+
+**** Observability
+
+To measure performance and load balancing, the Client and server were modified to collect and 
+log times and other metrics.
+
+On the Client, we recorded the elapsed time between the creation of each payload 
+and the arrival of the first response, as well as the last response.
+
+On the server, we measured the time between a payload being received and its discretization, as 
+well as the first and last responses being received by the ~MPI Recv~ thread, and the times these
+were sent to the Client in the ~Net Send~ thread.
+
+On each worker, we measured the individual times to compute each payload, their pixel counts and
+iteration counts, as well as the aggregate sum of these values.
 
 *** Evaluation procedure
 ** Results
