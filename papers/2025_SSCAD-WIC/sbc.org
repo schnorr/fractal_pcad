@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # -*- mode: org -*-
 
-#+TITLE: Dynamic Load Balancing and Scalability Analysis of the Mandelbrot Set in a Multi-Thread HPC Application
+#+TITLE: Dynamic Load Balancing and Scalability Analysis of the Mandelbrot Set in a Multi-Threaded HPC Application
 #+AUTHOR: Francisco Pegoraro Etcheverria, Rayan Raddatz de Matos, Kenichi Brumati, Lucas Mello Schnorr
 
 #+STARTUP: overview indent
