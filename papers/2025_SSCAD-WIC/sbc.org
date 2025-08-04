@@ -383,14 +383,20 @@ Client.
 
 *** Hardware & Software configuration
 
-All experiments were conducted at the PCAD cluster at UFRGS. The Client ran on a single /draco/
-node, while the server ran on 1 to 6 /cei/ nodes. 
-
-- Each cei node was equipped with two Intel Xeon Silver 4116 processors at 2.10 GHz, providing a
-  total of 24 physical cores. Within this server setup, each MPI Rank was pinned to a CPU core. 
-  The MPI implementation was OpenMPI version 4.1.4.
-
-- The Client ran on a draco node with two Intel Xeon E5‑2640 v2 processors at 2.00 GHz.
+We run all experiments at the /Parque Computacional de Alto Desempenho/
+(PCAD) at INF/UFRGS. The Client executes on a single /draco/ node, while
+the server executes on 1 to 6 /cei/ nodes. The draco node on which the
+Client executes has two Intel Xeon E5‑2640 v2 processors at 2.00 GHz.
+Each cei node, used for the compute-bound part, has two Intel Xeon
+Silver 4116 processors at 2.10 GHz, providing 24 physical cores each
+for a total of 144 physical cores. In all experiments, we have
+exclusive access to the machines without any type of
+virtualization. We also take time to pin each MPI rank to a physical
+CPU core and use the /performance/ frequency governor of the
+=acpi-cpufreq=.  The MPI implementation was OpenMPI version 4.1.4 and
+the Linux Kernel 6.1.0 with SMP support as released by the Debian 12
+distribution. The Client--Server Ethernet network is 1Gbps, while the
+MPI application executes in a 10Gbps Ethernet switch.
 
 *** Experimental Project
 **** Input parameters
