@@ -241,12 +241,14 @@ performance a computational system. *[Mandelbrot]*
 
 *[What is this work?/What we will do about the things we introduced?]*
 
-This paper is organized as follows. Section [[sec.related]] presents related
-work. Section [[sec.materials]] discusses all
-the materials and methods of our work, including the detailed
-description of the observed system. Section [[sec.results]] presents the
-experimental results. Finally, Section [[sec.conclusion]] concludes
-this work.
+This paper has the following organization. Section [[sec.related]]
+presents other load balancing performance analysis of the Mandelbrot
+set. Section [[sec.materials]] discusses materials and methods of our
+work, including the detailed description of the observed
+system. Section [[sec.results]] presents the experimental
+results. Finally, Section [[sec.conclusion]] concludes this text with
+future work.
+
 ** Related Work
 Load balancing is a widely studied field, cite:sandeep2008 analyzes
 different load balancing algorithms and concludes that while dynamic
