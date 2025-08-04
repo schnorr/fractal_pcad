@@ -365,7 +365,7 @@ request a new payload from the coordinator. The ~MPI Send~ thread dynamically as
 payloads from the queue. Each worker independently computes a response, 
 producing iteration counts for all pixels in that subregion. Once the response is computed, it is 
 sent to the ~MPI Recv~ thread, which enqueues it to a response queue. These responses 
-are then collected by ~Net Send~, which sends them back to the client.
+are then collected by ~Net Send~, which sends them back to the Client.
 
 **** Computational aspects
 - Workload discretization etc
@@ -373,14 +373,14 @@ are then collected by ~Net Send~, which sends them back to the client.
 
 *** Hardware & Software configuration
 
-All experiments were conducted at the PCAD cluster at UFRGS. The client ran on a single /draco/
+All experiments were conducted at the PCAD cluster at UFRGS. The Client ran on a single /draco/
 node, while the server ran on 1 to 6 /cei/ nodes. 
 
 - Each cei node was equipped with two Intel Xeon Silver 4116 processors at 2.10 GHz, providing a
   total of 24 physical cores. Within this server setup, each MPI Rank was pinned to a CPU core. 
   The MPI implementation was OpenMPI version 4.1.4.
 
-- The client ran on a draco node with two Intel Xeon E5‑2640 v2 processors at 2.00 GHz.
+- The Client ran on a draco node with two Intel Xeon E5‑2640 v2 processors at 2.00 GHz.
 
 *** Experimental Project
 **** Input parameters
@@ -437,22 +437,22 @@ For each run, the following parameters varied:
 
 **** Observability
 
-To measure performance and load balancing, the client and server were modified to collect and 
+To measure performance and load balancing, the Client and server were modified to collect and 
 log times and other metrics.
 
-On the client, we recorded the elapsed time between the creation of each payload 
+On the Client, we recorded the elapsed time between the creation of each payload 
 and the arrival of the first response, as well as the last response.
 
 On the server, we measured the time between a payload being received and its discretization, as 
 well as the first and last responses being received by the ~MPI Recv~ thread, and the times these
-were sent to the client in the ~Net Send~ thread.
+were sent to the Client in the ~Net Send~ thread.
 
 On each worker, we measured the individual times to compute each payload, their pixel counts and
 iteration counts, as well as the aggregate sum of these values.
 
 **** Design of Experiments
 
-Experiments were conducted using a modified experimental client, which did not perform graphical 
+Experiments were conducted using a modified experimental Client, which did not perform graphical 
 rendering, and did not capture user mouse/keyboard input, instead receiving parameters through 
 the command line. As such, the ~Process Response~ thread was removed, and the ~Main~ thread simply 
 enqueued the payload and dequeued responses from the ~Net Recv~ thread.
@@ -505,11 +505,11 @@ fac.design(nfactors = 3,
 This section presents the performance evaluation of our fractal rendering system based on the 
 experiments described earlier. We focus on four key metrics:
 
-- Mean client time: The total time taken for the client to receive the fully computed fractal
+- Mean Client time: The total time taken for the Client to receive the fully computed fractal
   for each setting, averaged across the 10 trials. 
 
-- Speedup: The ratio of the mean client time with a single node for a given region and granularity
-  setting (the baseline), to the mean client time with multiple nodes for that same setting. 
+- Speedup: The ratio of the mean Client time with a single node for a given region and granularity
+  setting (the baseline), to the mean Client time with multiple nodes for that same setting. 
   Note that the speedup is calculated relative to the number of nodes, not cores.
 
 - Efficiency: The speedup normalized by the number of nodes, indicating how well the system 
@@ -523,11 +523,11 @@ experiments described earlier. We focus on four key metrics:
   where $L_{\text{max}}$ is the computation time of the slowest worker, $L_{\text{avg}}$ is the average 
   computation time across all workers, and $n$ is the number of workers.
 
-Although coordinator metrics were collected, they closely mirrored the client-side metrics.
-We therefore focus on client times, which directly reflect user-perceived performance,
+Although coordinator metrics were collected, they closely mirrored the Client-side metrics.
+We therefore focus on Client times, which directly reflect user-perceived performance,
 and worker-level timings, which reveal the degree of load balancing achieved.
 
-#+CAPTION: Mean client time for each setting.
+#+CAPTION: Mean Client time for each setting.
 #+NAME: fig:client-time
 [[./figures/client_time.png]]
 
