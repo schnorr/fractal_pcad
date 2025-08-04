@@ -261,9 +261,9 @@ a HPC Systems from the perspective of this well-known benchmark. Our
 major contributions include: (1) a multi-threaded application that
 implements the Mandelbrot Set using a client-server architecture where
 the server is a MPI application with dynamic load-balancing, (2) a
-profound performance analysis using state-of-the-art performance
-metrics for overview and load imbalance perspectives. Our main results
-observed in a cluster with a W configuration is Z.
+performance analysis with metrics to provide overview and load
+imbalance perspectives. Our main results observed in a cluster with a
+W configuration is Z.
 
 This paper has the following organization. Section [[sec.related]]
 presents other load balancing performance analysis of the Mandelbrot
