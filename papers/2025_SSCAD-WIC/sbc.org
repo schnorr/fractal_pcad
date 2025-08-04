@@ -214,7 +214,7 @@ Lucas Mello Schnorr\inst{1}
 Put the abstract here.
 #+end_abstract
 
-** Introduction                                                      :RA:KE:
+** Introduction
 
 # *[Context/Load Balancing]*
 High Performance Computing (HPC) systems are increasingly complex and
