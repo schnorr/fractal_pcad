@@ -269,21 +269,34 @@ future work.
 <<sec.related>>
 
 # *[References about load balancing]*
-Load balancing is a widely studied field, cite:sandeep2008 analyzes
-different load balancing algorithms and concludes that while dynamic
-distributed load balancing algorithms are always generally considered
-better, the static algorithms are more stables and predictable.
-cite:mohammed2020two proposes a two-level dynamic load balancing to
-scientific applications that operate with MPI+OpenMP and uses the
-Mandelbrot application as one of its test cases because of the application irregularity.
-
-
-The Mandelbrot application is also vastly studied and used as a
-benchmark in a variety of works for its computationally intensive,
-parallizable and irregular nature.
-*[References about the mandelbrot implementation]*
-
-
+Load balancing is a widely studied field, Chenzhong and Francis
+cite:xu2007load provide a general overview of the techniques for
+parallel computers. Sandeep cite:sandeep2008 more specifically
+analyzes different load balancing algorithms and concludes that while
+dynamic distributed load balancing algorithms are always generally
+considered better, the static algorithms are more stable and
+predictable.  Another work cite:mohammed2020two proposes a two-level
+dynamic load balancing to scientific applications that operate with
+MPI+OpenMP and uses the Mandelbrot application as one of its test
+cases because of the application irregularity.
+#+latex: %
+#+latex: % *[References about the mandelbrot implementation]*
+The Mandelbrot Set as an HPC application is also vastly studied and
+used as a benchmark in a variety of works for its computationally
+intensive, parallizable and irregular nature. For example, all works
+considering the Mandelbrot Set, Gomez cite:gomez2020mpi has carried
+out a case study to compare MPI against OpenMP.  Another work
+cite:ozen2015exploring has specifically explored dynamic parallelism
+in OpenMP. Yang cite:yang2011performance also study specific
+parameters to control how load balancing actuates among application
+processes.
+#+latex: %
+The related work demonstrates how pertinent is the usage of the
+Mandelbrot Set as a benchmarking application. Our work employs once
+again this application with a strong focus on the the performance
+analysis, employing general metrics (mean client time, speedup, and
+efficiency), and a metric specific to quantify the load imbalance
+(imbalance percentage), as we detail next.
 
 ** Materials and Methods                                             :FR:LU:
 <<sec.materials>>
@@ -556,7 +569,6 @@ and additional nodes can even reduce performance.
 <<sec.conclusion>>
 
 
-
 ** Acknowledgments
 :PROPERTIES:
 :UNNUMBERED: t
@@ -576,7 +588,48 @@ bibliographystyle:sbc.bst
 * Bib file is here                                                 :noexport:
 
 Tangle this file with C-c C-v t
+
 #+begin_src bibtex :tangle refs.bib
+@article{yang2011performance,
+  title={Performance-based parallel loop self-scheduling using hybrid OpenMP and MPI programming on multicore SMP clusters},
+  author={Yang, Chao-Tung and Wu, Chao-Chin and Chang, Jen-Hsiang},
+  journal={Concurrency and Computation: Practice and Experience},
+  volume={23},
+  number={8},
+  pages={721--744},
+  year={2011},
+  publisher={Wiley Online Library}
+}
+
+
+@inproceedings{ozen2015exploring,
+  title={Exploring dynamic parallelism in openmp},
+  author={Ozen, Guray and Ayguad{\'e}, Eduard and Labarta, Jes{\'u}s},
+  booktitle={Proceedings of the Second Workshop on Accelerator Programming using Directives},
+  pages={1--8},
+  year={2015}
+}
+
+
+@article{gomez2020mpi,
+  title={MPI vs OpenMP: A case study on parallel generation of Mandelbrot set},
+  author={G{\'o}mez, Ernesto Soto},
+  journal={Innovation and Software},
+  volume={1},
+  number={2},
+  pages={12--26},
+  year={2020}
+}
+
+
+@book{xu2007load,
+  title={Load balancing in parallel computers: theory and practice},
+  author={Xu, Chenzhong and Lau, Francis CM},
+  volume={381},
+  year={2007},
+  publisher={Springer}
+}
+
 @inproceedings{mohammed2020two,
   title={Two-level dynamic load balancing for high performance scientific applications},
   author={Mohammed, Ali and Cavelan, Aur{\'e}lien and Ciorba, Florina M and Cabez{\'o}n, Rub{\'e}n M and Banicescu, Ioana},
