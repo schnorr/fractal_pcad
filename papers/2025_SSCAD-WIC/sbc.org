@@ -221,7 +221,7 @@ request new work from a coordinator. Our contributions include
 implementing this parallel application and a performance analysis
 highlighting load imbalance and system scalability. The main results
 indicate that the granularity factor has a major influence on load
-balance, and its choice depends on the selected the fractal region.
+balance, and its choice depends on the selected fractal region.
 #+end_abstract
 
 ** Introduction
