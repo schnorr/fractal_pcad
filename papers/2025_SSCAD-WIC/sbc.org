@@ -227,19 +227,34 @@ load balancing task has an major role in the application performance
 when executing it in the cluster, ensuring that each process in the
 system does approximately the same work during the program execution.
 
-_We used a MPI implementation of the Mandelbrot application in order to
-study the load balancing and scalability of a HPC Systems *[Change later with our objective]*_. The Mandelbrot Set is a set of points $c$
-in the complex plane for which the application of the function $f(z) =
-z^2 + c$
-starting from $z = 0$ is bounded and does not diverge to
-infinity cite:mandelbrot1980. To compute and generate this set, an
-application needs to, for each pixel in a 2D image, calculate the
-value based on the equation previously shown. The application that
-does calculation work is highly parallelizable and computationally
-intensive, often serving as benchmark for HPC used to measure the
-performance a computational system. *[Mandelbrot]*
+# *[Mandelbrot]*
+A common activity to study the correct usage of a HPC system is to
+verify if the application achieves adequate load balancing amongst its
+processes. This activity is particularly harder for irregular
+workloads as the dynamic nature of the load make common static
+partitioning techniques unsuitable. The Mandelbrot Set
+cite:mandelbrot1980 is a typical application that possesses an
+irregular workload because of how it computes the points belonging to
+the set. The application computes, for each point $c$ in the complex
+plane, the application of the function $f(z) = z^2 + c$, starting from
+$z = 0$. The point $c$ belongs to the Mandelbrot Set if the
+computation of such equation is bounded and does not diverge to
+infinity. An application needs to, for each pixel in a 2D image,
+calculate the response for that function to compute and generate this
+set.
 
-*[What is this work?/What we will do about the things we introduced?]*
+# *[What is this work?/What we will do about the things we introduced?]*
+The Mandelbrot Set is a very known compute-bound application and
+considered as embarassangly parallel, as all points calculation are
+independent. Therefore being highly parallelizable and computationally
+intensive, it often serves as benchmark for HPC to measure the
+performance a computational system.  In this article, we implement
+from scratch an MPI version of this application with a dynamic load
+balancer where workers, when idle, contact the coordinator for a new
+set of points to work on. Our implementation is then used for our
+major goal which is to to study the load balancing and scalability of
+a HPC Systems from the perspective of this well-known benchmark. Our
+major contributions include: (1) X, (2) Y. Our main results is Z.
 
 This paper has the following organization. Section [[sec.related]]
 presents other load balancing performance analysis of the Mandelbrot
