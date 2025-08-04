@@ -354,7 +354,7 @@ enables the Client to view the partial fractal regions without waiting
 for the entire computation to complete.
 
 We designed the Client to be responsive and highly interactive. As
-shown in figure [[fig:system-architecture]], the Client contains four
+shown in Figure [[fig:system-architecture]], the Client contains four
 concurrent threads. The ~Main~ thread manages both rendering of the
 fractal image and collection of user mouse and keyboard input. When a
 new region is selected, ~Main~ constructs the corresponding payload and
