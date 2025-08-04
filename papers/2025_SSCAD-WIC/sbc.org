@@ -219,66 +219,63 @@ strategies. We present a custom MPI-based implementation employing a
 client-server model with dynamic load balancing, where idle workers
 request new work from a coordinator. Our contributions include
 implementing this parallel application and a performance analysis
-highlighting load imbalance and system scalability. The main results
-indicate that the granularity factor has a major influence on load
+highlighting load imbalance and system scalability.  The main results
+indicate that the granularity factor significantly influences load
 balance, and its choice depends on the selected fractal region.
 #+end_abstract
 
 ** Introduction
 
 # *[Context/Load Balancing]*
-High Performance Computing (HPC) systems are increasingly complex and
-large. They accommodate applications that frequently have irregular
-workloads and are computationally demanding. When dealing with
-irregular workloads, one of the major concerns is to achieve a
-balanced workload distribution among the computational resources
-available, to maximize both the performance and resource usage. The
-load balancing task has an major role in the application performance
-when executing it in the cluster, ensuring that each process in the
-system does approximately the same work during the program execution.
-The co-evolution of computational physics and high-performance
-computing has led to the development of infrastructures, algorithms
-and applications to address more complex computational challenges
-cite:dongarra2024.
+High-Performance Computing (HPC) systems are increasingly complex and
+extensive cite:dongarra2024. They accommodate applications that
+frequently have irregular workloads and are computationally
+demanding. One of the significant concerns when dealing with irregular
+workloads is achieving a balanced workload distribution among the
+computational resources available to maximize performance and resource
+usage. The load balancing task has a significant role in the
+application performance when executing it in the cluster, ensuring
+that each process in the system does approximately the same work
+during the program execution.
 
 # *[Mandelbrot]*
-A common activity to study the correct usage of a HPC system is to
+An everyday activity to study the correct usage of an HPC system is to
 verify if the application achieves adequate load balancing amongst its
-processes. This activity is particularly harder for irregular
-workloads as the dynamic nature of the load make common static
-partitioning techniques unsuitable. The Mandelbrot Set
-cite:mandelbrot1980 is a typical application that possesses an
-irregular workload because of how it computes the points belonging to
-the set. The application computes, for each point $c$ in the complex
-plane, the application of the function $f(z) = z^2 + c$, starting from
-$z = 0$. The point $c$ belongs to the Mandelbrot Set if the
-computation of such equation is bounded and does not diverge to
-infinity. An application needs to, for each pixel in a 2D image,
-calculate the response for that function to compute and generate this
-set.
+processes. This activity is particularly more challenging for
+irregular workloads as the dynamic nature of the load makes standard
+static partitioning techniques unsuitable. The Mandelbrot Set
+cite:mandelbrot1980 is a typical application with an irregular
+workload because it computes the points belonging to the set. The
+application computes, for each point $c$ in the complex plane, the
+application of the function $f(z) = z^2 + c$, starting from $z =
+0$. The point $c$ belongs to the Mandelbrot Set if the computation of
+such an equation is bounded and does not diverge to infinity. For each
+pixel in a 2D image, an application needs to calculate the response
+for that function to compute and generate this set.
 
 # *[What is this work?/What we will do about the things we introduced?]*
-The Mandelbrot Set is a very known compute-bound application and
-considered as embarassangly parallel, as all points calculation are
-independent. Therefore being highly parallelizable and computationally
-intensive, it often serves as benchmark for HPC to measure the
-performance a computational system.  In this article, we implement
-from scratch an MPI version of this application with a dynamic load
-balancer where workers, when idle, contact the coordinator for a new
-set of points to work on. Our implementation is then used for our
-major goal which is to to study the load balancing and scalability of
-a HPC Systems from the perspective of this well-known benchmark. Our
-major contributions include: (1) a multi-threaded application that
+The Mandelbrot Set is a well-known compute-bound application and
+considered embarrassingly parallel, as all point calculations are
+independent. Therefore, being highly parallelizable and
+computationally intensive, it often serves as a benchmark for HPC to
+measure the performance of a computational system. In this article, we
+implement an MPI version of this application from scratch with a
+dynamic load balancer where workers, when idle, contact the
+coordinator for a new set of points to work on. We then study the load
+balancing and scalability of this HPC application. Our significant
+contributions include: (1) a multi-threaded application that
 implements the Mandelbrot Set using a client-server architecture where
-the server is a MPI application with dynamic load-balancing, (2) a
-performance analysis with metrics to provide overview and load
-imbalance perspectives. Our main results observed in a cluster with a
-W configuration is Z.
+the server is an MPI application with dynamic load-balancing, (2) a
+performance analysis with metrics to provide an overview and load
+imbalance perspectives. Our main results indicate that the granularity
+factor significantly influences load balance, and its choice depends
+on the selected fractal region and the severity of how unbalanced the
+load is.
 
 This paper has the following organization. Section [[sec.related]]
 presents other load balancing performance analysis of the Mandelbrot
 set. Section [[sec.materials]] discusses materials and methods of our
-work, including the detailed description of the observed
+work, including a detailed description of the observed
 system. Section [[sec.results]] presents the experimental
 results. Finally, Section [[sec.conclusion]] concludes this text with
 future work.
