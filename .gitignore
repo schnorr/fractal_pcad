@@ -5,3 +5,4 @@
 /worker_logs
 client_log.txt
 coordinator_log.txt
+analysis*
