@@ -529,17 +529,29 @@ among workers.
 <<sec.results>>
 
 We present the performance evaluation of our multi-thread MPI
-applicaton based on the experiments described earlier. We focus on
+application based on the experiments described earlier. We focus on
 four key metrics: the mean client time, speedup, efficiency, and
 imbalance percentage. The *Mean Client Time* represents the total time
 taken for the Client to receive the fully computed fractal for each
-setting. The *Speedup*, a common metric in HPC, represents the ratio of
-the mean Client time with a single node for a given region and
-granularity setting (the baseline), to the mean Client time with
-multiple nodes for that same setting.  We emphasize that our speedup
-metric is relative to the number of nodes. The *Efficiency* represents
-the speedup normalized by the number of nodes, indicating how well the
-system scales with more nodes. Finally, the *Imbalance Percentage*
+setting. The *Speedup* measures the ratio of the mean Client time with 
+a single node for a given region and granularity setting, to the mean Client 
+time with multiple nodes for that same setting. That is, for a given number of 
+nodes, $S(n) = \dfrac{T(1)}{T(n)}$. We emphasize that our speedup
+metric is relative to the number of nodes rather than processors. 
+
+Our server architecture is asymmetric, which necessitates a careful definition of 
+ideal performance and efficiency. The baseline configuration on a single node uses 
+23 workers and one coordinator, while each additional node contributes 24 workers. 
+This results in a worker count for $n$ nodes of $24n - 1$.
+Standard efficiency calculations using node count would yield misleading values above 
+1.0 due to this uneven worker distribution.
+Therefore, we normalize our metrics based on worker count rather than node count. 
+We define the ideal speedup as: $S_{ideal}(n) = \dfrac{24n - 1}{23}$, and *Efficiency*
+as: $E(n) = \dfrac{S(n)}{S_{ideal}(n)}$
+This ensures that perfect linear scaling as workers are added results in efficiency = $1.0$, 
+enabling fair comparison across configurations.
+
+Finally, the *Imbalance Percentage*
 cite:derose2007detecting depicts how unevenly the computational
 workload is distributed among workers. Lower values are better. It is
 calculated as:
@@ -550,28 +562,26 @@ calculated as:
 #+end_export
 where $L_{\text{max}}$ is the computation time of the slowest worker,
 $L_{\text{avg}}$ is the average computation time across all workers, and
-$n$ is the number of workers.
+$n$ is the number of workers. We picked the median value from the 10 trials.
 #+latex: %
 In our analysis we focus solely on Client times, which directly
 reflect user-perceived performance, as the coordinator metrics closely
 mirror client-side values. We also focus on worker-level timings,
 which reveal the degree of load balancing achieved.
 
-
-
 #+CAPTION: Mean Client time for each setting.
 #+NAME: fig:client-time
 [[./figures/client_time.png]]
 
-#+CAPTION: Client speedup relative to 1 node for each setting.
+#+CAPTION: Client speedup and ideal speedup for each setting.
 #+NAME: fig:client-speedup
 [[./figures/client_speedup.png]]
 
-#+CAPTION: Client efficiency relative to 1 node for each setting.
+#+CAPTION: Client efficiency for each setting.
 #+NAME: fig:client-efficiency
 [[./figures/client_efficiency.png]]
 
-#+CAPTION: Imbalance percentage across trials on each setting.
+#+CAPTION: Median Imbalance Percentage on each setting.
 #+NAME: fig:imbalance-percentage
 [[./figures/imbalance_percentage.png]]
 
@@ -585,8 +595,8 @@ also balancing work between workers well.
 
 This is supported by Figure [[fig:imbalance-percentage]],
 which shows generally better load balancing for lower granularities, with performance degrading 
-at values over 40. This effect is higher the more nodes, and therefore workers, are present.
-The /default/ case in particular seems to suffer from more worker imbalance
+for higher node counts at values over 40. This effect is higher the more nodes, and therefore workers, 
+are present. The /default/ case in particular seems to suffer from more worker imbalance
 than the /hard/ case, due to the fractal region having a mix of very easy and very hard regions.
 
 In contrast, the /easy/ case shows a different trend: higher granularities consistently perform 
