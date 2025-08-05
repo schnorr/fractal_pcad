@@ -521,8 +521,8 @@ responses are sent to the Client in the ~SendResponse~ thread. This
 information allow us to verify the discretization cost, and the amount
 of compute time from the perspective of the coordinator. Finally, in
 each MPI worker, we measured the individual times to compute each
-payload, their pixel and depth counts, as well as the aggregate sum of
-these values. This information allow us to verify the load balance
+payload, their pixel and depth counts, as well as the aggregate of
+these values. This information allows us to verify the load balance
 among workers.
 
 ** Results
