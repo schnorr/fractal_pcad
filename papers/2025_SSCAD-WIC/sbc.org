@@ -252,7 +252,7 @@ pixel in a 2D image, an application needs to calculate the response
 for that function to compute and generate this set.
 
 # *[What is this work?/What we will do about the things we introduced?]*
-The Mandelbrot Set is a well-known compute-bound application and
+The Mandelbrot Set is a well-known compute-bound application and is
 considered embarrassingly parallel, as all point calculations are
 independent. Therefore, being highly parallelizable and
 computationally intensive, it often serves as a benchmark for HPC to
