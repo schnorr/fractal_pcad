@@ -613,6 +613,19 @@ and additional nodes can even reduce performance.
 ** Conclusion
 <<sec.conclusion>>
 
+This work presented a dynamic, multi-threaded MPI-based implementation
+of the Mandelbrot Set to study load balancing and scalability in HPC
+systems. Through extensive experimentation, we demonstrated that
+workload granularity plays a crucial role in performance, with optimal
+values depending on the computational characteristics of the fractal
+region. Our analysis showed that while the system scales well for
+compute-intensive workloads with balanced granularity, communication
+overhead can dominate in simpler cases, reducing efficiency. These
+insights highlight the importance of tuning granularity based on
+workload characteristics to achieve efficient parallel execution.  As
+future work, we plan to focus on investigating varying granularity
+values based on neighborhood fractal depth and its impact on
+performance and load balance.
 
 ** Acknowledgments
 :PROPERTIES:
