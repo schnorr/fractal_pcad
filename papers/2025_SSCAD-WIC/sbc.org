@@ -533,10 +533,10 @@ application based on the experiments described earlier. We focus on
 four key metrics: the mean client time, speedup, efficiency, and
 imbalance percentage. The *Mean Client Time* represents the total time
 taken for the Client to receive the fully computed fractal for each
-setting. The *Speedup* measures the ratio of the mean Client time with 
-a single node for a given region and granularity setting, to the mean Client 
-time with multiple nodes for that same setting. That is, for a given number of 
-nodes, $S(n) = \dfrac{T(1)}{T(n)}$. We emphasize that our speedup
+case (/payload/). The *Speedup* measures the ratio of the mean Client time with 
+a single node for a given case and granularity setting to the mean Client 
+time any other number of nodes for that same setting. That is, for a given number of 
+nodes $n$, $S(n) = \frac{T(1)}{T(n)}$. We emphasize that our speedup
 metric is relative to the number of nodes rather than processors. 
 
 Our server architecture is asymmetric, which necessitates a careful definition of 
@@ -546,9 +546,9 @@ This results in a worker count for $n$ nodes of $24n - 1$.
 Standard efficiency calculations using node count would yield misleading values above 
 1.0 due to this uneven worker distribution.
 Therefore, we normalize our metrics based on worker count rather than node count. 
-We define the ideal speedup as: $S_{ideal}(n) = \dfrac{24n - 1}{23}$, and *Efficiency*
-as: $E(n) = \dfrac{S(n)}{S_{ideal}(n)}$
-This ensures that perfect linear scaling as workers are added results in efficiency = $1.0$, 
+We define the ideal speedup as $S_{ideal}(n) = \frac{24n - 1}{23}$, and *Efficiency*
+as $E(n) = \frac{S(n)}{S_{ideal}(n)}$.
+This method of computing $S$ and $E$ ensures that perfect linear scaling as workers are added results in efficiency = $1.0$, 
 enabling fair comparison across configurations.
 
 Finally, the *Imbalance Percentage*
@@ -569,7 +569,15 @@ reflect user-perceived performance, as the coordinator metrics closely
 mirror client-side values. We also focus on worker-level timings,
 which reveal the degree of load balancing achieved.
 
-#+CAPTION: Mean Client time for each setting.
+Examining Figures [[fig:client-time]], [[fig:client-speedup]] and [[fig:client-efficiency]],
+performance appears to scale well with the addition of nodes for the /default/ and /hard/ cases, 
+provided the granularity is not too low or too high. In particular, the granularity 20 appears to 
+perform the best in those cases, with an efficiency close to 1 in the /hard/ case, and 
+approximately 0.88 in the /default/ case. This understanding is likely due to there being a good trade‑off 
+between the payload size and the number of payloads, keeping a low communication overhead while 
+also balancing work between workers well. 
+
+#+CAPTION: Mean Client time for each of thre three cases (/payloads/).
 #+NAME: fig:client-time
 [[./figures/client_time.png]]
 
@@ -577,21 +585,6 @@ which reveal the degree of load balancing achieved.
 #+NAME: fig:client-speedup
 [[./figures/client_speedup.png]]
 
-#+CAPTION: Client efficiency for each setting.
-#+NAME: fig:client-efficiency
-[[./figures/client_efficiency.png]]
-
-#+CAPTION: Median Imbalance Percentage on each setting.
-#+NAME: fig:imbalance-percentage
-[[./figures/imbalance_percentage.png]]
-
-Examining Figures [[fig:client-time]], [[fig:client-speedup]] and [[fig:client-efficiency]],
-performance appears to scale well with the addition of nodes for the /default/ and /hard/ cases, 
-provided the granularity is not too low or too high. In particular, granularity 20 appears to 
-perform the best in those cases, with an efficiency close to 1 in the /hard/ case, and 
-approximately 0.88 in the /default/ case. This is likely due to there being a good trade‑off 
-between the payload size and the number of payloads, keeping a low communication overhead while 
-also balancing work between workers well. 
 
 This is supported by Figure [[fig:imbalance-percentage]],
 which shows generally better load balancing for lower granularities, with performance degrading 
@@ -607,6 +600,20 @@ added. This effect is especially visible at granularity 5: in the /default/ and 
 performance worsens past 3 nodes, nearly matching the times observed in the /easy/ case. This 
 suggests that the performance is being capped by communication overhead rather than computation 
 time at such low granularities. 
+
+#+CAPTION: Client efficiency for each setting.
+#+NAME: fig:client-efficiency
+[[./figures/client_efficiency.png]]
+
+
+
+#+CAPTION: Median Imbalance Percentage on each setting.
+#+NAME: fig:imbalance-percentage
+[[./figures/imbalance_percentage.png]]
+
+
+
+
 
 Imbalance is also high across granularities in the /easy/ case, as 
 the work is so light that some workers can finish a payload and request another, while other 
@@ -640,10 +647,11 @@ balance.
 :UNNUMBERED: t
 :END:
 
-We would like to express our sincere gratitude to the Rio Grande do Sul Research Foundation (FAPERGS) and the Brazilian National Council for Scientific and
-Technological Development (CNPq) for their financial support, which included scientific initiation scholarships from both FAPERGS (PROBIC) and CNPq (PBIC).
-We thank the Federal University of Rio Grande do Sul (UFRGS) for all institutional support. We also extend our thanks to the Parallel and Distributed
-Processing Research Group (GPPD) for access to the PCAD cluster resources, which were essential for carrying out this work.
+We thank FAPERGS and CNPq for their financial support, which included
+scientific initiation scholarships from both FAPERGS (PROBIC) and CNPq
+(PBIC).  We also thank UFRGS for all institutional support. We also
+extend our thanks to the Parallel and Distributed Processing Research
+Group (GPPD) for access to the PCAD cluster resources.
 
 ** References                                                        :ignore:
 
