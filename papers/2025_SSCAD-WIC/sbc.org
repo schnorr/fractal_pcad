@@ -435,7 +435,7 @@ balanced, so we can assess computational throughput. We manually
 selected the three max depth values of each case so the execution time
 remains bounded to an acceptable value.
 
-#+CAPTION: Default, Easy, and Hard fractal regions, from left to right.
+#+CAPTION: The three fractal cases, with the corresponding maximum depth values.
 #+NAME: fig:fractal-regions
 #+ATTR_LATEX: :placement [htbp]
 \begin{figure}[htbp]
