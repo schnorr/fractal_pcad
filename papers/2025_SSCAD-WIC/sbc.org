@@ -311,26 +311,26 @@ quantifying load imbalance (imbalance percentage), as we detail next.
 
 ** Materials and Methods
 <<sec.materials>>
-*** The multi-threaded client-server MPI application for the Mandelbrot Set
+*** The multi-threaded client--server MPI application for the Mandelbrot Set
 
-The implemented multi-thread system adopts a Client--Server
+The implemented multi-threaded system adopts a Client--Server
 architecture designed to parallelize the computation of the Mandelbrot
 Set while enabling efficient load balancing across multiple computing
 nodes. Figure [[fig:system-architecture]] illustrates the overall
 architecture, highlighting the main threads, communication queues, and
 data flow between components. The Client is responsible for managing
 user interactions and rendering the fractal image produced by the
-server. When the user requests a new region, the client issues a
-/payload/ to the server. The Server comprises a central MPI coordinator
+Server. When the user requests a new region, the client issues a
+/payload/ to the Server. The Server comprises a central MPI coordinator
 which receives the /payload/ from the client, discretizes the
 workload into smaller problems, and dynamically distributes these
 smaller problems to a pool of MPI workers by demand. From the start of
-the server, the workers approach the coordinator looking for work. By
+the Server, the workers approach the coordinator looking for work. By
 reception of a smaller problem, the workers carry out the numerical
 computations for each of them (Mandelbrot Set) before sending back to
 the Server the /responses/, which are then redirected to the Client.
 
-#+CAPTION: Multi-thread system overview with processes, threads, and queues.
+#+CAPTION: Multi-threaded system overview with processes, threads, and queues.
 #+NAME: fig:system-architecture
 [[./figures/system_architecture.png]]
 
@@ -341,13 +341,13 @@ structure that specifies the region of the Mandelbrot Set to be
 computed, including the bounds in the complex plane, the corresponding
 screen coordinates, the /depth/, which is maximum number of iterations
 to apply in the Mandelbrot algorithm, and the /granularity/, which
-determines the size of the square blocks into which the server
+determines the size of the square blocks into which the Server
 partitions the workload. For example, a granularity of 5 means that
-the server will split the fractal space into several 5\times5 square
+the Server will split the fractal space into several 5\times5 square
 blocks. Each payload also includes an increasing generation number to
-identify it in the case the Client sends several /payloads/ in after the
+identify it in the case the Client sends several /payloads/ one after the
 another.
-
+#+latex: %
 The Server replies to a single /payload/ with several /response/ objects,
 each carrying its corresponding payload, as well as the calculated
 depth count at each pixel position. In addition to the depth counts,
@@ -463,10 +463,10 @@ distinct configurations (6\times6\times3). Each configuration has been executed
 ten times so we can assess the experimental variability, and the
 execution order has been randomized to avoid potential bias.
 #+LATEX: %
-All experiments consider a simplified experimental Client as we
+All experiments consider a simplified Client as we
 executed everything in the cluster without a graphical interface. Our
 textual Client instead receives parameters through the command
-line. As such, the ~ProcessResponse~ thread is absent, and the ~Main~
+line. The ~ProcessResponse~ thread is therefore absent, and the ~Main~
 thread enqueues the payload and dequeues responses from the ~RecvResponse~
 thread.
 
@@ -528,7 +528,7 @@ among workers.
 ** Results
 <<sec.results>>
 
-We present the performance evaluation of our multi-thread MPI
+We present the performance evaluation of our multi-threaded MPI
 application based on the experiments described earlier. We focus on
 four key metrics: the mean client time, speedup, efficiency, and
 imbalance percentage. The *Mean Client Time* represents the total time
