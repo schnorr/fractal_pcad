@@ -282,34 +282,32 @@ future work.
 <<sec.related>>
 
 # *[References about load balancing]*
-Load balancing is a widely studied field, Chenzhong and Francis
-cite:xu2007load provide a general overview of the techniques for
-parallel computers. Sandeep cite:sandeep2008 more specifically
-analyzes different load balancing algorithms and concludes that while
-dynamic distributed load balancing algorithms are always generally
-considered better, the static algorithms are more stable and
-predictable.  Another work cite:mohammed2020two proposes a two-level
-dynamic load balancing to scientific applications that operate with
-MPI+OpenMP and uses the Mandelbrot application as one of its test
-cases because of the application irregularity.
+Load balancing is a widely studied field. Chenzhong and Francis
+cite:xu2007load provide a general overview of load balancing
+techniques for parallel computers. Sandeep cite:sandeep2008 more
+specifically analyzes different load balancing algorithms and
+concludes that while dynamic distributed load balancing algorithms are
+always generally considered better, the static algorithms are more
+stable and predictable.  Another work cite:mohammed2020two proposes a
+two-level dynamic load balancing to scientific applications that
+operate with MPI+OpenMP and uses the Mandelbrot application as one of
+its test cases because of the application's irregularity.
 #+latex: %
 #+latex: % *[References about the mandelbrot implementation]*
-The Mandelbrot Set as an HPC application is also vastly studied and
-used as a benchmark in a variety of works for its computationally
-intensive, parallizable and irregular nature. For example, all works
-considering the Mandelbrot Set, Gomez cite:gomez2020mpi has carried
-out a case study to compare MPI against OpenMP.  Another work
+The Mandelbrot Set as an HPC application has also been vastly studied
+and used as a benchmark in various works for its computationally
+intensive, parallelizable, and irregular nature. For example, all
+works considering the Mandelbrot Set, Gomez cite:gomez2020mpi has
+conducted a case study comparing MPI against OpenMP. Another work
 cite:ozen2015exploring has specifically explored dynamic parallelism
-in OpenMP. Yang cite:yang2011performance also study specific
-parameters to control how load balancing actuates among application
-processes.
+in OpenMP.  Yang cite:yang2011performance also studies specific
+parameters to control load balancing among application processes.
 #+latex: %
-The related work demonstrates how pertinent is the usage of the
-Mandelbrot Set as a benchmarking application. Our work employs once
-again this application with a strong focus on the the performance
-analysis, employing general metrics (mean client time, speedup, and
-efficiency), and a metric specific to quantify the load imbalance
-(imbalance percentage), as we detail next.
+The related work demonstrates how pertinent the Mandelbrot Set is as a
+benchmarking application. Again, our work employs this application
+with a strong focus on performance analysis, general metrics (mean
+client time, speedup, and efficiency), and a metric specific to
+quantifying load imbalance (imbalance percentage), as we detail next.
 
 ** Materials and Methods
 <<sec.materials>>
@@ -622,10 +620,10 @@ region. Our analysis showed that while the system scales well for
 compute-intensive workloads with balanced granularity, communication
 overhead can dominate in simpler cases, reducing efficiency. These
 insights highlight the importance of tuning granularity based on
-workload characteristics to achieve efficient parallel execution.  As
-future work, we plan to focus on investigating varying granularity
-values based on neighborhood fractal depth and its impact on
-performance and load balance.
+workload characteristics to achieve efficient parallel execution. As
+future work, we plan to investigate varying granularity values based
+on neighborhood fractal depth and its impact on performance and load
+balance.
 
 ** Acknowledgments
 :PROPERTIES:
