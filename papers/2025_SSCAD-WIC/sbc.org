@@ -574,8 +574,8 @@ depict the time, speedup and efficiency results. We see that
 performance appears to scale well with the addition of nodes for the
 /default/ and /hard/ cases, provided an adequate granularity (nor low nor
 high). The granularity 20 appears to be the best, with an efficiency
-close to 1 in the /hard/ case, and approximately 0.88 in the /default/
-case. This understanding is likely due to presenting a good trade‑off
+of around 0.98 in the /hard/ case, and approximately 0.85 in the /default/
+case. This is likely due to it presenting a good trade‑off
 between the payload size and the number of payloads, with small
 communication overhead while providing good load balancing.
 
@@ -590,8 +590,8 @@ communication overhead while providing good load balancing.
 
 This interpretation can be confirmed in Figure
 [[fig:imbalance-percentage]], which shows generally better load balancing
-for smaller granularities. The performance degrades for higher node
-counts (over 40). This effect is also larger with more workers. The
+for lower granularities. The load balancing at higher granularity values 
+tends to degrade as the number of nodes increases. The
 /default/ case in particular seems to suffer from more worker imbalance
 than the /hard/ case, due to the fractal region having a mix of very
 easy and very hard regions.
