@@ -664,14 +664,23 @@ Tangle this file with C-c C-v t
     publisher={Wiley Online Library}
   }
 
-
-  @inproceedings{ozen2015exploring,
-    title={Exploring dynamic parallelism in openmp},
-    author={Ozen, Guray and Ayguad{\'e}, Eduard and Labarta, Jes{\'u}s},
-    booktitle={Proceedings of the Second Workshop on Accelerator Programming using Directives},
-    pages={1--8},
-    year={2015}
-  }
+@inproceedings{ozen2015exploring,
+author = {Ozen, Guray and Ayguade, Eduard and Labarta, Jesus},
+title = {Exploring dynamic parallelism in OpenMP},
+year = {2015},
+isbn = {9781450340144},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/2832105.2832113},
+doi = {10.1145/2832105.2832113},
+abstract = {GPU devices are becoming a common element in current HPC platforms due to their high performance-per-Watt ratio. However, developing applications able to exploit their dazzling performance is not a trivial task, which becomes even harder when they have irregular data access patterns or control flows. Dynamic Parallelism (DP) has been introduced in the most recent GPU architecture as a mechanism to improve applicability of GPU computing in these situations, resource utilization and execution performance. DP allows to launch a kernel within a kernel without intervention of the CPU. Current experiences reveal that DP is offered to programmers at the expenses of an excessive overhead which, together with its architecture dependency, makes it difficult to see the benefits in real applications.In this paper, we propose how to extend the current OpenMP accelerator model to make the use of DP easy and effective. The proposal is based on nesting of teams constructs and conditional clauses, showing how it is possible for the compiler to generate code that is then efficiently executed under dynamic runtime scheduling. The proposal has been implemented on the MACC compiler supporting the OmpSs task--based programming model and evaluated using three kernels with data access and computation patterns commonly found in real applications: sparse matrix vector multiplication, breadth-first search and divide--and--conquer Mandelbrot. Performance results show speed-ups in the 40x range relative to versions not using DP.},
+booktitle = {Proceedings of the Second Workshop on Accelerator Programming Using Directives},
+articleno = {5},
+numpages = {8},
+keywords = {programming models, dynamic parallelism, compilers, OpenMP, OpenACC, OmpSs, GPGPU, CUDA},
+location = {Austin, Texas},
+series = {WACCPD '15}
+}
 
   @article{dongarra2024,
     author    = {Dongarra, Jack and Keyes, David E.},
@@ -692,14 +701,15 @@ Tangle this file with C-c C-v t
     year={2020}
   }
 
-
-  @book{xu2007load,
-    title={Load balancing in parallel computers: theory and practice},
-    author={Xu, Chenzhong and Lau, Francis CM},
-    volume={381},
-    year={2007},
-    publisher={Springer}
-  }
+@book{xu2007load,
+author = {Xu, Chenzhong and Lau, Francis C. M.},
+title = {Load Balancing in Parallel Computers: Theory and Practice},
+year = {2013},
+isbn = {1475770669},
+publisher = {Springer Publishing Company, Incorporated},
+edition = {1st},
+abstract = {Load Balancing in Parallel Computers: Theory and Practice is about the essential software technique of load balancing in distributed memory message-passing parallel computers, also called multicomputers. Each processor has its own address space and has to communicate with other processors by message passing. In general, a direct, point-to-point interconnection network is used for the communications. Many commercial parallel computers are of this class, including the Intel Paragon, the Thinking Machine Cm-5, and the Ibm Sp2. Load Balancing in Parallel Computers: Theory and Practice presents a comprehensive treatment of the subject using rigorous mathematical analyses and practical implementations. The focus is on nearest-neighbor load balancing methods in which every processor at every step is restricted to balancing its workload with its direct neighbours only. Nearest-neighbor methods are iterative in nature because a global balanced state can be reached through processors' successive local operations. Since nearest-neighbor methods have a relatively relaxed requirement for the spread of local load information across the system, they are flexible in terms of allowing one to control the balancing quality, effective for preserving communication locality, and can be easily scaled in parallel computers with a direct communication network. Load Balancing in Parallel Computers: Theory and Practice serves as an excellent reference source and may be used as a text for advanced courses on the subject.}
+}
 
   @inproceedings{mohammed2020two,
     title={Two-level dynamic load balancing for high performance scientific applications},
@@ -719,8 +729,6 @@ Tangle this file with C-c C-v t
   pages = {249-259},
   year = {1980}
   }
-
-
 
   @article{sandeep2008,
     title     = {Performance Analysis of Load Balancing Algorithms},
