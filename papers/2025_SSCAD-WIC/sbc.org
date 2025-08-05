@@ -538,7 +538,7 @@ a single node for a given case and granularity setting to the mean Client
 time any other number of nodes for that same setting. That is, for a given number of 
 nodes $n$, $S(n) = \frac{T(1)}{T(n)}$. We emphasize that our speedup
 metric is relative to the number of nodes rather than processors. 
-
+#+latex: %
 Our server architecture is asymmetric, which necessitates a careful definition of 
 ideal performance and efficiency. The baseline configuration on a single node uses 
 23 workers and one coordinator, while each additional node contributes 24 workers. 
@@ -550,7 +550,7 @@ We define the ideal speedup as $S_{ideal}(n) = \frac{24n - 1}{23}$, and *Efficie
 as $E(n) = \frac{S(n)}{S_{ideal}(n)}$.
 This method of computing $S$ and $E$ ensures that perfect linear scaling as workers are added results in efficiency = $1.0$, 
 enabling fair comparison across configurations.
-
+#+latex: %
 Finally, the *Imbalance Percentage*
 cite:derose2007detecting depicts how unevenly the computational
 workload is distributed among workers. Lower values are better. It is
@@ -569,13 +569,15 @@ reflect user-perceived performance, as the coordinator metrics closely
 mirror client-side values. We also focus on worker-level timings,
 which reveal the degree of load balancing achieved.
 
-Examining Figures [[fig:client-time]], [[fig:client-speedup]] and [[fig:client-efficiency]],
-performance appears to scale well with the addition of nodes for the /default/ and /hard/ cases, 
-provided the granularity is not too low or too high. In particular, the granularity 20 appears to 
-perform the best in those cases, with an efficiency close to 1 in the /hard/ case, and 
-approximately 0.88 in the /default/ case. This understanding is likely due to there being a good trade‑off 
-between the payload size and the number of payloads, keeping a low communication overhead while 
-also balancing work between workers well. 
+Figures [[fig:client-time]], [[fig:client-speedup]] and [[fig:client-efficiency]]
+depict the time, speedup and efficiency results. We see that
+performance appears to scale well with the addition of nodes for the
+/default/ and /hard/ cases, provided an adequate granularity (nor low nor
+high). The granularity 20 appears to be the best, with an efficiency
+close to 1 in the /hard/ case, and approximately 0.88 in the /default/
+case. This understanding is likely due to presenting a good trade‑off
+between the payload size and the number of payloads, with small
+communication overhead while providing good load balancing.
 
 #+CAPTION: Mean Client time for each of thre three cases (/payloads/).
 #+NAME: fig:client-time
@@ -586,24 +588,30 @@ also balancing work between workers well.
 [[./figures/client_speedup.png]]
 
 
-This is supported by Figure [[fig:imbalance-percentage]],
-which shows generally better load balancing for lower granularities, with performance degrading 
-for higher node counts at values over 40. This effect is higher the more nodes, and therefore workers, 
-are present. The /default/ case in particular seems to suffer from more worker imbalance
-than the /hard/ case, due to the fractal region having a mix of very easy and very hard regions.
+This interpretation can be confirmed in Figure
+[[fig:imbalance-percentage]], which shows generally better load balancing
+for smaller granularities. The performance degrades for higher node
+counts (over 40). This effect is also larger with more workers. The
+/default/ case in particular seems to suffer from more worker imbalance
+than the /hard/ case, due to the fractal region having a mix of very
+easy and very hard regions.
 
-In contrast, the /easy/ case shows a different trend: higher granularities consistently perform 
-better, and increasing node counts worsen performance. Because most points in this region escape 
-in only a few iterations, computation becomes inexpensive, and the bottleneck is communication. 
-As such, lower granularities lead to higher overhead, which seems to grow worse as more nodes are 
-added. This effect is especially visible at granularity 5: in the /default/ and /hard/ cases, 
-performance worsens past 3 nodes, nearly matching the times observed in the /easy/ case. This 
-suggests that the performance is being capped by communication overhead rather than computation 
-time at such low granularities. 
+In contrast, the /easy/ case shows a different trend: higher
+granularities consistently perform better, and increasing node counts
+worsen performance. Because most points in this region escape in only
+a few iterations, computation becomes inexpensive, and the bottleneck
+is communication.  As such, lower granularities lead to higher
+overhead, which seems to grow worse as more nodes are added. This
+effect is especially visible at granularity 5 (see Figure
+[[fig:client-time]] for instance): in the /default/ and /hard/ cases,
+performance worsens past 3 nodes, nearly matching the times observed
+in the /easy/ case. We conclude that the performance is limited by
+communication rather than computation time at such low granularities.
 
 #+CAPTION: Client efficiency for each setting.
 #+NAME: fig:client-efficiency
 [[./figures/client_efficiency.png]]
+
 
 
 
@@ -614,16 +622,9 @@ time at such low granularities.
 
 
 
-
-Imbalance is also high across granularities in the /easy/ case, as 
-the work is so light that some workers can finish a payload and request another, while other 
-workers are still waiting for their next payload.
-
-These results show that scaling depends on the balance between computation
-and communication costs. For harder fractal regions, the system scales very well 
-with additional nodes when granularity is appropriately chosen, with granularity 20 striking 
-the best balance. However, for simpler regions, communication overhead dominates 
-and additional nodes can even reduce performance.
+Imbalance is also high across granularities in the /easy/ case, as the
+work is so light that some workers can finish a payload and request
+another, while other workers are still waiting for their next payload.
 
 ** Conclusion
 <<sec.conclusion>>
@@ -633,11 +634,17 @@ of the Mandelbrot Set to study load balancing and scalability in HPC
 systems. Through extensive experimentation, we demonstrated that
 workload granularity plays a crucial role in performance, with optimal
 values depending on the computational characteristics of the fractal
-region. Our analysis showed that while the system scales well for
-compute-intensive workloads with balanced granularity, communication
-overhead can dominate in simpler cases, reducing efficiency. These
-insights highlight the importance of tuning granularity based on
-workload characteristics to achieve efficient parallel execution. As
+region.
+#+latex: %
+These results show that scaling depends on the balance between
+computation and communication costs. For harder fractal regions, the
+system scales very well with additional nodes when granularity is
+appropriately chosen, with granularity 20 striking the best
+balance. However, for simpler regions, communication overhead
+dominates and additional nodes can even reduce performance.
+#+latex: %
+These insights highlight the importance of tuning granularity based on
+workload characteristics to achieve efficient parallel execution.  As
 future work, we plan to investigate varying granularity values based
 on neighborhood fractal depth and its impact on performance and load
 balance.
@@ -732,10 +739,8 @@ abstract = {Load Balancing in Parallel Computers: Theory and Practice is about t
   @inproceedings{mohammed2020two,
     title={Two-level dynamic load balancing for high performance scientific applications},
     author={Mohammed, Ali and Cavelan, Aur{\'e}lien and Ciorba, Florina M and Cabez{\'o}n, Rub{\'e}n M and Banicescu, Ioana},
-    booktitle={Proceedings of the 2020 SIAM Conference on Parallel Processing for Scientific Computing},
-    pages={69--80},
+    booktitle={SIAM Conference on Parallel Processing for Scientific Computing},
     year={2020},
-    organization={SIAM}
   }
 
   @article{mandelbrot1980,
@@ -757,7 +762,7 @@ abstract = {Load Balancing in Parallel Computers: Theory and Practice is about t
     volume    = {2},
     number    = {2},
     year      = {2008},
-    pages     = {367 - 370},
+    pages     = {367},
     ee        = {https://publications.waset.org/pdf/5537},
     url   	= {https://publications.waset.org/vol/14},
     bibsource = {https://publications.waset.org/},
