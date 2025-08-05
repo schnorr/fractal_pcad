@@ -361,27 +361,27 @@ shown in Figure [[fig:system-architecture]], the Client contains four
 concurrent threads. The ~Main~ thread manages both rendering of the
 fractal image and collection of user mouse and keyboard input. When a
 new region is selected, ~Main~ constructs the corresponding payload and
-pushes it to a dedicated queue.  The ~Net Send~ thread dequeues payloads
+pushes it to a dedicated queue.  The ~SendPayload~ thread dequeues payloads
 from this queue and transmits them to the Server over a TCP
-connection. Meanwhile, ~Net Recv~ listens for incoming responses, and
-enqueues them into a response queue. Finally, the ~Process Response~
+connection. Meanwhile, ~RecvResponse~ listens for incoming responses, and
+enqueues them into a response queue. Finally, the ~ProcessResponse~
 thread retrieves these responses and integrates them into the
 displayed image by applying a coloring function to the calculated
 depth count for each pixel, updating the pixel buffer
 incrementally as results arrive.
 
-On the Server side, the ~Net Recv~ thread listens for Client payloads,
-forwarding them to the ~Discretize payloads~ thread, which divides the
+On the Server side, the ~RecvPayload~ thread listens for Client payloads,
+forwarding them to the ~DiscretizePayloads~ thread, which divides the
 requested region into several payloads sized according to the
 specified granularity. These are then placed into a queue, with
 outdated payloads being discarded to prevent workers from computing
 regions that are no longer relevant. As workers become available, they
-request a new payload from the coordinator. The ~MPI Send~ thread
+request a new payload from the coordinator. The ~SendToWorker~ thread
 dynamically assigns them payloads from the queue. Each worker
 independently computes a response, producing the depth counts for all
 pixels in that subregion. Once the response becomes ready, it is sent to
-the ~MPI Recv~ thread, which enqueues it to a response queue. These
-responses are then collected by ~Net Send~, which sends them back to the
+the ~RecvFromWorker~ thread, which enqueues it to a response queue. These
+responses are then collected by ~SendResponse~, which sends them back to the
 Client.
 
 *** Hardware & Software configuration
@@ -466,8 +466,8 @@ execution order has been randomized to avoid potential bias.
 All experiments consider a simplified experimental Client as we
 executed everything in the cluster without a graphical interface. Our
 textual Client instead receives parameters through the command
-line. As such, the ~Process Response~ thread is absent, and the ~Main~
-thread enqueues the payload and dequeues responses from the ~Net Recv~
+line. As such, the ~ProcessResponse~ thread is absent, and the ~Main~
+thread enqueues the payload and dequeues responses from the ~RecvResponse~
 thread.
 
 **** Code                                                       :noexport:
@@ -516,8 +516,8 @@ well as the last response. These metrics enable us to verify the
 latency of the application as well as total perceived time from the
 user perspective. In the server, we measured the time between a
 payload being received and its discretization, the first and last
-responses being received by the ~MPI Recv~ thread, and the moments these
-responses are sent to the Client in the ~Net Send~ thread. This
+responses being received by the ~RecvFromWorker~ thread, and the moments these
+responses are sent to the Client in the ~SendResponse~ thread. This
 information allow us to verify the discretization cost, and the amount
 of compute time from the perspective of the coordinator. Finally, in
 each MPI worker, we measured the individual times to compute each
