@@ -209,8 +209,8 @@ Lucas Mello Schnorr\inst{1}
 ** Abstract                                                         :ignore:
 
 #+begin_abstract
-This work investigates load balancing and scalability in High
-Performance Computing (HPC) systems using the Mandelbrot Set as a
+This work investigates load balancing and scalability in
+High-Performance Computing (HPC) systems using the Mandelbrot Set as a
 benchmark. Due to its irregular and compute-intensive workload, the
 Mandelbrot Set is ideal for evaluating dynamic workload distribution
 strategies. We present a custom MPI-based implementation employing a
