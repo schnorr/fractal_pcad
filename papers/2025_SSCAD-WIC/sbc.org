@@ -534,7 +534,7 @@ imbalance percentage. The *Mean Client Time* represents the total time
 taken for the Client to receive the fully computed fractal for each
 case (/payload/). The *Speedup* measures the ratio of the mean Client time with 
 a single node for a given case and granularity setting to the mean Client 
-time any other number of nodes for that same setting. That is, for a given number of 
+time with another number of nodes for that same setting. That is, for a given number of 
 nodes $n$, $S(n) = \frac{T(1)}{T(n)}$. We emphasize that our speedup
 metric is relative to the number of nodes rather than processors. 
 #+latex: %
