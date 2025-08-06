@@ -53,7 +53,7 @@ plot <- df |>
   meu_estilo() +
   xlim(0, NA) +
   labs(x = "Nodes", 
-       y = "Median Imbalance Percentage",
+       y = "Imbalance Percentage",
        color = "Gran.") +
   theme(legend.title = element_text())
 
