@@ -394,8 +394,7 @@ Each cei node, used for the compute-bound part, has two Intel Xeon
 Silver 4116 processors at 2.10 GHz, providing 24 physical cores each
 for a total of 144 physical cores. In all experiments, we have
 exclusive access to the machines without any type of
-virtualization. We also take time to pin each MPI rank to a physical
-CPU core and use the /performance/ frequency governor of the
+virtualization. We also use the /performance/ frequency governor of the
 =acpi-cpufreq=.  The MPI implementation was OpenMPI version 4.1.4 and
 the Linux Kernel 6.1.0 with SMP support as released by the Debian 12
 distribution. The Client--Server Ethernet network is 1Gbps, while the
