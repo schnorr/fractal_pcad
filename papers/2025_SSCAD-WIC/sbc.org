@@ -410,14 +410,14 @@ assessing how the system behaves under different workloads. The
 experiments consisted of rendering fractal images with a resolution of
 1920\times1080 pixels, typical for full high definition screens.  Each
 execution is the combination of a value of the following factors:
-Granularity, Number of Workers, and Fractal Cases. The *Granularity*
+Granularity, Number of Nodes, and Fractal Cases. The *Granularity*
 factor has the six levels: [5\times5, 10\times10, 20\times20, 40\times40, 60\times60, 120\times120],
 respectively resulting in [82944, 20736, 5184, 1296, 576, 144] tasks
 for workers. Smaller blocks improve load balancing but increase
 communication overhead. Larger blocks may lead to severe load
-imbalance. The *Number of Workers* factor has also six levels: [1, 2, 3,
+imbalance. The *Number of Nodes* factor also has six levels: [1, 2, 3,
 4, 5, 6], derived from the limitations of our platform, where each
-number of worker /nodes/ contribute to 24 physical cores.  This
+/node/ contributes 24 physical cores to the server.  This
 corresponds to a total of 24 to 144 MPI ranks (step of 24 cores),
 enabling the evaluation of how well the application scales with
 additional resources. Finally, the *Fractal Cases* has three levels:
