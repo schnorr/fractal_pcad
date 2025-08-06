@@ -578,11 +578,11 @@ case. This is likely due to it presenting a good trade‑off
 between the payload size and the number of payloads, with small
 communication overhead while providing good load balancing.
 
-#+CAPTION: Mean Client time for each of thre three cases (/payloads/).
+#+CAPTION: Mean Client time for each of the three cases (/payloads/).
 #+NAME: fig:client-time
 [[./figures/client_time.png]]
 
-#+CAPTION: Client speedup and ideal speedup for each setting.
+#+CAPTION: Speedup and ideal speedup for each case.
 #+NAME: fig:client-speedup
 [[./figures/client_speedup.png]]
 
@@ -607,14 +607,14 @@ performance worsens past 3 nodes, nearly matching the times observed
 in the /easy/ case. We conclude that the performance is limited by
 communication rather than computation time at such low granularities.
 
-#+CAPTION: Client efficiency for each setting.
+#+CAPTION: Efficiency for each case.
 #+NAME: fig:client-efficiency
 [[./figures/client_efficiency.png]]
 
 
 
 
-#+CAPTION: Median Imbalance Percentage on each setting.
+#+CAPTION: Median Imbalance Percentage for each case.
 #+NAME: fig:imbalance-percentage
 [[./figures/imbalance_percentage.png]]
 
