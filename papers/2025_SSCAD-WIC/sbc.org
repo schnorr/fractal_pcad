@@ -573,7 +573,7 @@ depict the time, speedup and efficiency results. We see that
 performance appears to scale well with the addition of nodes for the
 /default/ and /hard/ cases, provided an adequate granularity (nor low nor
 high). The granularity 20 appears to be the best, with an efficiency
-of around 0.98 in the /hard/ case, and approximately 0.85 in the /default/
+of around 0.98 with 6 nodes in the /hard/ case, and approximately 0.85 in the /default/
 case. This is likely due to it presenting a good trade‑off
 between the payload size and the number of payloads, with small
 communication overhead while providing good load balancing.
