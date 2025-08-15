@@ -239,17 +239,18 @@ during the program execution.
 # *[Mandelbrot]*
 An everyday activity to study the correct usage of an HPC system is to
 verify if the application achieves adequate load balancing amongst its
-processes. This activity is particularly more challenging for
-irregular workloads as the dynamic nature of the load makes standard
+processes. This is particularly challenging for
+irregular workloads, as their dynamic nature makes standard
 static partitioning techniques unsuitable. The Mandelbrot Set
 cite:mandelbrot1980 is a typical application with an irregular
-workload because it computes the points belonging to the set. The
-application computes, for each point $c$ in the complex plane, the
-application of the function $f(z) = z^2 + c$, starting from $z =
-0$. The point $c$ belongs to the Mandelbrot Set if the computation of
-such an equation is bounded and does not diverge to infinity. For each
-pixel in a 2D image, an application needs to calculate the response
-for that function to compute and generate this set.
+workload because different points require varying numbers 
+of iterations to compute. For each 
+point $c$ in the complex plane, the application applies the function 
+$f(z) = z^2 + c$, starting from $z =0$. $c$ belongs to the Mandelbrot 
+Set if the computation remains bounded, that is, if its magnitude does 
+not exceed a fixed radius within a limited number of iterations. To 
+generate a 2D image of the set, the application performs this 
+computation for every pixel corresponding to a point in the complex plane. 
 
 # *[What is this work?/What we will do about the things we introduced?]*
 The Mandelbrot Set is a well-known compute-bound application and is
@@ -338,11 +339,12 @@ the Server the /responses/, which are then redirected to the Client.
 Each interaction between the Client and the Server consists of the
 exchange of /payload/ and /response/ objects. A /payload/ is a data
 structure that specifies the region of the Mandelbrot Set to be
-computed, including the bounds in the complex plane, the corresponding
+computed, including the bounds in the complex plane (given in 
+~long double~ precision), the corresponding
 screen coordinates, the /depth/, which is the maximum number of iterations
 to apply in the Mandelbrot algorithm, and the /granularity/, which
-determines the size of the square blocks into which the Server
-partitions the workload. For example, a granularity of 5 means that
+determines the size of the square blocks into which the workload is partitioned. 
+For example, a granularity of 5 means that
 the Server will split the fractal space into several 5\times5 square
 blocks. Each payload also includes an increasing generation number to
 identify it in the case the Client sends several /payloads/ one after
