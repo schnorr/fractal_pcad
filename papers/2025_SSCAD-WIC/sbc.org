@@ -245,7 +245,7 @@ static partitioning techniques unsuitable. The Mandelbrot Set
 cite:mandelbrot1980 is a typical application with an irregular
 workload because different points require varying numbers 
 of iterations to compute. For each 
-point $c$ in the complex plane, the application applies the function 
+point $c$ in the complex plane, the application iteratively applies the function 
 $f(z) = z^2 + c$, starting from $z =0$. $c$ belongs to the Mandelbrot 
 Set if the computation remains bounded, that is, if its magnitude does 
 not exceed a fixed radius within a limited number of iterations. To 
