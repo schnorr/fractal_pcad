@@ -47,14 +47,16 @@ plot <- df |>
   summarize(median_imbalance.percentage = median(imbalance.percentage, na.rm = TRUE),
             .groups="keep") |>
   mutate(case = factor(case, levels = c("easy", "default", "hard"))) |>
-  ggplot(aes(x = num_nodes, y = median_imbalance.percentage, color = as.factor(granularity))) +
-  geom_point(size = 2) +
+  ggplot(aes(x = factor(num_nodes), 
+             y = median_imbalance.percentage, 
+             fill = factor(granularity))) +
+  geom_col(position = position_dodge(width = 0.8)) +
   facet_wrap(~case, nrow = 1) +
   meu_estilo() +
-  xlim(0, NA) +
   labs(x = "Nodes", 
        y = "Imbalance Percentage",
-       color = "Gran.") +
+       fill = "Gran.") +
   theme(legend.title = element_text())
+
 
 ggsave("imbalance_percentage.png", plot = plot, width = 6.5, height = 2.5, dpi = 300)
