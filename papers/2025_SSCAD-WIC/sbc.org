@@ -408,33 +408,30 @@ We designed a set of experiments with various input parameters to
 evaluate the performance, scalability and load balancing of the
 application on the target system. These parameters were chosen to test
 different computational characteristics of the application, enabling
-assessing how the system behaves under different workloads. The
+us to assess how the system behaves under different workloads. The
 experiments consisted of rendering fractal images with a resolution of
-1920\times1080 pixels, typical for full high definition screens.  Each
+1920\times1080 pixels.  Each
 execution is the combination of a value of the following factors:
 Granularity, Number of Nodes, and Fractal Cases. The *Granularity*
 factor has the six levels: [5\times5, 10\times10, 20\times20, 40\times40, 60\times60, 120\times120],
 respectively resulting in [82944, 20736, 5184, 1296, 576, 144] tasks
 for workers. Smaller blocks improve load balancing but increase
 communication overhead. Larger blocks may lead to severe load
-imbalance. The *Number of Nodes* factor also has six levels: [1, 2, 3,
-4, 5, 6], derived from the limitations of our platform, where each
-/node/ contributes 24 physical cores to the server.  This
-corresponds to a total of 24 to 144 MPI ranks (step of 24 cores),
-enabling the evaluation of how well the application scales with
-additional resources. Finally, the *Fractal Cases* has three levels:
+imbalance. The *Number of Nodes* factor varies from 1 to 6, with each
+/node/ contributing 24 physical cores to the server.  This
+corresponds to a total of 24 to 144 MPI ranks (steps of 24),
+enabling the evaluation of scalability. Finally, *Fractal Cases* has three levels:
 [easy, default, hard]. Figure [[fig:fractal-regions]] illustrates
-representative images of the final result. The /easy/ (maximum depth
+representative images of each region. The /easy/ (maximum depth
 of 1024) depicts a region where most points escape in only a few
 iterations, testing the communication overhead, rather than
 computational speed. The /default/ (150000) depicts a typical unbalanced
 Mandelbrot fractal region, containing both points that are
 computationally intensive, as well as many points that escape quickly,
-stressing requirements for active load balancing. Finally, the /hard/
+stressing load balancing. Finally, the /hard/
 (300000) depicts a deep region that is computationally intensive but
-balanced, so we can assess computational throughput. We manually
-selected the three max depth values of each case so the execution time
-remains bounded to an acceptable value.
+balanced, to assess throughput. Max depth values were selected to keep 
+execution time bounded.
 
 #+CAPTION: The three fractal cases, with the corresponding maximum depth values.
 #+NAME: fig:fractal-regions
@@ -523,8 +520,13 @@ information allow us to verify the discretization cost, and the amount
 of compute time from the perspective of the coordinator. Finally, in
 each MPI worker, we measured the individual times to compute each
 payload, their pixel and depth counts, as well as the aggregate of
-these values. This information allows us to verify the load balance
-among workers.
+these values, allowing us to assess load balancing.
+
+*** Reproducibility
+
+For reproducibility, we provide a companion folder in our repository
+with data and scripts used to run the experiment and generate graphs:
+\url{https://github.com/schnorr/fractal_pcad/tree/main/papers/2025_SSCAD-WIC/companion}.
 
 ** Results
 <<sec.results>>
@@ -598,11 +600,11 @@ than the /hard/ case, due to the fractal region having a mix of very
 easy and very hard regions.
 
 In contrast, the /easy/ case shows a different trend: higher
-granularities consistently perform better, and increasing node counts
+granularities perform better, and increasing node counts
 worsen performance. Because most points in this region escape in only
-a few iterations, computation becomes inexpensive, and the bottleneck
-is communication.  As such, lower granularities lead to higher
-overhead, which seems to grow worse as more nodes are added. This
+a few iterations, computation is inexpensive, and the bottleneck
+is communication.  As such, lower granularities increase
+overhead, which seems to worsen as more nodes are added. This
 effect is especially visible at granularity 5 (see Figure
 [[fig:client-time]] for instance): in the /default/ and /hard/ cases,
 performance worsens past 3 nodes, nearly matching the times observed
