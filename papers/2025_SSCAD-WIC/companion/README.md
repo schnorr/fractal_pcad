@@ -63,12 +63,12 @@ at GPPD. As such, they will need adaptation to run on a different cluster enviro
 
 ### Dependencies
 
-- **OpenMPI 4.1.4** in a Slurm environment to compile and run the server
+- **OpenMPI 4.1.4** in a Slurm environment to compile and run the client/server
 - **Python 3.12** with `pandas` to parse resulting log files into `.csv` files
 
 Both scripts expect the repository to be in folder `$HOME/fractal_pcad`, and the experiment
 parameters to be in `$HOME/fractal_pcad/projeto_experimental.csv`. Logs are saved to folder 
-`$HOME/fractal_pcad/results`, with a nested folder structure.
+`$HOME/fractal_pcad/results`, within a nested folder structure.
 
 The resulting log files can be converted to multiple `.csv` files by using script 
 `scripts/process_client_server_results.py` as follows:
