@@ -14,7 +14,7 @@ cd $FRACTALDIR
 
 make textual LOG_LEVEL=LOG_FULL
 
-CSV_FILE="projeto_experimental_francisco.csv"
+CSV_FILE="projeto_experimental.csv"
 RESULTS_DIR="results"
 
 HOST=cei1

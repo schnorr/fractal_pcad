@@ -1,8 +1,6 @@
 #!/usr/bin/Rscript
 options(crayon.enabled=FALSE)
 suppressMessages(library(tidyverse))
-suppressMessages(library(lubridate))
-suppressMessages(library(readxl))
 
 meu_estilo <- function() {
   list(
@@ -19,7 +17,15 @@ meu_estilo <- function() {
     ))
 }
 
-df <- read_csv("experiment_results.csv", progress=FALSE, show_col_types=FALSE) |>
+args <- commandArgs(trailingOnly = TRUE)
+
+if (length(args) < 1) {
+  stop("Missing argument: Path to the CSV with timing data.")
+}
+
+csv_path <- args[1]
+
+df <- read_csv(csv_path, progress = FALSE, show_col_types = FALSE) |>
   rename(case = difficulty) |>
   mutate(
     case = factor(case, levels = c("easy", "default", "hard")),

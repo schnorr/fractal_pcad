@@ -17,7 +17,7 @@ cd $FRACTALDIR
 
 make coordinator LOG_LEVEL=LOG_FULL
 
-CSV_FILE="projeto_experimental_francisco.csv"
+CSV_FILE="projeto_experimental.csv"
 HOST=cei1
 PORT=9191
 RESULTS_DIR="results"

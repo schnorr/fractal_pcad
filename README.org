@@ -12,7 +12,76 @@ People involved:
 
 If you want to get yourself involved, get in touch. ;-)
 
-** Interacting with the fractal
+** Building
+
+To build the project, ensure you have MPI and [[https://github.com/raysan5/raylib][Raylib]] installed.  
+You can adjust the Raylib installation path in the =Makefile=.
+
+Then, simply run:
+
+#+begin_src shell
+make
+#+end_src
+
+This will create three executables inside the =bin/= directory:
+- =grafica= (GUI client, requires Raylib)
+- =textual= (command line client with no graphical output, useful for benchmarking)
+- =coordinator= (parallel server, requires MPI)
+
+*** Log level
+
+There is logging available for the =textual= client and the =coordinator=.
+By default, the build uses =LOG_BASIC= logging. 
+You can override this at compile time by setting the =LOG_LEVEL= variable:
+
+#+begin_src shell
+make LOG_LEVEL=LOG_NONE
+#+end_src
+
+Available options include:
+- =LOG_NONE= No logging output
+- =LOG_BASIC= Default option, includes coordinator timing logs and worker timing logs per client request
+- =LOG_FULL= Includes =LOG_BASIC= logs, as well as logs for individual discretized tasks executed by each worker.
+
+** Running
+
+*** Coordinator (server)
+
+The coordinator should be run using =mpirun=.  
+You should specify at least 2 processes with option =-n= (one for the coordinator itself and at least one worker).
+
+Example:
+
+#+begin_src shell
+mpirun -n 4 ./bin/coordinator <port>
+#+end_src
+
+Runs the server, listening on a given port. Note that 4 processes means the server will be launched with 3 workers.
+
+*** Graphical client
+
+To connect to the coordinator and interact with the fractal using the GUI client:
+
+#+begin_src shell
+./bin/grafica <host> <port>
+#+end_src
+
+*** Textual client
+
+For benchmarking or running without graphical output, you can use the textual client:
+
+#+begin_src shell
+./bin/textual <host> <port> <granularity> <fractal_depth> <screen_width> <screen_height> <ll_x> <ll_y> <ur_x> <ur_y>
+#+end_src
+
+The =granularity= is the size of the square blocks the server will discretize the fractal space into.
+
+The =fractal depth= is the max number of iterations to run the mandelbrot algorithm for each pixel.
+
+=ll_x= / =ll_y= are the lower left corner x and y fractal coordinates, and =ur_x= / =ur_y= 
+are the upper right corner x and y fractal coordinates.
+
+** Interacting with the fractal (GUI client)
 
 You can go further in the fractal by selecting a new zone to zoom in
 when in selection mode. You can enter selection mode by pressing =ENTER=.

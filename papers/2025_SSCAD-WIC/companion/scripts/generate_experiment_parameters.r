@@ -62,4 +62,4 @@ fac.design(nfactors = 3,
          lower_left_x, lower_left_y,
          upper_right_x, upper_right_y, difficulty, 
          Blocks) |>
-  write_csv("projeto_experimental_francisco.csv", progress=FALSE)
+  write_csv("projeto_experimental.csv", progress=FALSE)

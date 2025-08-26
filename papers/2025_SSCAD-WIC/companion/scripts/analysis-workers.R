@@ -1,8 +1,6 @@
 #!/usr/bin/Rscript
 options(crayon.enabled=FALSE)
 suppressMessages(library(tidyverse))
-suppressMessages(library(lubridate))
-suppressMessages(library(readxl))
 
 meu_estilo <- function() {
   list(
@@ -19,7 +17,15 @@ meu_estilo <- function() {
     ))
 }
 
-read_csv("worker_totals.csv", progress=FALSE, show_col_types=FALSE) |>
+args <- commandArgs(trailingOnly = TRUE)
+
+if (length(args) < 1) {
+  stop("Missing argument: Path to the CSV with timing data.")
+}
+
+csv_path <- args[1]
+
+read_csv(csv_path, progress=FALSE, show_col_types=FALSE) |>
   group_by(difficulty, num_nodes, granularity, trial_id, worker_id) -> df
 
 df <- df |>
