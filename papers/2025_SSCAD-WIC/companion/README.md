@@ -30,7 +30,7 @@ The included CSVs can be used directly to reproduce figures in the paper:
 
 - [./data/experiment_results.csv](./data/experiment_results.csv): client and coordinator timing results
 
-- `data/worker_totals.csv`: worker performance results
+- [./data/worker_totals.csv](./data/worker_totals.csv): worker performance results
 
 ### Dependencies
 
@@ -38,7 +38,8 @@ The included CSVs can be used directly to reproduce figures in the paper:
 
 ### Generating figures
 
-To generate the figures in the paper, we use scripts `scripts/analysis-client-time.R` and `scripts/analysis-workers.R`.
+To generate the figures in the paper, we use scripts [./scripts/analysis-client-time.R](./scripts/analysis-client-time.R) 
+and [./scripts/analysis-workers.R](./scripts/analysis-workers.R).
 
 To generate figures 3, 4 and 5 (client performance analysis), simply run:
 
@@ -56,10 +57,12 @@ Figures will be saved to the current working directory as `.png` files.
 
 ## Rerunning the full experiment
 
-Optionally, to rerun the full experiment, you can use the slurm scripts `scripts/experiment_client.slurm`
-and `scripts/experiment_coordinator.slurm`, as well as the experiment parameters 
-`data/projeto_experimental.csv`. These scripts were made to run on the PCAD cluster 
-at GPPD. As such, they will need adaptation to run on a different cluster environment. 
+Optionally, to rerun the full experiment, you can use the slurm scripts 
+[./scripts/experiment_client.slurm](./scripts/experiment_client.slurm)
+and [./scripts/experiment_coordinator.slurm](./scripts/experiment_coordinator.slurm), 
+as well as the experiment parameters [./data/projeto_experimental.csv](./data/projeto_experimental.csv). 
+These scripts were made to run on the PCAD cluster at GPPD. As such, they will need adaptation to 
+run on a different cluster environment. 
 
 ### Dependencies
 
@@ -71,7 +74,7 @@ parameters to be in `$HOME/fractal_pcad/projeto_experimental.csv`. Logs are save
 `$HOME/fractal_pcad/results`, within a nested folder structure.
 
 The resulting log files can be converted to multiple `.csv` files by using script 
-`scripts/process_client_server_results.py` as follows:
+[./scripts/process_client_server_results.py](./scripts/process_client_server_results.py) as follows:
 
 ```bash
 python3 scripts/process_client_server_results.py <results_folder>
