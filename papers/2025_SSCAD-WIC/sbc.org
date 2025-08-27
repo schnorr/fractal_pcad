@@ -279,6 +279,16 @@ system. Section [[sec.results]] presents the experimental
 results. Finally, Section [[sec.conclusion]] concludes this text with
 future work.
 
+#+latex: \noindent
+*Software and Data Availability*. We endeavor to make our analysis
+reproducible for a better science. We made available a companion
+material hosted in a public GitHub repository at
+#+latex: {\scriptsize\url{https://github.com/schnorr/fractal_pcad/tree/main/papers/2025_SSCAD-WIC/companion}}.
+Our companion contains the source code of this article and the
+software necessary to handle the created datasets. We also include
+instructions to run the experiment and figures.
+# An archive is also available in Zenodo at URL.
+
 ** Related Work
 <<sec.related>>
 
@@ -521,12 +531,6 @@ of compute time from the perspective of the coordinator. Finally, in
 each MPI worker, we measured the individual times to compute each
 payload, their pixel and depth counts, as well as the aggregate of
 these values, allowing us to assess load balancing.
-
-*** Reproducibility
-
-For reproducibility, we provide a companion folder in our repository
-with data and scripts used to run the experiment and generate graphs:
-\url{https://github.com/schnorr/fractal_pcad/tree/main/papers/2025_SSCAD-WIC/companion}.
 
 ** Results
 <<sec.results>>
