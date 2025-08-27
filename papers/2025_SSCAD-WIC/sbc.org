@@ -656,11 +656,8 @@ future work, we plan to investigate varying granularity values based
 on neighborhood fractal depth and its impact on performance and load
 balance.
 
-** Acknowledgments
-:PROPERTIES:
-:UNNUMBERED: t
-:END:
-
+#+latex: \noindent
+*Acknowledgments*.
 We thank FAPERGS and CNPq for their financial support, which included
 scientific initiation scholarships from both FAPERGS (PROBIC) and CNPq
 (PBIC).  We also thank UFRGS for all institutional support. We also
