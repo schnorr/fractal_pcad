@@ -1,6 +1,9 @@
 # Companion Materials
 
-This folder contains the companion materials for our paper, including scripts and data used to generate the results presented.
+This folder contains the companion materials for our paper *"Dynamic Load Balancing and 
+Scalability Analysis of the Mandelbrot Set in a Multi-Threaded HPC Application"*, submitted to
+[SSCAD-WIC 2025](https://sscad2025.ufms.br/?page_id=277). Materials include scripts and data used to 
+generate the results presented.
 
 Commands in this README should be run from the companion directory:
 
