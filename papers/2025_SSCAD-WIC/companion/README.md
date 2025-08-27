@@ -28,7 +28,7 @@ cd fractal_pcad/papers/2025_SSCAD-WIC/companion/
 
 The included CSVs can be used directly to reproduce figures in the paper:
 
-- `data/experiment_results.csv`: client and coordinator timing results
+- <./data/experiment_results.csv>: client and coordinator timing results
 
 - `data/worker_totals.csv`: worker performance results
 
