@@ -908,7 +908,10 @@ tempos de execução maiores.
 Text say "We picked the median value from the 10 trials."
 Figure 3 caption say "Mean Client time"
 ** Introduction / Related Work
-*** TODO [R1,R2,R4] Explicitly compare contributions to related work and clarify how it advances state of the art
+*** [R1,R2,R4] Explicitly compare contributions to related work and clarify how it advances state of the art
+Impossible to do. It was never our goal to compare against other for
+this particular work, as nobody does the architecture precisely the
+way we do.
 *** TODO [R1,R2] Update references; add newer references
 *** TODO [R4] Explicitly state hypothesis about how granularity affects load balance/scalability
 
