@@ -674,6 +674,58 @@ bibliographystyle:sbc.bst
 
 Tangle this file with C-c C-v t
 
+* Reviewer suggestions                       :noexport:
+** Introduction / Related Work
+*** TODO [R1,R2,R4] Explicitly compare contributions to related work and clarify how it advances state of the art
+*** TODO [R1,R2] Update references; add newer references
+*** TODO [R4] Explicitly state hypothesis about how granularity affects load balance/scalability
+
+** Methodology / Implementation details
+*** TODO [R4] Clarify 10 repetitions of each setting
+*** TODO [R4] Mention queue thread safety/synchronization
+*** TODO [R4] Clarify handling of old/discarded payloads
+*** TODO [R4] Discuss communication bottlenecks in the coordinator with small granularities
+*** TODO [R4] Clarify client payload send/receive frequency (only once per image)
+*** TODO [R4] Consider longer execution times for statistical significance
+
+** Results / Analysis
+*** TODO [R1,R2,R4] Compare balancing approach and results with other works directly
+*** TODO [R1] Clarify worker imbalance at higher granularities in the easy case seen in Fig. 6 
+(imbalance high but execution time low, likely due to only a few workers handling entire workload)
+*** TODO [R1,R4] Add 95% confidence intervals for results, especially Fig. 6. 
+(Figure 3 has confidence intervals, but they are not visible)
+*** TODO [R1] Analyse Figs. 4-5 more deeply, discuss linear speedup, weak/strong scalability
+*** TODO [R1] Report experiment execution times
+*** TODO [R1] Clarify median was used for imbalance, averages were used for other metrics
+*** TODO [R2] Include analysis of factor effects; clarify how each factor impacts metrics.
+*** TODO [R3] Consider mentioning potential educational use of the implementation.
+
+** Figures / Visuals
+*** TODO [R2,R4] Improve resolution of Fig. 1
+*** TODO [R2] Improve clarity of Figs. 3-6 (add symbols/patterns)
+
+** Writing / Grammar / Terminology
+*** TODO [R1] Explain "escape" terminology
+*** TODO [R1] Explain draco/cei nodes
+*** TODO [R1] Review grammar consistency
+*** TODO [R1] Define all acronyms (MPI, etc.)
+*** TODO [R4] "Due to its irregular and compute-intensive workload" => "computationally intensive workload"
+*** TODO [R4] "An everyday activity to ..." => "A common activity..." / "A typical task..."
+*** TODO [R4] "f(z) = z2+c" =>  "f(z) = z^2+c"
+*** TODO [R4] "For example, all works..." => "For example, considering the Mandelbrot Set, Gómez [2020] conducted..."
+*** TODO [R4] "By reception of a smaller problem, the workers carry out the numerical computations..." => "Upon receiving a smaller problem, the workers carry out..."?
+*** TODO [R4] "discretizes the workload..." => "divides"
+*** TODO [R4] "before sending back to the Server the responses" => "before sending the responses back to the Server"
+*** TODO [R4] "enabling the verification of all possible combinations of factor.." => "enabling the exploration of..."
+*** TODO [R4] "with granularity 20 striking the best balance." => "...with a granularity of 20 striking the best balance"
+*** TODO [R4] "In this article" =>  "In this paper"
+
+** Future Work / Extensions
+*** TODO [R3] Evaluate static allocation approach with different granularities and interleaved distribution to workers
+*** TODO [R3] Evaluate work-stealing approach
+*** TODO [R4] Evaluate our approach with other (more realistic) irregular applications (particle simulation, molecular dynamics, graphs)
+*** TODO [R4] Have experiments with (much) longer execution times
+
 #+begin_src bibtex :tangle refs.bib
 @book{jain1990art,
   title={The art of computer systems performance analysis},
