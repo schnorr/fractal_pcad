@@ -926,7 +926,8 @@ Figure 3 caption say "Mean Client time"
 *** TODO [R1,R4] Add 95% confidence intervals for results, especially Fig. 6. 
 (Figure 3 has confidence intervals, but they are not visible)
 *** TODO [R1] Analyse Figs. 4-5 more deeply, discuss linear speedup, weak/strong scalability
-*** TODO [R1] Report experiment execution times
+*** [R1] Report experiment execution times
+We already do that
 *** TODO [R1] Clarify median was used for imbalance, averages were used for other metrics
 *** TODO [R2] Include analysis of factor effects; clarify how each factor impacts metrics.
 *** TODO [R3] Consider mentioning potential educational use of the implementation.
