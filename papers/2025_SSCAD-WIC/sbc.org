@@ -918,8 +918,7 @@ Figure 3 caption say "Mean Client time"
 *** TODO [R4] Clarify handling of old/discarded payloads
 *** TODO [R4] Discuss communication bottlenecks in the coordinator with small granularities
 *** TODO [R4] Clarify client payload send/receive frequency (only once per image)
-*** TODO [R4] Consider longer execution times for statistical significance
-
+*** [R4] Consider longer execution times for statistical significance
 ** Results / Analysis
 *** TODO [R1,R2,R4] Compare balancing approach and results with other works directly
 *** TODO [R1] Clarify worker imbalance at higher granularities in the easy case seen in Fig. 6 
