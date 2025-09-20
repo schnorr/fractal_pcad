@@ -925,7 +925,8 @@ Figure 3 caption say "Mean Client time"
 (imbalance high but execution time low, likely due to only a few workers handling entire workload)
 *** TODO [R1,R4] Add 95% confidence intervals for results, especially Fig. 6. 
 (Figure 3 has confidence intervals, but they are not visible)
-*** TODO [R1] Analyse Figs. 4-5 more deeply, discuss linear speedup, weak/strong scalability
+*** [R1] Analyse Figs. 4-5 more deeply, discuss linear speedup, weak/strong scalability
+We only have strong scalability here. Discussion is enough (see Figures)
 *** [R1] Report experiment execution times
 We already do that
 *** TODO [R1] Clarify median was used for imbalance, averages were used for other metrics
