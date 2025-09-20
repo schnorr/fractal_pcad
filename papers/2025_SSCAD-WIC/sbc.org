@@ -904,6 +904,9 @@ coordenador);e) o tempo de execução é muuuuuuito pequeno. Queria ver
 tempos de execução maiores.
 
 * Reviewer suggestions                                             :noexport:
+** Figure 3
+Text say "We picked the median value from the 10 trials."
+Figure 3 caption say "Mean Client time"
 ** Introduction / Related Work
 *** TODO [R1,R2,R4] Explicitly compare contributions to related work and clarify how it advances state of the art
 *** TODO [R1,R2] Update references; add newer references
