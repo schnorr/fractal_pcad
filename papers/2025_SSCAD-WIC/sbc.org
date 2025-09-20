@@ -936,7 +936,7 @@ tempos de execução maiores.
 *** TODO [R1] Explain "escape" terminology
 *** TODO [R1] Explain draco/cei nodes
 *** TODO [R1] Review grammar consistency
-*** TODO [R1] Define all acronyms (MPI, etc.)
+*** [R1] Define all acronyms (MPI, etc.)
 *** TODO [R4] "Due to its irregular and compute-intensive workload" => "computationally intensive workload"
 *** TODO [R4] "An everyday activity to ..." => "A common activity..." / "A typical task..."
 *** TODO [R4] "f(z) = z2+c" =>  "f(z) = z^2+c"
