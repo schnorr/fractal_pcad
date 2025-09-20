@@ -933,7 +933,8 @@ tempos de execução maiores.
 *** TODO [R2,R4] Improve resolution of Fig. 1
 *** [R2] Improve clarity of Figs. 3-6 (add symbols/patterns)
 ** Writing / Grammar / Terminology
-*** TODO [R1] Explain "escape" terminology
+*** [R1] Explain "escape" terminology
+The "escape" is part of the fractal ways of working. 
 *** [R1] Explain draco/cei nodes
 They are already explained in Section 3.2 HW and SW Config.
 *** TODO [R1] Review grammar consistency
