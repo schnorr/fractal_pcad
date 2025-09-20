@@ -958,6 +958,7 @@ They are already explained in Section 3.2 HW and SW Config.
 *** TODO [R4] Evaluate our approach with other (more realistic) irregular applications (particle simulation, molecular dynamics, graphs)
 *** TODO [R4] Have experiments with (much) longer execution times
 
+* Bib file                                                         :noexport:
 #+begin_src bibtex :tangle refs.bib
 @book{jain1990art,
   title={The art of computer systems performance analysis},
