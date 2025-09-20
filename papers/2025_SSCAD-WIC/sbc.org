@@ -934,7 +934,8 @@ tempos de execução maiores.
 *** [R2] Improve clarity of Figs. 3-6 (add symbols/patterns)
 ** Writing / Grammar / Terminology
 *** TODO [R1] Explain "escape" terminology
-*** TODO [R1] Explain draco/cei nodes
+*** [R1] Explain draco/cei nodes
+They are already explained in Section 3.2 HW and SW Config.
 *** TODO [R1] Review grammar consistency
 *** [R1] Define all acronyms (MPI, etc.)
 *** TODO [R4] "Due to its irregular and compute-intensive workload" => "computationally intensive workload"
