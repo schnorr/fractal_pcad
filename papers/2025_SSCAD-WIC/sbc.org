@@ -921,8 +921,9 @@ Figure 3 caption say "Mean Client time"
 *** [R4] Consider longer execution times for statistical significance
 ** Results / Analysis
 *** TODO [R1,R2,R4] Compare balancing approach and results with other works directly
-*** TODO [R1] Clarify worker imbalance at higher granularities in the easy case seen in Fig. 6 
+*** [R1] Clarify worker imbalance at higher granularities in the easy case seen in Fig. 6 
 (imbalance high but execution time low, likely due to only a few workers handling entire workload)
+It is already there the discussion about these results.
 *** TODO [R1,R4] Add 95% confidence intervals for results, especially Fig. 6. 
 
 (Figure 3 has confidence intervals, but they are not visible)
