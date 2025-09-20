@@ -953,11 +953,10 @@ They are already explained in Section 3.2 HW and SW Config.
 *** TODO [R4] "In this article" =>  "In this paper"
 
 ** Future Work / Extensions
-*** TODO [R3] Evaluate static allocation approach with different granularities and interleaved distribution to workers
-*** TODO [R3] Evaluate work-stealing approach
-*** TODO [R4] Evaluate our approach with other (more realistic) irregular applications (particle simulation, molecular dynamics, graphs)
-*** TODO [R4] Have experiments with (much) longer execution times
-
+*** [R3] Evaluate static allocation approach with different granularities and interleaved distribution to workers
+*** [R3] Evaluate work-stealing approach
+*** [R4] Evaluate our approach with other (more realistic) irregular applications (particle simulation, molecular dynamics, graphs)
+*** [R4] Have experiments with (much) longer execution times
 * Bib file                                                         :noexport:
 #+begin_src bibtex :tangle refs.bib
 @book{jain1990art,
