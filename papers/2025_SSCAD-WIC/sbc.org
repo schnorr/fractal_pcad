@@ -913,8 +913,8 @@ Figure 3 caption say "Mean Client time"
 *** TODO [R4] Explicitly state hypothesis about how granularity affects load balance/scalability
 
 ** Methodology / Implementation details
-*** TODO [R4] Mention queue thread safety/synchronization
 *** [R4] Clarify 10 repetitions of each setting
+*** [R4] Mention queue thread safety/synchronization
 *** TODO [R4] Clarify handling of old/discarded payloads
 *** TODO [R4] Discuss communication bottlenecks in the coordinator with small granularities
 *** TODO [R4] Clarify client payload send/receive frequency (only once per image)
