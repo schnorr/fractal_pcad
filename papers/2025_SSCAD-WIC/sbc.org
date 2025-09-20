@@ -920,7 +920,8 @@ Figure 3 caption say "Mean Client time"
 *** TODO [R4] Clarify client payload send/receive frequency (only once per image)
 *** [R4] Consider longer execution times for statistical significance
 ** Results / Analysis
-*** TODO [R1,R2,R4] Compare balancing approach and results with other works directly
+*** [R1,R2,R4] Compare balancing approach and results with other works directly
+Impossible to do.
 *** [R1] Clarify worker imbalance at higher granularities in the easy case seen in Fig. 6 
 (imbalance high but execution time low, likely due to only a few workers handling entire workload)
 It is already there the discussion about these results.
