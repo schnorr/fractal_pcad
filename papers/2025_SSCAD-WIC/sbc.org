@@ -931,8 +931,7 @@ tempos de execução maiores.
 
 ** Figures / Visuals
 *** TODO [R2,R4] Improve resolution of Fig. 1
-*** TODO [R2] Improve clarity of Figs. 3-6 (add symbols/patterns)
-
+*** [R2] Improve clarity of Figs. 3-6 (add symbols/patterns)
 ** Writing / Grammar / Terminology
 *** TODO [R1] Explain "escape" terminology
 *** TODO [R1] Explain draco/cei nodes
