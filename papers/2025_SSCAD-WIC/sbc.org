@@ -915,9 +915,9 @@ Figure 3 caption say "Mean Client time"
 ** Methodology / Implementation details
 *** [R4] Clarify 10 repetitions of each setting
 *** [R4] Mention queue thread safety/synchronization
-*** TODO [R4] Clarify handling of old/discarded payloads
+*** [R4] Clarify handling of old/discarded payloads
 *** TODO [R4] Discuss communication bottlenecks in the coordinator with small granularities
-*** TODO [R4] Clarify client payload send/receive frequency (only once per image)
+*** [R4] Clarify client payload send/receive frequency (only once per image)
 *** [R4] Consider longer execution times for statistical significance
 ** Results / Analysis
 *** [R1,R2,R4] Compare balancing approach and results with other works directly
