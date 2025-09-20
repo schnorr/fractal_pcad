@@ -674,7 +674,236 @@ bibliographystyle:sbc.bst
 
 Tangle this file with C-c C-v t
 
-* Reviewer suggestions                       :noexport:
+* The SSCAD-WIC Reviews (Text)                                     :noexport:
+** R1
+
+The paper investigates load balancing and scalability in
+High-Performance Computing systems, using a custom multi-threaded
+MPI-based implementation of the Mandelbrot Set as a benchmark. The
+authors analyze performance, demonstrating that workload granularity
+critically influences load balance and system scalability, with
+optimal granularity depending on the computational characteristics of
+the fractal region being processed. The topic is within the scope of
+SSCAD, is current and relevant, the contributions are clear, the text
+is well-written and organized, cites future work, and the methodology
+is straightforward. Some comments, questions, and suggestions follow:
+
+1) Although the authors state the paper contributions clearly in the
+   Introduction, they do not compare their paper with the literature
+   and how they advance the state of the art.
+
+2) The authors should update the references since there are too many
+   too old ones, which may indicate outdated work.
+
+Results:
+
+3) The authors do not compare their approach with approaches in the
+   literature that perform similar work, such as dynamically
+   scheduling.
+
+4) I could not check that, in the easy case, higher granularities
+   perform better in Fig. 6. Perhaps it is a matter of the meaning of
+   high x low granularities?
+
+5) Besides that, the authors should include the 95% confidence
+   interval in the results so we can compare, especially in Fig. 6.
+
+6) The authors should analyse Figs. 4 and 5 more deeply, discussing
+   linear speedup and weak or strong scalability.
+
+7) How long did the experiments take? This value helps analyze if more
+   than 10 executions would be feasible for an improved statistical
+   analysis.
+
+8) The authors should explain the sentence "We picked the median value
+   from the 10 trials". Did the authors do that for all four metrics?
+
+Writing: 
+
+9) What does escape mean? The authors should explain this critical
+   concept in the paper.
+
+10) The authors should explain the meaning of draco and cei nodes.
+
+11) The authors should review the grammar carefully, making verbal
+    tenses consistent throughout the text.
+
+12) The authors should define all acronyms, such as MPI.
+
+** R2
+
+O artigo estuda o impacto da granularidade de paralelismo na
+escalabilidade e no balanceamento de carga de uma aplicação
+embaraçosamente paralela e compute-bound.  O trabalho está muito bem
+escrito, com objetivos claros, metodologia de experientação adequada e
+reprodutível. A apresentação dos resultados também está clara e
+objetiva.  De certa forma, as conclusões gerais do artigo confirmam o
+que se espera de uma aplicação irregular, mas a novidade pode ser a
+partir da arquitetura e implementação proposta. Esse último ponto não
+ficou claro.  Apesar disso, é um trabalho de IC bem sólido e bem
+apresentado.
+
+No geral, deixo as seguintes sugestões:
+
+1. Delimitar e contextualizar melhor as contribuições do trabalho
+   frente aos relacionados. Outros trabalhos não consideram
+   balanceamento de carga? Outros trabalhos não consideram uma
+   arquitetura cliente-servidor? Isso não ficou muito claro.
+2. No texto, é mencionada a metodologia de projeto
+   fatorial. Entretanto, o impacto dos fatores (que, até onde entendo,
+   seria uma saída importante dessa metodologia) não foi incluído nem
+   mencionado.
+3. Resolução da fig. 1 poderia ser melhorada
+4. Figuras 3-6 poderiam se beneficiar de símbolos e padrões, além de
+   cores, para facilitar a visualização.
+
+** R3
+
+O artigo investiga balanceamento de carga e escalabilidade em ambiente
+distribuído, utilizando uma aplicação de Mandelbrot como
+benchmark. São tratados os casos de escalonamento estático e dinâmico,
+variando a granularidade de cálculo, considerando áreas do fractal com
+diferentes custos computacionais. O trabalho em sí não apresenta
+resultados inovadores, mas contribui como um "framework"
+experimental. A disponibilidade de um repositório para reprodutividade
+auxilia a tornar o material útil, dada a qualidade das informações que
+constam no projeto. Caso aceito, sugiro aos autores considerar incluir
+menção a possibilidade do uso da implementação como apoio
+didático. Como sugestão de continuidade, sugiro considerar uma versão
+da estratégia de escalonamento estática onde sejam tratadas diferentes
+granularidades de blocos e envio intercalado de blocos aos
+clientes. Outra possibilidade é desenvolver uma estratégia "roubo de
+trabalho", na qual todo o trabalho inicia no nó 1 e os demais enviam
+mensagens (a nós aleatório) para solicitar serviço. Ao receber uma
+demanda, tendo serviço disponível, divide sua carga de trabalho como o
+nó que solicitou. (workstealing, a lá Cilk).
+
+** R4
+
+O artigo apresenta uma avaliação de escalabilidade de um sistema
+multi-threaded criado para a resolução do conjunto de
+Mandelbrot. Destaco, como pontos fortes do trabalho: a) a excelente
+clareza na apresentação e organização do trabalho (parabéns por
+redigí-lo em inglês!); b) preocupação com reprodutibilidade dos
+experimentos (os autores disponibilizaram um repositório com código
+aberto, datasets e instruções disponíveis, algo louvável); c) métricas
+bem justificadas (incluindo definição cuidadosa de eficiência, que
+considera o desequilíbrio entre coordenador e workers). Contudo, vejo
+alguns problemas.
+
+Em relação à originalidade, justifico minha nota para os autores da
+seguinte forma: vejo que o artigo repete um tema bastante explorado na
+literatura (o próprio artigo cita vários trabalhos
+semelhantes). Talvez possamos dizer que a contribuição original reside
+principalmente na implementação específica em MPI com arquitetura
+cliente-servidor e na análise detalhada de granularidade sob
+diferentes regiões fractais. Embora haja alguma contribuição, trata-se
+mais de uma variação aplicada de métodos já conhecidos do que de uma
+proposta conceitualmente nova. Ademais, a análise se restringe ao
+sistema desenhado pelos autores, de modo que tenho certa dificuldade
+em extrapolar as conclusões para outras aplicações (com
+características distintas de Mandelbrot) ou ambientes de software
+(forma como o balanceador de carga foi projetado)/hardware(com
+arquitura distinta da usada pelos autores).
+
+A justificativa de minha nota para relevância se baseia na observação,
+ponderada por tratar-se de uma conferência de IC, de que há alguma
+contribuição: a avaliação de desempenho com projeto fatorial completo,
+múltiplos níveis de granularidade e análise de escalabilidade fornece
+informações úteis para práticas de programação paralela. Contudo, o
+uso do Mandelbrot como benchmark limita um pouco a aplicabilidade
+prática direta, já que é um problema não crítico, no meu entender, em
+aplicações reais.
+
+Não sei se preciso justificar para os autores a nota máxima no item
+qualidade da apresentação, mas vou fazê-lo ainda assim. O artigo está
+bem organizado, ainda mais considerando-se a limitação de espaço:
+introdução clara, revisão relacionada adequada, seção de métodos
+detalhada, apresentação de resultados com métricas bem
+definidas. Gostei muito do artigo estar em inglês, com redação clara e
+objetiva, e sem erros graves (listo alguns abaixo).
+
+Vou passar algumas outras anotações que fiz. Vou apresentar como
+tópicos para facilitar:
+
+- * A originalidade pode ser melhorada usando outras aplicações
+  irregulares mais realistas, como simulações de partículas, dinâmica
+  molecular, algumas aplicações em grafos, etc. Acho Mandelbrot meio
+  batido para estudos de balanceamento, apesar de entender que para IC
+  pode ser uma porta de entrada interessante para introduzir o
+  problema de balanceamento de carga. Até que ponto Mandelbrot pode
+  ser generalizado para outras aplicações?
+
+- * Falta uma discussão mais profunda sobre os porquês dos
+  comportamentos observados, por exemplo comparando com trade-offs
+  teóricos entre granularidade e sobrecarga de comunicação. Na própria
+  parte dos métodos, não ficou claro quantas vezes vocês repetiram
+  cada configuração (lembrem-se que o tempo é uma variável aleatória,
+  e como tal, precisamos tratar adequadamente a sua variabilidade e
+  reportar valores que nos levem a intervalos de confiança superiores
+  à 95%).
+
+- * Seria interessante incluir comparações diretas com implementações
+  ou algoritmos de balanceamento dinâmico de outros trabalhos, além de
+  apenas mencionar na revisão. Isso daria mais peso científico ao
+  estudo. Sei que pela falta de espaço é o tipo de coisa que só pode
+  ser feita em trabalhos futuros.
+
+- * Bato muito com meus alunos que a hipótese de pesquisa tem de estar
+  clara na seção de introdução. Acho que ficou meio implícita (a
+  granularidade influencia fortemente o balanceamento e a
+  escalabilidade). Poderia estar explicitada como hipótese formal.
+
+- * A qualidade das figuras pode ser melhorada. Fiquei com a impressão
+  que algumas figuras foram feitas no paint (figura 1). Melhorar a
+  resolução.
+
+- * Em relação ao inglês/typos: a) "Due to its irregular and
+  compute-intensive workload" => "computationally intensive workload"
+  não soa melhor? b) "An everyday activity to ..." => "A common
+  activity..."? ou "A typical task..."? c) "f(z) = z2+c" => não seria
+  z^2? d) "For example, all works..." => acho melhor "For example,
+  considering the Mandelbrot Set, Gómez [2020] conducted..." e) "By
+  reception of a smaller problem, the workers carry out the numerical
+  computations..." => não é melhor algo como "Upon receiving a smaller
+  problem, the workers carry out..."? f) "discretizes the
+  workload..."=> olha, discretizar, para mim, é quando você transforma
+  algo contínuo em discreto. Eu usaria outro termo, apesar de entender
+  o que vocês quiseram falar: "divides", g) "before sending back to
+  the Server the responses" => a ordem importa aqui: "before sending
+  the responses back to the Server". h) "enabling the verification of
+  all possible combinations of factor.." => verification? não seria
+  "exploration"? i) "with granularity 20 striking the best balance."
+  => "...with a granularity of 20 striking the best balance". Eu
+  também não gosto muito do uso de article para falar de artigo, mas
+  vejo que algumas pessoas usam, então troquem se acharem que devem:
+  "In this article, we implement an MPI version of this application"
+  => "In this paper, we implement an MPI version of this application"
+
+Do ponto de vista técnico, algumas coisas talvez pudessem, em
+trabalhos futuros, serem melhor discutidas: a) o servidor possui
+várias threads que compartilham filas. O artigo não menciona
+explicitamente o uso de sincronização e o seu custo; b) Não sei se
+entendi corretamente, mas vocês descartam payloads considerados
+antigos, não é? Se houver concorrência entre o descarte e a atribuição
+de tarefas a um worker, pode ocorrer uso de payload inválido, não? Um
+worker poderia calcular uma região que já não interessa, desperdiçando
+recursos ou gerando resultados inconsistentes. Não fica claro se há
+sincronização para garantir consistência entre descarte e distribuição
+de novas tarefas; c) se entendi corretamente, granularidades pequenas
+aumentam overhead de comunicação, o que faz sentido. Mas em cenários
+extremos, esse overhead pode não apenas degradar o desempenho, mas
+também causar gargalo no coordenador, já que ele é único e
+centralizado. Isso pode limitar escalabilidade em sistemas maiores,
+não? d) Não ficou muito clara a frequencia com que o cliente envia
+payloads e recebe respostas. Dependendo das taxas, isso pode levar a
+fila de mensagens acumuladas, causando latência extra. Aliás, pode
+haver contended communication (todos os workers pedindo tarefas ao
+mesmo coordenador ao mesmo tempo, por você ter um único
+coordenador);e) o tempo de execução é muuuuuuito pequeno. Queria ver
+tempos de execução maiores.
+
+* Reviewer suggestions                                             :noexport:
 ** Introduction / Related Work
 *** TODO [R1,R2,R4] Explicitly compare contributions to related work and clarify how it advances state of the art
 *** TODO [R1,R2] Update references; add newer references
