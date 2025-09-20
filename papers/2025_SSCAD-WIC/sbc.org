@@ -912,9 +912,8 @@ Figure 3 caption say "Mean Client time"
 Impossible to do. It was never our goal to compare against other for
 this particular work, as nobody does the architecture precisely the
 way we do.
-*** TODO [R1,R2] Update references; add newer references
-*** TODO [R4] Explicitly state hypothesis about how granularity affects load balance/scalability
-
+*** [R1,R2] Update references; add newer references
+*** [R4] Explicitly state hypothesis about how granularity affects load balance/scalability
 ** Methodology / Implementation details
 *** [R4] Clarify 10 repetitions of each setting
 *** [R4] Mention queue thread safety/synchronization
