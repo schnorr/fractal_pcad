@@ -929,8 +929,8 @@ It is already there the discussion about these results.
 (Figure 3 has confidence intervals, but they are not visible)
 
 Showing confidence intervals for the median is tricky. You could
-instead replace all the median by the mean, killing median of all
-results reporting, and then compute variability based on a 99% CI.
+instead replace all the median by the mean, killing median of all results reporting,
+and then compute variability based on a 99% CI.
 
 *** [R1] Analyse Figs. 4-5 more deeply, discuss linear speedup, weak/strong scalability
 We only have strong scalability here. Discussion is enough (see Figures)
