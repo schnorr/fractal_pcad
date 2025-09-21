@@ -945,7 +945,7 @@ Perhaps replace all by the mean, killing the "median" reporting results
 *** [R3] Consider mentioning potential educational use of the implementation.
 
 ** Figures / Visuals
-*** TODO [R2,R4] Improve resolution of Fig. 1
+*** DONE [R2,R4] Improve resolution of Fig. 1
 *** [R2] Improve clarity of Figs. 3-6 (add symbols/patterns)
 ** Writing / Grammar / Terminology
 *** [R1] Explain "escape" terminology
