@@ -211,7 +211,7 @@ Lucas Mello Schnorr\inst{1}
 #+begin_abstract
 This work investigates load balancing and scalability in
 High-Performance Computing (HPC) systems using the Mandelbrot Set as a
-benchmark. Due to its irregular and compute-intensive workload, the
+benchmark. Due to its irregular and computationally intensive workload, the
 Mandelbrot Set is ideal for evaluating dynamic workload distribution
 strategies. We present a custom MPI-based implementation employing a
 client-server model with dynamic load balancing, where idle workers
@@ -237,7 +237,7 @@ that each process in the system does approximately the same work
 during the program execution.
 
 # *[Mandelbrot]*
-An everyday activity to study the correct usage of an HPC system is to
+A common activity to study the correct usage of an HPC system is to
 verify if the application achieves adequate load balancing amongst its
 processes. This is particularly challenging for
 irregular workloads, as their dynamic nature makes standard
@@ -257,7 +257,7 @@ The Mandelbrot Set is a well-known compute-bound application and is
 considered embarrassingly parallel, as all point calculations are
 independent. Therefore, being highly parallelizable and
 computationally intensive, it often serves as a benchmark for HPC to
-measure the performance of a computational system. In this article, we
+measure the performance of a computational system. In this paper, we
 implement an MPI version of this application from scratch with a
 dynamic load balancer where workers, when idle, contact the
 coordinator for a new set of points to work on. We then study the load
@@ -307,8 +307,8 @@ its test cases because of the application's irregularity.
 #+latex: % *[References about the mandelbrot implementation]*
 The Mandelbrot Set as an HPC application has also been vastly studied
 and used as a benchmark in various works for its computationally
-intensive, parallelizable, and irregular nature. For example, all
-works considering the Mandelbrot Set, Gomez cite:gomez2020mpi has
+intensive, parallelizable, and irregular nature. For example, 
+considering the Mandelbrot Set, Gomez cite:gomez2020mpi has
 conducted a case study comparing MPI against OpenMP. Another work
 cite:ozen2015exploring has specifically explored dynamic parallelism
 in OpenMP.  Yang cite:yang2011performance also studies specific
@@ -333,13 +333,14 @@ data flow between components. The Client is responsible for managing
 user interactions and rendering the fractal image produced by the
 Server. When the user requests a new region, the client issues a
 /payload/ to the Server. The Server comprises a central MPI coordinator
-which receives the /payload/ from the client, discretizes the
+which receives /payloads/ from the client, discretizes the
 workload into smaller problems, and dynamically distributes these
-smaller problems to a pool of MPI workers by demand. From the start of
-the Server, the workers approach the coordinator looking for work. By
-reception of a smaller problem, the workers carry out the numerical
-computations for each of them (Mandelbrot Set) before sending back to
-the Server the /responses/, which are then redirected to the Client.
+smaller problems to a pool of MPI workers by demand. When the
+Server starts, workers approach the coordinator to request work. Upon 
+receiving a smaller problem, the workers carry out the numerical
+computations for them (Mandelbrot Set) before sending
+the /responses/ to the coordinator, which forwards them to the 
+Client.
 
 #+CAPTION: Multi-threaded system overview with processes, threads, and queues.
 #+NAME: fig:system-architecture
@@ -466,7 +467,7 @@ execution time bounded.
 \end{figure}
 
 With these factors, we adopt a Full Factorial Design cite:jain1990art, enabling the
-verification of all possible combinations of factors, resulting in 108
+exploration of all possible combinations of factors, resulting in 108
 distinct configurations (6\times6\times3). Each configuration has been executed
 ten times so we can assess the experimental variability, and the
 execution order has been randomized to avoid potential bias.
@@ -646,7 +647,7 @@ region.
 These results show that scaling depends on the balance between
 computation and communication costs. For harder fractal regions, the
 system scales very well with additional nodes when granularity is
-appropriately chosen, with granularity 20 striking the best
+appropriately chosen, with a granularity of 20 striking the best
 balance. However, for simpler regions, communication overhead
 dominates and additional nodes can even reduce performance.
 #+latex: %
@@ -952,18 +953,18 @@ Perhaps replace all by the mean, killing the "median" reporting results
 The "escape" is part of the fractal ways of working. 
 *** [R1] Explain draco/cei nodes
 They are already explained in Section 3.2 HW and SW Config.
-*** TODO [R1] Review grammar consistency
+*** DONE [R1] Review grammar consistency
 *** [R1] Define all acronyms (MPI, etc.)
-*** TODO [R4] "Due to its irregular and compute-intensive workload" => "computationally intensive workload"
-*** TODO [R4] "An everyday activity to ..." => "A common activity..." / "A typical task..."
-*** TODO [R4] "f(z) = z2+c" =>  "f(z) = z^2+c"
-*** TODO [R4] "For example, all works..." => "For example, considering the Mandelbrot Set, Gómez [2020] conducted..."
-*** TODO [R4] "By reception of a smaller problem, the workers carry out the numerical computations..." => "Upon receiving a smaller problem, the workers carry out..."?
+*** DONE [R4] "Due to its irregular and compute-intensive workload" => "computationally intensive workload"
+*** DONE [R4] "An everyday activity to ..." => "A common activity..." / "A typical task..."
+*** [R4] "f(z) = z2+c" =>  "f(z) = z^2+c"
+*** DONE [R4] "For example, all works..." => "For example, considering the Mandelbrot Set, Gómez [2020] conducted..."
+*** DONE [R4] "By reception of a smaller problem, the workers carry out the numerical computations..." => "Upon receiving a smaller problem, the workers carry out..."?
 *** TODO [R4] "discretizes the workload..." => "divides"
-*** TODO [R4] "before sending back to the Server the responses" => "before sending the responses back to the Server"
-*** TODO [R4] "enabling the verification of all possible combinations of factor.." => "enabling the exploration of..."
-*** TODO [R4] "with granularity 20 striking the best balance." => "...with a granularity of 20 striking the best balance"
-*** TODO [R4] "In this article" =>  "In this paper"
+*** DONE [R4] "before sending back to the Server the responses" => "before sending the responses back to the Server"
+*** DONE [R4] "enabling the verification of all possible combinations of factor.." => "enabling the exploration of..."
+*** DONE [R4] "with granularity 20 striking the best balance." => "...with a granularity of 20 striking the best balance"
+*** DONE [R4] "In this article" =>  "In this paper"
 
 ** Future Work / Extensions
 *** [R3] Evaluate static allocation approach with different granularities and interleaved distribution to workers
