@@ -570,7 +570,7 @@ calculated as:
 #+end_export
 where $L_{\text{max}}$ is the computation time of the slowest worker,
 $L_{\text{avg}}$ is the average computation time across all workers, and
-$n$ is the number of workers. We picked the median value from the 10 trials.
+$n$ is the number of workers. We report the mean value across the 10 trials.
 #+latex: %
 In our analysis we focus solely on Client times, which directly
 reflect user-perceived performance, as the coordinator metrics closely
@@ -623,7 +623,7 @@ communication rather than computation time at such low granularities.
 
 
 
-#+CAPTION: Median Imbalance Percentage for each case.
+#+CAPTION: Mean Imbalance Percentage for each case.
 #+NAME: fig:imbalance-percentage
 [[./figures/imbalance_percentage.png]]
 
@@ -940,7 +940,7 @@ and then compute variability based on a 99% CI.
 We only have strong scalability here. Discussion is enough (see Figures)
 *** [R1] Report experiment execution times
 We already do that
-*** TODO [R1] Clarify median was used for imbalance, averages were used for other metrics
+*** DONE [R1] Clarify median was used for imbalance, averages were used for other metrics
 Perhaps replace all by the mean, killing the "median" reporting results
 *** [R2] Include analysis of factor effects; clarify how each factor impacts metrics.
 *** [R3] Consider mentioning potential educational use of the implementation.

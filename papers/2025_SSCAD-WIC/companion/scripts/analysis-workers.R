@@ -47,14 +47,14 @@ df <- df |>
             std.deviation = sqrt(sum((duration - mean(duration))**2) / (n() - 1)),
             .groups="keep")
 
-# Median imbalance across repetitions
+# Mean imbalance across repetitions
 plot <- df |>
   group_by(case, num_nodes, granularity) |>
-  summarize(median_imbalance.percentage = median(imbalance.percentage, na.rm = TRUE),
+  summarize(mean_imbalance.percentage = mean(imbalance.percentage, na.rm = TRUE),
             .groups="keep") |>
   mutate(case = factor(case, levels = c("easy", "default", "hard"))) |>
   ggplot(aes(x = factor(num_nodes), 
-             y = median_imbalance.percentage, 
+             y = mean_imbalance.percentage, 
              fill = factor(granularity))) +
   geom_col(position = position_dodge(width = 0.8)) +
   facet_wrap(~case, nrow = 1) +
@@ -63,6 +63,5 @@ plot <- df |>
        y = "Imbalance Percentage",
        fill = "Gran.") +
   theme(legend.title = element_text())
-
 
 ggsave("imbalance_percentage.png", plot = plot, width = 6.5, height = 2.5, dpi = 300)
