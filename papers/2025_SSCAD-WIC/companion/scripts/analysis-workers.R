@@ -77,4 +77,4 @@ plot <- plot_data |>
        fill = "Gran.") +
   theme(legend.title = element_text())
 
-ggsave("imbalance_percentage.png", plot = plot, width = 6.5, height = 2.5, dpi = 300)
+ggsave("imbalance_percentage.pdf", plot = plot, width = 6.5, height = 2.5, dpi = 300)

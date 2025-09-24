@@ -100,6 +100,6 @@ efficiency_plot <- ggplot(agg_df, aes(x = num_nodes, y = eff_mean,
   meu_estilo() +
   theme(legend.title = element_text())
 
-ggsave("client_time.png", plot = time_plot, dpi = 300, width = 6.5, height = 2.5)
-ggsave("client_speedup.png", plot = speedup_plot, dpi = 300, width = 6.5, height = 2.5)
-ggsave("client_efficiency.png", plot = efficiency_plot, dpi = 300, width = 6.5, height = 2.5)
+ggsave("client_time.pdf", plot = time_plot, dpi = 300, width = 6.5, height = 2.5)
+ggsave("client_speedup.pdf", plot = speedup_plot, dpi = 300, width = 6.5, height = 2.5)
+ggsave("client_efficiency.pdf", plot = efficiency_plot, dpi = 300, width = 6.5, height = 2.5)

@@ -589,11 +589,11 @@ communication overhead while providing good load balancing.
 
 #+CAPTION: Mean Client time for each case, with 99% CI error bars.
 #+NAME: fig:client-time
-[[./figures/client_time.png]]
+[[./figures/client_time.pdf]]
 
 #+CAPTION: Speedup and ideal speedup for each case.
 #+NAME: fig:client-speedup
-[[./figures/client_speedup.png]]
+[[./figures/client_speedup.pdf]]
 
 
 This interpretation can be confirmed in Figure
@@ -618,14 +618,14 @@ communication rather than computation time at such low granularities.
 
 #+CAPTION: Efficiency for each case.
 #+NAME: fig:client-efficiency
-[[./figures/client_efficiency.png]]
+[[./figures/client_efficiency.pdf]]
 
 
 
 
 #+CAPTION: Mean Imbalance Percentage for each case, with 99% CI error bars.
 #+NAME: fig:imbalance-percentage
-[[./figures/imbalance_percentage.png]]
+[[./figures/imbalance_percentage.pdf]]
 
 
 
