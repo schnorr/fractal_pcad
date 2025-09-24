@@ -587,7 +587,7 @@ case. This is likely due to it presenting a good trade‑off
 between the payload size and the number of payloads, with small
 communication overhead while providing good load balancing.
 
-#+CAPTION: Mean Client time for each of the three cases (/payloads/).
+#+CAPTION: Mean Client time for each case, with 99% CI error bars.
 #+NAME: fig:client-time
 [[./figures/client_time.png]]
 
@@ -623,7 +623,7 @@ communication rather than computation time at such low granularities.
 
 
 
-#+CAPTION: Mean Imbalance Percentage for each case.
+#+CAPTION: Mean Imbalance Percentage for each case, with 99% CI error bars.
 #+NAME: fig:imbalance-percentage
 [[./figures/imbalance_percentage.png]]
 
@@ -928,7 +928,8 @@ Impossible to do.
 *** [R1] Clarify worker imbalance at higher granularities in the easy case seen in Fig. 6 
 (imbalance high but execution time low, likely due to only a few workers handling entire workload)
 It is already there the discussion about these results.
-*** TODO [R1,R4] Add 95% confidence intervals for results, especially Fig. 6. 
+*** DONE [R1,R4] Add 95% confidence intervals for results, especially Fig. 6. 
+Added 99% CI
 
 (Figure 3 has confidence intervals, but they are not visible)
 

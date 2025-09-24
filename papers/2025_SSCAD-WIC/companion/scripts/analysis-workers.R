@@ -1,10 +1,11 @@
 #!/usr/bin/Rscript
 options(crayon.enabled=FALSE)
 suppressMessages(library(tidyverse))
+suppressMessages(library(colorspace))
 
 meu_estilo <- function() {
   list(
-    theme_bw(base_size = 14),
+    theme_bw(base_size = 12),
     theme(
       legend.title = element_blank(),
       plot.margin = unit(c(0, 0, 0, 0), "cm"),
@@ -47,16 +48,28 @@ df <- df |>
             std.deviation = sqrt(sum((duration - mean(duration))**2) / (n() - 1)),
             .groups="keep")
 
-# Mean imbalance across repetitions
-plot <- df |>
+plot_data <- df |>
   group_by(case, num_nodes, granularity) |>
-  summarize(mean_imbalance.percentage = mean(imbalance.percentage, na.rm = TRUE),
-            .groups="keep") |>
-  mutate(case = factor(case, levels = c("easy", "default", "hard"))) |>
+  summarize(
+    mean_imbalance.percentage = mean(imbalance.percentage, na.rm = TRUE),
+    sd_imbalance.percentage = sd(imbalance.percentage, na.rm = TRUE),
+    se_imbalance.percentage = sd_imbalance.percentage / sqrt(n()),
+    ci_lower = mean_imbalance.percentage - qt(0.995, df = n() - 1) * se_imbalance.percentage,
+    ci_upper = mean_imbalance.percentage + qt(0.995, df = n() - 1) * se_imbalance.percentage,
+    .groups="keep"
+  ) |>
+  mutate(case = factor(case, levels = c("easy", "default", "hard")))
+
+plot <- plot_data |>
   ggplot(aes(x = factor(num_nodes), 
              y = mean_imbalance.percentage, 
              fill = factor(granularity))) +
   geom_col(position = position_dodge(width = 0.8)) +
+  geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper, color = after_scale(darken(fill, 0.4))),
+                position = position_dodge(width = 0.8),
+                width = 0.8,
+                linewidth = 0.3,
+                show.legend = FALSE) +
   facet_wrap(~case, nrow = 1) +
   meu_estilo() +
   labs(x = "Nodes", 

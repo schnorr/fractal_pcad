@@ -37,7 +37,7 @@ The included CSVs can be used directly to reproduce figures in the paper:
 
 ### Dependencies
 
-- **R v4.3.3** with the `tidyverse` package
+- **R v4.3.3** with the `tidyverse` and `colorspace` packages
 
 ### Generating figures
 
