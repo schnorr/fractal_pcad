@@ -56,7 +56,7 @@ To generate figure 6 (worker load balancing), run:
 Rscript scripts/analysis-workers.R data/worker_totals.csv
 ```
 
-Figures will be saved to the current working directory as `.png` files.
+Figures will be saved to the current working directory as `.pdf` files.
 
 ## Rerunning the full experiment
 
