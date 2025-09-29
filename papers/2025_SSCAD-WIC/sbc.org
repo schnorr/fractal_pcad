@@ -661,9 +661,11 @@ balance.
 *Acknowledgments*.
 We thank FAPERGS and CNPq for their financial support, which included
 scientific initiation scholarships from both FAPERGS (PROBIC) and CNPq
-(PBIC).  We also thank UFRGS for all institutional support. We also
-extend our thanks to the Parallel and Distributed Processing Research
-Group (GPPD) for access to the PCAD cluster resources.
+(PBIC). This study was financed in part by the Coordenação de Aperfeiçoamento 
+de Pessoal de Nível Superior – Brasil (CAPES) – Finance Code 001. We also thank 
+UFRGS for all institutional support. We also extend our thanks to the Parallel
+and Distributed Processing Research Group (GPPD) for access to the PCAD 
+cluster resources.
 
 ** References                                                        :ignore:
 
