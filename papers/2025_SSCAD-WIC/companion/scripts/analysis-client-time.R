@@ -62,11 +62,11 @@ agg_df <- df |>
 time_plot <- ggplot(agg_df, aes(x = num_nodes, y = time_mean, 
                                 color = factor(granularity), fill = factor(granularity), group = granularity)) +
   geom_line(linewidth = 0.7) +
+  geom_point(size = 1.5) +
   geom_errorbar(aes(ymin = time_ci_lower, ymax = time_ci_upper, color = after_scale(darken(fill, 0.4))),
                 width = 0.2,
-                linewidth = 0.4,
+                linewidth = 0.3,
                 show.legend = FALSE) +
-  geom_point(size = 1.5) +
   facet_wrap(~ case) +
   labs(x = "Node Count", y = "Time (s)", color = "Gran.") +
   xlim(0, NA) +
