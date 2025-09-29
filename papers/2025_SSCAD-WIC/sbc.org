@@ -344,7 +344,7 @@ Client.
 
 #+CAPTION: Multi-threaded system overview with processes, threads, and queues.
 #+NAME: fig:system-architecture
-[[./figures/system_architecture.png]]
+[[./figures/system_architecture.pdf]]
 
 
 Each interaction between the Client and the Server consists of the
