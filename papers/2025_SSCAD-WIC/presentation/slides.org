@@ -1,0 +1,96 @@
+# -*- coding: utf-8 -*-
+# -*- mode: org -*-
+#+startup: beamer overview indent
+#+LANGUAGE: pt-br
+#+TAGS: noexport(n)
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+EXPORT_SELECT_TAGS: export
+
+#+TITLE: Dynamic Load Balancing and Scalability Analysis of the Mandelbrot Set in a Multi-Threaded HPC Application
+#+LATEX: \makeatletter \def\beamer@shorttitle{Analysis of the Mandelbrot Set in an HPC Application} \makeatother
+#+SUBTITLE: SSCAD-WIC 2025
+#+AUTHOR: Francisco Etcheverria, Rayan Raddatz, Kenichi Brumati, Lucas Mello Schnorr
+#+DATE: 28/10/2025
+
+#+LATEX_CLASS: beamer
+#+LATEX_HEADER: \makeatletter
+#+LATEX_HEADER: \def\input@path{{theme/}}
+#+LATEX_HEADER: \makeatother
+#+BEAMER_THEME:Inf
+#+LATEX_CLASS_OPTIONS: [xcolor=dvipsnames,10pt]
+#+OPTIONS: H:2 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+
+#+LATEX_HEADER: \graphicspath{{theme/}{../figures/}{figures/}}
+
+* Roteiro
+  :PROPERTIES:
+  :BEAMER_env: frame
+  :END:
+
+#+LATEX: \tableofcontents
+
+* Introdução
+
+** Conjunto de Mandelbrot
+
+O conjunto de Mandelbrot é um conjunto definido pelos pontos complexos \( c \) para os quais a sequência
+
+\[
+z_{n+1} = z_n^2 + c, \quad z_0 = 0
+\]
+
+permanece limitada, ou seja, não diverge para o infinito após um número finito de iterações.
+
+** Visualização do conjunto
+
+Para visualizar o conjunto, cada pixel de uma imagem é associado a um ponto do plano complexo. 
+Cores são atribuídas de acordo com o número de iterações até a sequência divergir.
+
+#+LATEX: \vfill\pause
+
+#+LATEX: \begin{columns}
+#+LATEX: \column{0.49\textwidth}
+#+LATEX: \includegraphics[width=\linewidth]{figures/frac1.png}
+#+LATEX: \column{0.49\textwidth}
+#+LATEX: \includegraphics[width=\linewidth]{figures/frac2.png}
+#+LATEX: \end{columns}
+
+#+LATEX: \vfill
+
+As imagens resultantes tem uma estrutura fractal, com detalhe infinito sendo encontrado ao ampliar a imagem.
+
+** Aspectos computacionais
+
+- O conjunto de Mandelbrot é *trivialmente paralelizável*: Cada pixel pode ser computado independentemente, sem dependências.
+
+- No entanto, diferentes regiões da imagem requerem números de iterações diferentes. Logo, o *balanceamento de carga* é importante para se obter performance máxima.
+
+#+LATEX: \vfill\pause
+
+Para lidar com o desbalanceamento de carga, desenvolvemos uma aplicação distribuída que aloca o trabalho dinamicamente
+entre nós computacionais. Para avaliar sua eficiência e escalabilidade, realizamos um conjunto de experimentos
+variando parâmetros relevantes. A seguir, descrevemos a estrutura do sistema.
+
+* Materiais e Métodos
+
+** Arquitetura do sistema
+
+** Configuração de hardware e software
+
+** Projeto Experimental
+
+* Resultados
+
+** Métricas
+
+** Resultados 1
+
+** Resultados 2
+
+** Resultados 3
+
+* Conclusões
+
+** Considerações finais
+
+** Trabalhos futuros
