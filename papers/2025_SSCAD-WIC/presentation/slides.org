@@ -73,9 +73,61 @@ variando parâmetros relevantes. A seguir, descrevemos a estrutura do sistema.
 
 * Materiais e Métodos
 
-** Arquitetura do sistema
+** Arquitetura do sistema: Overview
 
-** Configuração de hardware e software
+#+BEGIN_CENTER
+#+ATTR_LATEX: :width 0.65\textwidth :center
+[[../figures/system_architecture.pdf]]
+#+END_CENTER
+
+#+LATEX: \vfill
+
+- Arquitetura Cliente-Servidor com distribuição dinâmica de trabalho
+- *Cliente*: Recebe input do usuário, solicita ao servidor o cálculo de regiões do fractal, recebe as respostas e renderiza o fractal na tela.
+- *Servidor*: Composto por um coordenador e vários /workers/ MPI. O coordenador recebe pedidos do cliente, divide-os em tarefas menores e distribui a carga de trabalho entre os /workers/. 
+
+** Arquitetura do sistema: /payloads/ e /responses/
+
+#+BEGIN_CENTER
+#+ATTR_LATEX: :width 0.65\textwidth :center
+[[../figures/system_architecture.pdf]]
+#+END_CENTER
+
+#+LATEX: \vfill
+
+- A interação entre o cliente e servidor ocorre através da troca de /payloads/ e /responses/. O cliente envia um payload, e recebe vários /responses/ do servidor.
+- */Payloads/* contêm os limites da região, dimensões da tela e a granularidade - o tamanho dos blocos em que o trabalho é dividido.
+- */Responses/* contêm os valores calculados pelo servidor, junto com o payload de origem e o identificador do worker que os produziu.
+
+** Arquitetura do sistema: Fluxo de comunicação
+
+#+BEGIN_CENTER
+#+ATTR_LATEX: :width 0.65\textwidth :center
+[[../figures/system_architecture.pdf]]
+#+END_CENTER
+
+#+LATEX: \vfill
+
+- O cliente e o servidor são /multi-threaded/, com cada etapa de comunicação em uma /thread/ dedicada.
+- O coordenador recebe um /payload/, divide em múltiplos /payloads/ menores e os distribui dinamicamente aos *workers* MPI.
+- Os /workers/ pedem trabalho para o coordenador, e enviam suas respostas assim que são calculadas.
+- Cada /response/ é redirecionado ao cliente após ser recebido de um /worker/, permitindo visualização progressiva da imagem. 
+
+** Configuração de hardware
+
+Os experimentos foram rodados no Parque Computacional de Alto Desempenho (PCAD) do Instituto de Informática da UFRGS.
+
+#+LATEX: \vfill
+
+O cliente rodou em uma máquina *draco*, com:
+
+- 2x Intel Xeon E5-2640 v2 @ 2.00GHz, 32 cores
+- 64GB DDR4
+
+O servidor rodou em até seis máquinas *cei*, cada um com:
+
+- 2x Intel Xeon Silver 4116 @ 2.10GHz, 24 cores por nó
+- 96GB DDR4
 
 ** Projeto Experimental
 
