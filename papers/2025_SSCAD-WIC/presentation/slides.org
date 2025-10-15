@@ -22,18 +22,15 @@
 
 #+LATEX_HEADER: \graphicspath{{theme/}{../figures/}{figures/}}
 
-* Roteiro
-  :PROPERTIES:
-  :BEAMER_env: frame
-  :END:
+* Introdução
+
+** Roteiro
 
 #+LATEX: \tableofcontents
 
-* Introdução
-
 ** Conjunto de Mandelbrot
 
-O conjunto de Mandelbrot é um conjunto definido pelos pontos complexos \( c \) para os quais a sequência
+O conjunto de Mandelbrot \cite{mandelbrot1980} é um conjunto definido pelos pontos complexos \( c \) para os quais a sequência
 
 \[
 z_{n+1} = z_n^2 + c, \quad z_0 = 0
@@ -65,11 +62,19 @@ As imagens resultantes tem uma estrutura fractal, com detalhe infinito sendo enc
 
 - No entanto, diferentes regiões da imagem requerem números de iterações diferentes. Logo, o *balanceamento de carga* é importante para se obter performance máxima.
 
-#+LATEX: \vfill\pause
+** Trabalhos Relacionados
 
-Para lidar com o desbalanceamento de carga, desenvolvemos uma aplicação distribuída que aloca o trabalho dinamicamente
-entre nós computacionais. Para avaliar sua eficiência e escalabilidade, realizamos um conjunto de experimentos
-variando parâmetros relevantes. A seguir, descrevemos a estrutura do sistema.
+O *balanceamento de carga* é amplamente estudado em sistemas paralelos e de alto desempenho, 
+e o conjunto de Mandelbrot é frequentemente utilizado neste contexto.
+
+- *\cite{gomez2020mpi}* compara abordagens utilizando MPI e OpenMP no cálculo do conjunto, assim como abordagens de distribuição de trabalho estáticas e dinâmicas.
+- *\cite{mohammed2020two}* propõem uma abordagem de balanceamento dinâmico em dois níveis com MPI e OpenMP, e utiliza o Conjunto de Mandelbrot como um /benchmark/.
+
+#+LATEX: \pause\vfill
+
+Nosso trabalho utiliza uma arquitetura cliente-servidor que aloca o trabalho dinamicamente. 
+Realizamos um conjunto de experimentos para avaliar sua eficiência e escalabilidade, e investigar como o 
+balanceamento de carga se comporta em diferentes cenários. A seguir, descrevemos a estrutura do sistema.
 
 * Materiais e Métodos
 
@@ -115,7 +120,7 @@ variando parâmetros relevantes. A seguir, descrevemos a estrutura do sistema.
 
 ** Configuração de hardware
 
-Os experimentos foram rodados no Parque Computacional de Alto Desempenho (PCAD) do Instituto de Informática da UFRGS.
+Os experimentos foram executados no Parque Computacional de Alto Desempenho (PCAD) do Instituto de Informática da UFRGS.
 
 #+LATEX: \vfill
 
@@ -141,8 +146,44 @@ O servidor rodou em até seis máquinas *cei*, cada um com:
 
 ** Resultados 3
 
-* Conclusões
+* Conclusão
 
 ** Considerações finais
 
 ** Trabalhos futuros
+
+** Referências
+
+#+LATEX: \bibliographystyle{sbc}
+#+LATEX: \bibliography{refs} 
+
+* Bib file                                                         :noexport:
+#+begin_src bibtex :tangle refs.bib
+
+@article{gomez2020mpi,
+  title={MPI vs OpenMP: A case study on parallel generation of Mandelbrot set},
+  author={G{\'o}mez, Ernesto Soto},
+  journal={Innovation and Software},
+  volume={1},
+  number={2},
+  pages={12--26},
+  year={2020}
+}
+
+@inproceedings{mohammed2020two,
+  title={Two-level dynamic load balancing for high performance scientific applications},
+  author={Mohammed, Ali and Cavelan, Aur{\'e}lien and Ciorba, Florina M and Cabez{\'o}n, Rub{\'e}n M and Banicescu, Ioana},
+  booktitle={SIAM Conference on Parallel Processing for Scientific Computing},
+  year={2020},
+}
+
+@article{mandelbrot1980,
+  author = {Mandelbrot, Benoit B.},
+  title = { “Fractal Aspects of the Iteration of Z → z $\Lambda$(1-Z) for Complex $\Lambda$ and Z”},
+  journal = {Annals of the New York Academy of Sciences},
+  volume = {357},
+  number = {1},
+  pages = {249-259},
+  year = {1980}
+}
+#+end_src
