@@ -87,7 +87,6 @@ balanceamento de carga se comporta em diferentes cenários. A seguir, descrevemo
 
 #+LATEX: \vfill
 
-- Arquitetura Cliente-Servidor com distribuição dinâmica de trabalho
 - *Cliente*: Recebe input do usuário, solicita ao servidor o cálculo de regiões do fractal, recebe as respostas e renderiza o fractal na tela.
 - *Servidor*: Composto por um coordenador e vários /workers/ MPI. O coordenador recebe pedidos do cliente, divide-os em tarefas menores e distribui a carga de trabalho entre os /workers/. 
 
@@ -100,7 +99,7 @@ balanceamento de carga se comporta em diferentes cenários. A seguir, descrevemo
 
 #+LATEX: \vfill
 
-- A interação entre o cliente e servidor ocorre através da troca de /payloads/ e /responses/. O cliente envia um payload, e recebe vários /responses/ do servidor.
+- A interação ocorre através da troca de /payloads/ e /responses/. O cliente envia um payload, e recebe vários /responses/ do servidor.
 - */Payloads/* contêm os limites da região, dimensões da tela e a granularidade - o tamanho dos blocos em que o trabalho é dividido.
 - */Responses/* contêm os valores calculados pelo servidor, junto com o payload de origem e o identificador do worker que os produziu.
 
