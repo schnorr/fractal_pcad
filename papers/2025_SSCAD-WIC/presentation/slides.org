@@ -40,8 +40,8 @@ permanece limitada, ou seja, não diverge para o infinito após um número finit
 
 ** Visualização do conjunto
 
-Para visualizar o conjunto, cada pixel de uma imagem é associado a um ponto do plano complexo. 
-Cores são atribuídas de acordo com o número de iterações até a sequência divergir.
+- Cada pixel é associado a um ponto do plano complexo. 
+- Cores são atribuídas de acordo com o número de iterações até a sequência divergir.
 
 #+LATEX: \vfill\pause
 
@@ -58,9 +58,9 @@ As imagens resultantes tem uma estrutura fractal, com detalhe infinito sendo enc
 
 ** Aspectos computacionais
 
-- O conjunto de Mandelbrot é *trivialmente paralelizável*: Cada pixel pode ser computado independentemente, sem dependências.
-
-- No entanto, diferentes regiões da imagem requerem números de iterações diferentes. Logo, o *balanceamento de carga* é importante para se obter performance máxima.
+- O conjunto de Mandelbrot é *trivialmente paralelizável*: Cada pixel pode ser computado independentemente.
+- Diferentes regiões da imagem requerem números de iterações diferentes.
+- Logo, o *balanceamento de carga* é importante para se obter performance máxima.
 
 ** Trabalhos Relacionados
 
@@ -87,21 +87,21 @@ balanceamento de carga se comporta em diferentes cenários.
 
 #+LATEX: \vfill
 
-- *Cliente*: Recebe input do usuário, solicita ao servidor o cálculo de regiões do fractal, recebe as respostas e renderiza o fractal na tela.
-- *Servidor*: Composto por um coordenador e vários /workers/ MPI. O coordenador recebe pedidos do cliente, divide-os em tarefas menores e distribui a carga de trabalho entre os /workers/. 
+- *Cliente*: Recebe input do usuário, solicita ao servidor o cálculo de regiões, recebe respostas e renderiza o fractal.
+- *Servidor*: O coordenador recebe pedidos do cliente, divide-os em tarefas menores e distribui a carga de trabalho entre seus /workers/. 
 
 ** Arquitetura do sistema: /payloads/ e /responses/
 
 #+BEGIN_CENTER
 #+ATTR_LATEX: :width 0.55\textwidth :center
-[[../figures/system_architecture.pdf]]
+[[../figures/system_architecture.pdf]]  
 #+END_CENTER
 
 #+LATEX: \vfill
 
-- A interação ocorre através da troca de /payloads/ e /responses/. O cliente envia um payload, e recebe vários /responses/ do servidor.
+- A interação ocorre através da troca de /payloads/ e /responses/.
 - */Payloads/* contêm os limites da região, dimensões da tela, o número máximo de iterações, e a granularidade - o tamanho em pixels dos blocos em que o trabalho é dividido.
-- */Responses/* contêm os valores calculados pelo servidor, junto com o payload de origem e o identificador do worker que os produziu.
+- */Responses/* contêm os valores calculados pelo servidor, o payload de origem e o identificador do worker que os produziu.
 
 ** Arquitetura do sistema: Fluxo de comunicação
 
@@ -112,9 +112,9 @@ balanceamento de carga se comporta em diferentes cenários.
 
 #+LATEX: \vfill
 
-- O coordenador recebe um /payload/, divide em múltiplos /payloads/ menores e os distribui dinamicamente aos *workers* MPI.
-- Os /workers/ pedem trabalho para o coordenador, e enviam suas respostas assim que são calculadas.
-- Cada /response/ é redirecionado ao cliente após ser recebido de um /worker/, permitindo visualização progressiva da imagem. 
+- O coordenador recebe um /payload/, divide em vários menores e os distribui aos *workers* dinamicamente.
+- Os /workers/ pedem trabalho para o coordenador, enviando os resultados assim que são calculados.
+- Cada /response/ é redirecionado ao cliente, permitindo visualização progressiva da imagem. 
 
 ** Configuração de hardware
 
@@ -134,19 +134,19 @@ O servidor rodou em até seis máquinas *cei*, cada um com:
 
 ** Projeto Experimental
 
-Os experimentos consistem em calcular regiões do fractal de Mandelbrot, com uma resolução de 1920×1080 pixels. Foram executadas 5 repetições de cada combinação dos fatores abaixo:
+- Resolução: 1920\times1080
 
 #+LATEX: \pause
 
-- Granularidade (tamanho dos blocos em que a imagem é dividida). 6 níveis: [5\times5, 10\times10, 20\times20, 40\times40, 60\times60, 120\times120].
+- Granularidade dos payloads: [5\times5, 10\times10, 20\times20, 40\times40, 60\times60, 120\times120]
 
 #+LATEX: \pause
 
-- Quantidade de nós do servidor. De 1 a 6 nós (24 a 144 /ranks/ MPI).
+- Quantidade de nós do servidor: 1 a 6 nós
 
 #+LATEX: \pause
 
-- Região do fractal e número de iterações máximo: *easy* estressa o /overhead/ de comunicação, *default* é um caso desbalanceado típico, e *hard* testa a vazão computacional do sistema.
+- Região do fractal e número de iterações máximo: *easy* estressa o /overhead/ de comunicação, *default* é um caso desbalanceado típico, e *hard* testa a vazão computacional do sistema
 
 #+LATEX: \vfill
 
@@ -161,6 +161,10 @@ Os experimentos consistem em calcular regiões do fractal de Mandelbrot, com uma
 #+LATEX: \includegraphics[width=\linewidth]{../figures/region_hard.png}
 #+LATEX: \centering\footnotesize hard (máx. 300000 it.)
 #+LATEX: \end{columns}
+
+#+LATEX: \vfill\pause
+
+- 5 repetições de cada configuração
 
 * Resultados
 
