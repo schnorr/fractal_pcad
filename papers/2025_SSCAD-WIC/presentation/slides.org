@@ -74,7 +74,7 @@ e o conjunto de Mandelbrot é frequentemente utilizado neste contexto.
 
 Nosso trabalho utiliza uma arquitetura cliente-servidor que aloca o trabalho dinamicamente. 
 Realizamos um conjunto de experimentos para avaliar sua eficiência e escalabilidade, e investigar como o 
-balanceamento de carga se comporta em diferentes cenários. A seguir, descrevemos a estrutura do sistema.
+balanceamento de carga se comporta em diferentes cenários.
 
 * Materiais e Métodos
 
