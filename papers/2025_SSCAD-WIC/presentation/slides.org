@@ -142,7 +142,7 @@ O servidor rodou em até seis máquinas *cei*, cada um com:
 
 #+LATEX: \pause
 
-- Quantidade de nós do servidor: 1 a 6 nós
+- Quantidade de nós do servidor: 1 a 6 nós (24 a 144 ranks MPI)
 
 #+LATEX: \pause
 
