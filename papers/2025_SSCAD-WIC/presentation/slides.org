@@ -67,7 +67,7 @@ As imagens resultantes tem uma estrutura fractal, com detalhe infinito sendo enc
 O *balanceamento de carga* é amplamente estudado em sistemas paralelos e de alto desempenho, 
 e o conjunto de Mandelbrot é frequentemente utilizado neste contexto.
 
-- *\cite{gomez2020mpi}* compara abordagens utilizando MPI e OpenMP no cálculo do conjunto, assim como abordagens de distribuição de trabalho estáticas e dinâmicas.
+- *\cite{gomez2020mpi}* compara abordagens utilizando MPI e OpenMP no cálculo do conjunto, assim como distribuição de trabalho estática e dinâmica.
 - *\cite{mohammed2020two}* propõe uma abordagem de balanceamento dinâmico em dois níveis com MPI e OpenMP, e utiliza o Conjunto de Mandelbrot como um /benchmark/.
 
 #+LATEX: \pause\vfill
@@ -87,8 +87,11 @@ balanceamento de carga se comporta em diferentes cenários.
 
 #+LATEX: \vfill
 
-- *Cliente*: Recebe input do usuário, solicita ao servidor o cálculo de regiões, recebe respostas e renderiza o fractal.
-- *Servidor*: O coordenador recebe pedidos do cliente, divide-os em tarefas menores e distribui a carga de trabalho entre seus /workers/. 
+- *Cliente*: Recebe input do usuário, solicita cálculos ao servidor e renderiza o fractal.
+
+#+LATEX: \pause
+
+- *Servidor*: O coordenador recebe pedidos do cliente, divide-os em tarefas menores e distribui a carga entre seus /workers/. 
 
 ** Arquitetura do sistema: /payloads/ e /responses/
 
@@ -99,9 +102,15 @@ balanceamento de carga se comporta em diferentes cenários.
 
 #+LATEX: \vfill
 
-- A interação ocorre através da troca de /payloads/ e /responses/.
-- */Payloads/* contêm os limites da região, dimensões da tela, o número máximo de iterações, e a *granularidade* - tamanho em pixels dos blocos em que o trabalho é dividido.
-- */Responses/* contêm os valores calculados pelo servidor, o payload de origem e o identificador do worker que os produziu.
+A interação ocorre através da troca de /payloads/ e /responses/:
+
+#+LATEX: \pause
+
+- */Payloads/*: limites da região, dimensões da tela, o número máximo de iterações, granularidade.
+
+#+LATEX: \pause
+
+- */Responses/*: valores calculados, payload de origem, identificador do worker.
 
 ** Arquitetura do sistema: Fluxo de comunicação
 
@@ -112,20 +121,28 @@ balanceamento de carga se comporta em diferentes cenários.
 
 #+LATEX: \vfill
 
-- O coordenador recebe um /payload/, divide em vários menores e os distribui aos *workers* dinamicamente.
+- O coordenador recebe um /payload/, divide em vários menores e os distribui aos /workers/ dinamicamente.
+
+#+LATEX: \pause
+
 - Os /workers/ pedem trabalho para o coordenador, enviando os resultados assim que são calculados.
+
+#+LATEX: \pause
+
 - Cada /response/ é redirecionado ao cliente, permitindo visualização progressiva da imagem. 
 
 ** Configuração de hardware
 
 Os experimentos foram executados no Parque Computacional de Alto Desempenho (PCAD) do Instituto de Informática da UFRGS.
 
-#+LATEX: \vfill
+#+LATEX: \vfill\pause
 
 O cliente rodou em uma máquina *draco*, com:
 
 - 2x Intel Xeon E5-2640 v2 @ 2.00GHz, 32 cores
 - 64GB DDR4
+
+#+LATEX: \pause
 
 O servidor rodou em até seis máquinas *cei*, cada uma com:
 
