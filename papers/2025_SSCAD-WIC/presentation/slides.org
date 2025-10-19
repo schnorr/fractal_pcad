@@ -142,7 +142,7 @@ Os experimentos consistem em calcular regiões do fractal de Mandelbrot, com uma
 
 #+LATEX: \pause
 
-- Quantidade de nós do servidor. De 1 a 6 nós (24 a 144 /workers/ MPI).
+- Quantidade de nós do servidor. De 1 a 6 nós (24 a 144 /ranks/ MPI).
 
 #+LATEX: \pause
 
