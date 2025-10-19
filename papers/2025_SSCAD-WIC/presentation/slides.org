@@ -163,7 +163,7 @@ O servidor rodou em até seis máquinas *cei*, cada uma com:
 
 #+LATEX: \pause
 
-- Região do fractal e número de iterações máximo: *easy* estressa o /overhead/ de comunicação, *default* é um caso desbalanceado típico, e *hard* testa a vazão computacional do sistema
+- Casos: *easy* estressa o /overhead/ de comunicação, *default* é um caso desbalanceado típico, e *hard* testa a vazão computacional do sistema
 
 #+LATEX: \vfill
 
