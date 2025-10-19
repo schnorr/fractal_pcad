@@ -211,18 +211,75 @@ O servidor rodou em até seis máquinas *cei*, cada uma com:
   \]
   onde \(L_{max}\) é o tempo do worker mais lento, \(L_{avg}\) é a média e \(n\) o número de /workers/.
 
+** Resultados: Tempo médio
 
-** Resultados: Tempo Médio
+#+BEGIN_CENTER
+#+ATTR_LATEX: :width 0.8\textwidth :center
+[[../figures/client_time.pdf]]  
+#+END_CENTER
+
+- Perfomance tende a escalar bem ao adicionar nós nos casos /default/ e /hard/
+
+- Tempo com granularidade baixa (5) piora com mais nós: */overhead/*
+
+- Tempo com granularidade alta (120) não escala bem no caso /default/: *desbalanceamento*
+
+- Performance no caso /easy/ é melhor com granularidades maiores: a computação é fácil, logo a limitação é o */overhead/ de comunicação*
 
 ** Resultados: Speedup e Eficiência
 
+#+LATEX: \begin{columns}
+#+LATEX: \column{0.5\textwidth}
+#+LATEX: \includegraphics[width=\linewidth]{../figures/client_speedup.pdf}
+#+LATEX: \column{0.5\textwidth}
+#+LATEX: \includegraphics[width=\linewidth]{../figures/client_efficiency.pdf}
+#+LATEX: \end{columns}
+
+#+LATEX:\vfill
+
+- Granularidade 20 apresenta melhor /trade-off/ entre /overhead/ e balanceamento nos casos /default/ e /hard/
+- Eficiência de ~0.85 (/default/) e ~0.98 (/hard/) com 6 nós
+
 ** Resultados: /Imbalance Percentage/
+
+#+BEGIN_CENTER
+#+ATTR_LATEX: :width 0.8\textwidth :center
+[[../figures/imbalance_percentage.pdf]]  
+#+END_CENTER
+
+- Desbalanceamento tende a ser menor com granularidades menores
+- O caso /default/ sofre maior desbalaceamento que o caso /hard/
+- Especialmente nas granularidades mais altas, o desbalanceamento tende a aumentar com o número de nós
+- Caso /easy/ apresenta desbalanceamento alto em geral
 
 * Conclusão
 
 ** Considerações finais 
 
+Este trabalho apresentou uma implementação MPI /multi-threaded/ do Conjunto de Mandelbrot com balanceamento de carga dinâmico.
+
+#+LATEX: \vfill\pause
+
+*Principais resultados:*
+
+- A *granularidade* é crucial para obter boa performance
+
+#+LATEX: \pause
+
+- Para regiões desbalanceadas ou computacionalmente intensas (/default/ e /hard/), granularidade 20 oferece o melhor /trade-off/
+
+#+LATEX: \pause
+
+- Para regiões simples (/easy/), o /overhead/ de comunicação domina, e adicionar nós pode reduzir performance
+
+#+LATEX: \pause
+
+- A escolha da granularidade deve considerar as características da região do fractal
+
 ** Trabalhos futuros
+
+Como trabalho futuro, planejamos investigar a variação da granularidade com base no número de iterações 
+da vizinhança, avaliando o impacto no desempenho e no balanceamento de carga.
 
 ** Referências
 
