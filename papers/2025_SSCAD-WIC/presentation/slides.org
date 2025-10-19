@@ -68,7 +68,7 @@ O *balanceamento de carga* é amplamente estudado em sistemas paralelos e de alt
 e o conjunto de Mandelbrot é frequentemente utilizado neste contexto.
 
 - *\cite{gomez2020mpi}* compara abordagens utilizando MPI e OpenMP no cálculo do conjunto, assim como abordagens de distribuição de trabalho estáticas e dinâmicas.
-- *\cite{mohammed2020two}* propõem uma abordagem de balanceamento dinâmico em dois níveis com MPI e OpenMP, e utiliza o Conjunto de Mandelbrot como um /benchmark/.
+- *\cite{mohammed2020two}* propõe uma abordagem de balanceamento dinâmico em dois níveis com MPI e OpenMP, e utiliza o Conjunto de Mandelbrot como um /benchmark/.
 
 #+LATEX: \pause\vfill
 
