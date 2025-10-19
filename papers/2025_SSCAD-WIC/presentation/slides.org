@@ -17,7 +17,7 @@
 #+LATEX_HEADER: \def\input@path{{theme/}}
 #+LATEX_HEADER: \makeatother
 #+BEAMER_THEME:Inf
-#+LATEX_CLASS_OPTIONS: [xcolor=dvipsnames,10pt]
+#+LATEX_CLASS_OPTIONS: [xcolor=dvipsnames,10pt,aspectratio=169]
 #+OPTIONS: H:2 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
 
 #+LATEX_HEADER: \graphicspath{{theme/}{../figures/}{figures/}}
@@ -81,7 +81,7 @@ balanceamento de carga se comporta em diferentes cenários. A seguir, descrevemo
 ** Arquitetura do sistema: Overview
 
 #+BEGIN_CENTER
-#+ATTR_LATEX: :width 0.65\textwidth :center
+#+ATTR_LATEX: :width 0.55\textwidth :center
 [[../figures/system_architecture.pdf]]
 #+END_CENTER
 
@@ -93,7 +93,7 @@ balanceamento de carga se comporta em diferentes cenários. A seguir, descrevemo
 ** Arquitetura do sistema: /payloads/ e /responses/
 
 #+BEGIN_CENTER
-#+ATTR_LATEX: :width 0.65\textwidth :center
+#+ATTR_LATEX: :width 0.55\textwidth :center
 [[../figures/system_architecture.pdf]]
 #+END_CENTER
 
@@ -106,13 +106,12 @@ balanceamento de carga se comporta em diferentes cenários. A seguir, descrevemo
 ** Arquitetura do sistema: Fluxo de comunicação
 
 #+BEGIN_CENTER
-#+ATTR_LATEX: :width 0.65\textwidth :center
+#+ATTR_LATEX: :width 0.55\textwidth :center
 [[../figures/system_architecture.pdf]]
 #+END_CENTER
 
 #+LATEX: \vfill
 
-- O cliente e o servidor são /multi-threaded/, com cada etapa de comunicação em uma /thread/ dedicada.
 - O coordenador recebe um /payload/, divide em múltiplos /payloads/ menores e os distribui dinamicamente aos *workers* MPI.
 - Os /workers/ pedem trabalho para o coordenador, e enviam suas respostas assim que são calculadas.
 - Cada /response/ é redirecionado ao cliente após ser recebido de um /worker/, permitindo visualização progressiva da imagem. 
@@ -135,7 +134,7 @@ O servidor rodou em até seis máquinas *cei*, cada um com:
 
 ** Projeto Experimental
 
-Os experimentos consistem em calcular regiões do fractal de Mandelbrot, com uma resolução de 1920×1080 pixels. Seguem os fatores:
+Os experimentos consistem em calcular regiões do fractal de Mandelbrot, com uma resolução de 1920×1080 pixels. Foram executadas 5 repetições de cada combinação dos fatores abaixo:
 
 #+LATEX: \pause
 
