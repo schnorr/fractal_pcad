@@ -187,15 +187,40 @@ O servidor rodou em até seis máquinas *cei*, cada uma com:
 
 ** Métricas
 
-** Resultados 1
+- *Tempo médio do cliente*: Tempo entre o envio de um /payload/ e chegada do último /response/.
 
-** Resultados 2
+#+LATEX:\pause
 
-** Resultados 3
+- *Speedup*: Razão entre o tempo com um nó e \(n\) nós:
+  \[
+  S(n) = \frac{T(1)}{T(n)}
+  \]
+
+#+LATEX:\pause
+
+- *Eficiência*: Speedup normalizado pelo número de workers.
+  \[
+  E(n) = \frac{S(n)}{S_{\text{ideal}}(n)}, \quad S_{\text{ideal}}(n) = \frac{24n-1}{23}
+  \]
+
+#+LATEX:\pause
+
+- */Imbalance Percentage/* \cite{derose2007detecting}: Mede o desbalanceamento de carga:
+  \[
+  \text{Imbalance \%} = \frac{L_{max} - L_{avg}}{L_{max}} \times \frac{n}{n-1}
+  \]
+  onde \(L_{max}\) é o tempo do worker mais lento, \(L_{avg}\) é a média e \(n\) o número de /workers/.
+
+
+** Resultados: Tempo Médio
+
+** Resultados: Speedup e Eficiência
+
+** Resultados: /Imbalance Percentage/
 
 * Conclusão
 
-** Considerações finais
+** Considerações finais 
 
 ** Trabalhos futuros
 
@@ -233,4 +258,14 @@ O servidor rodou em até seis máquinas *cei*, cada uma com:
   pages = {249-259},
   year = {1980}
 }
+
+@inproceedings{derose2007detecting,
+  title={Detecting application load imbalance on high end massively parallel systems},
+  author={DeRose, Luiz and Homer, Bill and Johnson, Dean},
+  booktitle={European Conference on Parallel Processing},
+  pages={150--159},
+  year={2007},
+  organization={Springer}
+}
+
 #+end_src
