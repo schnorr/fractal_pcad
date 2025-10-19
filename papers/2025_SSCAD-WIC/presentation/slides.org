@@ -100,7 +100,7 @@ balanceamento de carga se comporta em diferentes cenários. A seguir, descrevemo
 #+LATEX: \vfill
 
 - A interação ocorre através da troca de /payloads/ e /responses/. O cliente envia um payload, e recebe vários /responses/ do servidor.
-- */Payloads/* contêm os limites da região, dimensões da tela e a granularidade - o tamanho dos blocos em que o trabalho é dividido.
+- */Payloads/* contêm os limites da região, dimensões da tela, o número máximo de iterações, e a granularidade - o tamanho em pixels dos blocos em que o trabalho é dividido.
 - */Responses/* contêm os valores calculados pelo servidor, junto com o payload de origem e o identificador do worker que os produziu.
 
 ** Arquitetura do sistema: Fluxo de comunicação
@@ -134,6 +134,34 @@ O servidor rodou em até seis máquinas *cei*, cada um com:
 - 96GB DDR4
 
 ** Projeto Experimental
+
+Os experimentos consistem em calcular regiões do fractal de Mandelbrot, com uma resolução de 1920×1080 pixels. Seguem os fatores:
+
+#+LATEX: \pause
+
+- Granularidade (tamanho dos blocos em que a imagem é dividida). 6 níveis: [5\times5, 10\times10, 20\times20, 40\times40, 60\times60, 120\times120].
+
+#+LATEX: \pause
+
+- Quantidade de nós do servidor. De 1 a 6 nós (24 a 144 /workers/ MPI).
+
+#+LATEX: \pause
+
+- Região do fractal e número de iterações máximo: *easy* estressa o /overhead/ de comunicação, *default* é um caso desbalanceado típico, e *hard* testa a vazão computacional do sistema.
+
+#+LATEX: \vfill
+
+#+LATEX: \begin{columns}
+#+LATEX: \column{0.33\textwidth}
+#+LATEX: \includegraphics[width=\linewidth]{../figures/region_easy.png}
+#+LATEX: \centering\footnotesize easy (máx. 1024 it.)
+#+LATEX: \column{0.33\textwidth}
+#+LATEX: \includegraphics[width=\linewidth]{../figures/region_default.png}
+#+LATEX: \centering\footnotesize default (máx. 150000 it.)
+#+LATEX: \column{0.33\textwidth}
+#+LATEX: \includegraphics[width=\linewidth]{../figures/region_hard.png}
+#+LATEX: \centering\footnotesize hard (máx. 300000 it.)
+#+LATEX: \end{columns}
 
 * Resultados
 
