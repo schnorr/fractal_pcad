@@ -138,7 +138,7 @@ O servidor rodou em até seis máquinas *cei*, cada um com:
 
 #+LATEX: \pause
 
-- Granularidade dos payloads: [5\times5, 10\times10, 20\times20, 40\times40, 60\times60, 120\times120]
+- Granularidade: [5\times5, 10\times10, 20\times20, 40\times40, 60\times60, 120\times120]
 
 #+LATEX: \pause
 
