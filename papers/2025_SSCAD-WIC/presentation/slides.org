@@ -100,7 +100,7 @@ balanceamento de carga se comporta em diferentes cenários.
 #+LATEX: \vfill
 
 - A interação ocorre através da troca de /payloads/ e /responses/.
-- */Payloads/* contêm os limites da região, dimensões da tela, o número máximo de iterações, e a granularidade - o tamanho em pixels dos blocos em que o trabalho é dividido.
+- */Payloads/* contêm os limites da região, dimensões da tela, o número máximo de iterações, e a *granularidade* - tamanho em pixels dos blocos em que o trabalho é dividido.
 - */Responses/* contêm os valores calculados pelo servidor, o payload de origem e o identificador do worker que os produziu.
 
 ** Arquitetura do sistema: Fluxo de comunicação
@@ -127,7 +127,7 @@ O cliente rodou em uma máquina *draco*, com:
 - 2x Intel Xeon E5-2640 v2 @ 2.00GHz, 32 cores
 - 64GB DDR4
 
-O servidor rodou em até seis máquinas *cei*, cada um com:
+O servidor rodou em até seis máquinas *cei*, cada uma com:
 
 - 2x Intel Xeon Silver 4116 @ 2.10GHz, 24 cores por nó
 - 96GB DDR4
