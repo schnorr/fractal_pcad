@@ -181,7 +181,7 @@ O servidor rodou em até seis máquinas *cei*, cada uma com:
 
 #+LATEX: \vfill\pause
 
-- 5 repetições de cada configuração
+- 10 repetições de cada configuração
 
 * Resultados
 
