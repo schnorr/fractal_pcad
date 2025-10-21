@@ -220,13 +220,13 @@ O servidor rodou em até seis máquinas *cei*, cada uma com:
 [[../figures/client_time.pdf]]  
 #+END_CENTER
 
+- Performance no caso /easy/ é melhor com granularidades maiores: a computação é fácil, logo a limitação é o */overhead/ de comunicação*
+
 - Perfomance tende a escalar bem ao adicionar nós nos casos /default/ e /hard/
 
-- Tempo com granularidade baixa (5) piora com mais nós: */overhead/*
+- Tempo com granularidade 5 piora com mais nós: */overhead/*
 
-- Tempo com granularidade alta (120) não escala bem no caso /default/: *desbalanceamento*
-
-- Performance no caso /easy/ é melhor com granularidades maiores: a computação é fácil, logo a limitação é o */overhead/ de comunicação*
+- Tempo com granularidade 120 não escala bem no caso /default/: *desbalanceamento*
 
 ** Resultados: Speedup e Eficiência
 
@@ -249,10 +249,10 @@ O servidor rodou em até seis máquinas *cei*, cada uma com:
 [[../figures/imbalance_percentage.pdf]]  
 #+END_CENTER
 
-- Desbalanceamento tende a ser menor com granularidades menores
-- O caso /default/ sofre maior desbalaceamento que o caso /hard/
-- Especialmente nas granularidades mais altas, o desbalanceamento tende a aumentar com o número de nós
 - Caso /easy/ apresenta desbalanceamento alto em geral
+- O caso /default/ sofre maior desbalaceamento que o caso /hard/
+- Desbalanceamento tende a ser menor com granularidades menores
+- O desbalanceamento tende a aumentar com o número de nós
 
 * Conclusão
 
