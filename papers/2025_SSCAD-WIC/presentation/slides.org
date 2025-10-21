@@ -277,6 +277,29 @@ da vizinhança, avaliando o impacto no desempenho e no balanceamento de carga.
 #+LATEX: \bibliographystyle{sbc}
 #+LATEX: \bibliography{refs} 
 
+** Agradecimentos
+
+O presente trabalho foi realizado com apoio da Coordenação de Aperfeiçoamento
+de Pessoal de Nível Superior – Brasil (CAPES) – Código de Financiamento 001.
+
+#+LATEX: \vfill
+
+Agradecemos também à FAPERGS e ao CNPq pelo suporte financeiro, incluindo
+bolsas de iniciação científica da FAPERGS (PROBIC) e do CNPq (PBIC).
+
+#+LATEX: \vfill
+
+Agradecemos ainda à UFRGS pelo suporte institucional e ao Grupo de 
+Processamento Paralelo e Distribuído pelo acesso aos recursos do PCAD.
+
+#+LATEX:\vfill
+
+#+LATEX:\begin{center}
+#+LATEX:\includegraphics[width=0.33\textwidth,height=0.25\textheight,keepaspectratio]{figures/capes.jpg}
+#+LATEX:\includegraphics[width=0.33\textwidth,height=0.25\textheight,keepaspectratio]{figures/fapergs.png}
+#+LATEX:\includegraphics[width=0.33\textwidth,height=0.25\textheight,keepaspectratio]{figures/cnpq.png}
+#+LATEX:\end{center}
+
 * Bib file                                                         :noexport:
 #+begin_src bibtex :tangle refs.bib
 
