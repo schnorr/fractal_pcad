@@ -64,17 +64,19 @@ As imagens resultantes tem uma estrutura fractal, com detalhe infinito sendo enc
 
 ** Trabalhos Relacionados
 
-O *balanceamento de carga* é amplamente estudado em sistemas paralelos e de alto desempenho, 
-e o conjunto de Mandelbrot é frequentemente utilizado neste contexto.
-
-- *\cite{gomez2020mpi}* compara abordagens utilizando MPI e OpenMP no cálculo do conjunto, assim como distribuição de trabalho estática e dinâmica.
-- *\cite{mohammed2020two}* propõe uma abordagem de balanceamento dinâmico em dois níveis com MPI e OpenMP, e utiliza o Conjunto de Mandelbrot como um /benchmark/.
+\cite{gomez2020mpi}:
+  - MPI vs OpenMP no cálculo do conjunto
+  - Distribuição de trabalho estática vs dinâmica
+\cite{mohammed2020two}:
+  - Balanceamento dinâmico em dois níveis com MPI e OpenMP
+  - Conjunto de Mandelbrot é um dos /benchmarks/
 
 #+LATEX: \pause\vfill
 
-Nosso trabalho utiliza uma arquitetura cliente-servidor que aloca o trabalho dinamicamente. 
-Realizamos um conjunto de experimentos para avaliar sua eficiência e escalabilidade, e investigar como o 
-balanceamento de carga se comporta em diferentes cenários.
+Nosso trabalho: 
+  - Arquitetura cliente-servidor
+  - Alocação dinâmica da carga de trabalho
+  - Investigação da escalabilidade e balanceamento em diferentes cenários
 
 * Materiais e Métodos
 
