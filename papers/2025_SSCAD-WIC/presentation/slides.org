@@ -244,7 +244,7 @@ O servidor rodou em até seis máquinas *cei*, cada uma com:
 [[../figures/imbalance_percentage.pdf]]  
 #+END_CENTER
 
-- Caso /easy/ apresenta desbalanceamento alto em geral
+- O caso /easy/ apresenta desbalanceamento alto em geral
 - O caso /default/ sofre maior desbalaceamento que o caso /hard/
 - Desbalanceamento tende a ser menor com granularidades menores
 - O desbalanceamento tende a aumentar com o número de nós
