@@ -83,55 +83,50 @@ Nosso trabalho:
 ** Arquitetura do sistema: Overview
 
 #+BEGIN_CENTER
-#+ATTR_LATEX: :width 0.55\textwidth :center
-[[../figures/system_architecture.pdf]]
+#+ATTR_LATEX: :width 0.85\textwidth
+[[../figures/system_architecture1.pdf]]  
 #+END_CENTER
 
-#+LATEX: \vfill
-
-- *Cliente*: Recebe input do usuário, solicita cálculos ao servidor e renderiza o fractal.
-
-#+LATEX: \pause
-
-- *Servidor*: O coordenador recebe pedidos do cliente, divide-os em tarefas menores e distribui a carga entre seus /workers/. 
-
-** Arquitetura do sistema: /payloads/ e /responses/
+** Arquitetura do sistema: Fluxo (1/4)
 
 #+BEGIN_CENTER
-#+ATTR_LATEX: :width 0.55\textwidth :center
-[[../figures/system_architecture.pdf]]  
+#+ATTR_LATEX: :width 0.85\textwidth
+[[../figures/system_architecture2.pdf]]  
+
+#+LATEX:\vfill
+*Cliente envia /payload/ ao servidor requisitando uma região do fractal*
 #+END_CENTER
 
-#+LATEX: \vfill
 
-A interação ocorre através da troca de /payloads/ e /responses/:
-
-#+LATEX: \pause
-
-- */Payloads/*: limites da região, dimensões da tela, o número máximo de iterações, granularidade.
-
-#+LATEX: \pause
-
-- */Responses/*: valores calculados, payload de origem, identificador do worker.
-
-** Arquitetura do sistema: Fluxo de comunicação
+** Arquitetura do sistema: Fluxo (2/4)
 
 #+BEGIN_CENTER
-#+ATTR_LATEX: :width 0.55\textwidth :center
-[[../figures/system_architecture.pdf]]
+#+ATTR_LATEX: :width 0.85\textwidth
+[[../figures/system_architecture3.pdf]]  
+
+#+LATEX:\vfill
+*Coordenador divide /payload/ em vários menores*
 #+END_CENTER
 
-#+LATEX: \vfill
+** Arquitetura do sistema: Fluxo (3/4)
 
-- O coordenador recebe um /payload/, divide em vários menores e os distribui aos /workers/ dinamicamente.
+#+BEGIN_CENTER
+#+ATTR_LATEX: :width 0.85\textwidth
+[[../figures/system_architecture4.pdf]]  
 
-#+LATEX: \pause
+#+LATEX:\vfill
+*/Workers/ requisitam /payloads/ do coordenador, enviando /responses/ de volta ao calcular*
+#+END_CENTER
 
-- Os /workers/ pedem trabalho para o coordenador, enviando os resultados assim que são calculados.
+** Arquitetura do sistema: Fluxo (4/4)
 
-#+LATEX: \pause
+#+BEGIN_CENTER
+#+ATTR_LATEX: :width 0.85\textwidth
+[[../figures/system_architecture5.pdf]]  
 
-- Cada /response/ é redirecionado ao cliente, permitindo visualização progressiva da imagem. 
+#+LATEX:\vfill
+*/Responses/ são redirecionados ao cliente, permitindo visualização progressiva*
+#+END_CENTER
 
 ** Configuração de hardware
 
