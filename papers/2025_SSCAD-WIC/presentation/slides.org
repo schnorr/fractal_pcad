@@ -253,12 +253,6 @@ O servidor rodou em até seis máquinas *cei*, cada uma com:
 
 ** Considerações finais 
 
-Este trabalho apresentou uma implementação MPI /multi-threaded/ do Conjunto de Mandelbrot com balanceamento de carga dinâmico.
-
-#+LATEX: \vfill\pause
-
-*Principais resultados:*
-
 - A *granularidade* é crucial para obter boa performance
 
 #+LATEX: \pause
