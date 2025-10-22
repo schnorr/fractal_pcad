@@ -22,6 +22,12 @@
 
 #+LATEX_HEADER: \graphicspath{{theme/}{../figures/}{figures/}}
 
+#+LATEX_HEADER: \titlegraphic{%
+#+LATEX_HEADER:   \includegraphics[height=0.13\paperheight,keepaspectratio]{figures/capes.jpg}%
+#+LATEX_HEADER:   \includegraphics[height=0.13\paperheight,keepaspectratio]{figures/fapergs.png}%
+#+LATEX_HEADER:   \includegraphics[height=0.08\paperheight,keepaspectratio]{figures/cnpq.png}%
+#+LATEX_HEADER: }
+
 * Introdução
 
 ** Roteiro

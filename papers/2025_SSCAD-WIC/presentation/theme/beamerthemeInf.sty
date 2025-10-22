@@ -318,6 +318,15 @@
                         }
                     \end{minipage}
                  }}
+            \pgfputat
+                {\pgfpoint{0.01\paperwidth}{0.08\paperheight}}
+                {\pgfbox[left,bottom]{%
+                    \color{InfBlack}
+                    \begin{minipage}[t][0.08\paperheight][c]{0.35\paperwidth}%
+                        \raggedright
+                        \inserttitlegraphic
+                    \end{minipage}
+                 }}
         \end{pgfpicture}
     }
     \end{beamercolorbox}
