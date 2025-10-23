@@ -212,7 +212,7 @@ O servidor rodou em até seis máquinas *cei*, cada uma com:
   \[
   \text{Imbalance \%} = \frac{L_{max} - L_{avg}}{L_{max}} \times \frac{n}{n-1}
   \]
-  onde \(L_{max}\) é o tempo do worker mais lento, \(L_{avg}\) é a média e \(n\) o número de /workers/.
+  onde \(L_{max}\) é o tempo máximo de um worker, \(L_{avg}\) é o médio e \(n\) o número de /workers/.
 
 ** Resultados: Tempo médio
 
