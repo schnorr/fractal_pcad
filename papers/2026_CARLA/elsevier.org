@@ -1,0 +1,247 @@
+# -*- coding: utf-8 -*-
+# -*- mode: org -*-
+
+#+TITLE: Using Mandelbrot Set as a Pedagogic Tool in the Teaching of Parallel Computing Concepts
+#+AUTHOR: Rayan Raddatz de Matos, Francisco Pegoraro Etcheverria, Kenichi Brumati, Lucas Mello Schnorr
+
+#+STARTUP: overview indent
+#+LANGUAGE: pt-br
+#+OPTIONS: H:3 creator:nil timestamp:nil skip:nil toc:nil num:t ^:nil ~:~
+#+OPTIONS: author:nil title:nil date:nil
+#+TAGS: noexport(n) deprecated(d) ignore(i)
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+
+#+LATEX_CLASS: ELSEVIER
+#+LATEX_CLASS_OPTIONS: [final,12pt]
+#+LATEX_HEADER: \usepackage[utf8]{inputenc}
+#+LATEX_HEADER: \usepackage[T1]{fontenc}
+#+LATEX_HEADER: \usepackage{lineno}
+#+LATEX_HEADER: \linenumbers
+#+LATEX_HEADER: \modulolinenumbers[1]
+#+LATEX_HEADER: \usepackage{color}
+#+LATEX_HEADER: \usepackage{hyperref,xspace}
+#+LATEX_HEADER: \usepackage[tight,footnotesize]{subfigure}
+#+LATEX_HEADER: \usepackage{tabularx}
+
+# You need at least Org 9 and Emacs 24 to make this work.
+# If you do, just type make (thanks Luka Stanisic for this).
+# You'll also need to install texlive-publishers to get acmart.cls
+
+* Elsevier configuration for org export + ignore tag (Start Here)  :noexport:
+
+#+begin_src emacs-lisp :results output :session :exports both
+(add-to-list 'load-path ".")
+(require 'ox-extra)
+(ox-extras-activate '(ignore-headlines))
+(add-to-list 'org-latex-classes
+             '("ELSEVIER"
+               "\\documentclass{elsarticle}"
+               ("\\section{%s}" . "\\section*{%s}")
+               ("\\subsection{%s}" . "\\subsection*{%s}")
+               ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+               ("\\paragraph{%s}" . "\\paragraph*{%s}")
+               ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+#+end_src
+
+#+RESULTS:
+
+* *The Paper*                                                       :ignore:
+** Latex configurations                                             :ignore:
+#+BEGIN_EXPORT latex
+\journal{Information Sciences}
+#+END_EXPORT
+** Frontpage                                                        :ignore:
+*** Authors and Affiliations                                       :ignore:
+#+BEGIN_EXPORT latex
+%% use the tnoteref command within \title for footnotes;
+%% use the tnotetext command for theassociated footnote;
+%% use the fnref command within \author or \address for footnotes;
+%% use the fntext command for theassociated footnote;
+%% use the corref command within \author for corresponding author footnotes;
+%% use the cortext command for theassociated footnote;
+%% use the ead command for the email address,
+%% and the form \ead[url] for the home page:
+%% \title{Title\tnoteref{label1}}
+%% \tnotetext[label1]{}
+%% \author{Name\corref{cor1}\fnref{label2}}
+%% \ead{email address}
+%% \ead[url]{home page}
+%% \fntext[label2]{}
+%% \cortext[cor1]{}
+%% \address{Address\fnref{label3}}
+%% \fntext[label3]{}
+
+\author[UFRGS]{Rayan Raddatz de Matos}
+\ead{rayan.raddatz@inf.ufrgs.br}
+
+
+\author[UFRGS]{Francisco Pegoraro Etcheverria}
+\ead{fpetcheverria@inf.ufrgs.br}
+
+
+\author[UFRGS]{Kenichi Brumati}
+\ead{kbrumati@inf.ufrgs.br}
+
+
+
+\author[UFRGS]{Lucas Mello Schnorr}
+\ead{schnorr@inf.ufrgs.br}
+
+\address[UFRGS]{
+Institute of Informatics, Federal University of Rio Grande do Sul -- UFRGS\\
+91501-970, Porto Alegre, RS -- Brazil\\
+}
+
+#+END_EXPORT
+
+*** Abstract                                                       :ignore:
+
+#+LaTeX: \begin{abstract}
+
+Put the abstract here.
+
+#+LaTeX: \end{abstract}
+
+*** Graphical Abstract                                             :ignore:
+
+#+latex: %\begin{graphicalabstract}
+
+# Graphical Abstract
+
+#+latex: %\end{graphicalabstract}
+
+*** Research Highlights                                            :ignore:
+
+#+latex: %\begin{highlights}
+
+# \item Research highlight 1
+# \item Research highlight 2
+
+#+latex: %\end{highlights}
+
+*** Keywords                                                       :ignore:
+
+#+latex: \begin{keyword}
+
+#+BEGIN_EXPORT latex
+%% keywords here, in the form: keyword \sep keyword
+
+%% PACS codes here, in the form: \PACS code \sep code
+
+%% MSC codes here, in the form: \MSC code \sep code
+%% or \MSC[2008] code \sep code (2000 is the default)
+#+END_EXPORT
+
+#+latex: \end{keyword}
+*** Maketitle                                                      :ignore:
+#+LaTeX: \maketitle
+** Introduction
+
+*[Context: HPC, CS and Education]*
+
+
+[Talk about tools and the problem]
+
+
+[Introduce our tool and explain why use mandelbrot]
+
+
+[Talk about contributions]
+
+
+[Other Sections]
+
+[Open science, url, etc]
+
+
+
+** Related Work
+
+[Other tools for HPC/PP teaching]
+
+[MandelBrot as a default benchmark]
+
+[Visualization as a teaching method]
+
+[Differences of our approach]
+
+
+** Material and Methods
+
+*** Application
+ [Explain the application]
+
+**** Architecture
+[The application architecture, MPI, server, etc]
+
+
+**** Client
+[User interaction, movement, zoom, etc]
+
+
+*** Visualizing parallel concepts
+
+[Granularity]
+
+[Load Balance]
+
+[Speedup and Efficiency]
+
+[Scalability]
+
+** Pedagogic Deployment and Experience
+
+** Related Work and Motivation
+\label{sec.relatedwork}
+
+
+** Your Great Contribution to Computer Science
+\label{sec.proposal}
+** Your Super Results
+** Conclusion
+** Acknowledgments                                                  :ignore:
+
+#+LATEX:\section*{Acknowledgements}
+
+Who paid for this?
+
+** References                                                        :ignore:
+
+# See next section to understand how refs.bib file is created.
+
+#+LATEX: \bibliographystyle{elsearticle-harv}
+#+LATEX: \bibliography{refs}
+
+* Bib file is here                                                 :noexport:
+
+Tangle this file with C-c C-v t
+
+#+begin_src bib :tangle refs.bib
+@article{orgmode,
+  author =	"Eric Schulte and Dan Davison and Thomas Dye and Carsten Dominik",
+  title =	"A Multi-Language Computing Environment for Literate Programming and Reproducible Research",
+  journal =	"J. of Stat. Soft.",
+  volume =	"46",
+  number =	"3",
+  day =  	"25",
+  year = 	"2012",
+  CODEN =	"JSSOBK",
+  ISSN = 	"1548-7660",
+  bibdate =	"2011-10-03",
+  accepted =	"2011-10-03",
+  acknowledgement = "",
+  submitted =	"2010-12-22",
+}
+
+@incollection{schnorr2013visualizing,
+  title={Visualizing More Performance Data Than What Fits on Your Screen},
+  author={Schnorr, Lucas M and Legrand, Arnaud},
+  booktitle={Tools for High Performance Computing 2012},
+  pages={149--162},
+  year={2013},
+  publisher={Springer}
+}
+
+
+#+end_src

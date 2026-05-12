@@ -1,0 +1,7 @@
+* Elsevier LaTeX in Org-Mode
+
+The [[https://www.elsevier.com/authors/author-schemas/latex-instructions][Elsevier LaTeX template]] in Org-Mode, just type make.  Be aware
+that this example is compatible with OrgMode 9.*. We won't recommend
+use with earlier versions.  For a detailed explanation on why and how
+to write reproducible articles using OrgMode, please visit the
+following [[https://github.com/alegrand/RR_webinars/blob/master/1_replicable_article_laboratory_notebook/index.org][page]].
