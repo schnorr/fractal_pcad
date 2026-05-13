@@ -192,19 +192,18 @@ Put the abstract here.
 
 ** Pedagogic Deployment and Experience
 
-** Related Work and Motivation
-\label{sec.relatedwork}
+** Discussion
+\label{discussion}
 
-
-** Your Great Contribution to Computer Science
-\label{sec.proposal}
-** Your Super Results
 ** Conclusion
+\label{conclusion}
+
 ** Acknowledgments                                                  :ignore:
 
 #+LATEX:\section*{Acknowledgements}
 
 Who paid for this?
+
 
 ** References                                                        :ignore:
 
