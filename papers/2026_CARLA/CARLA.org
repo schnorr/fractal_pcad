@@ -183,7 +183,6 @@ http://pcad.inf.ufrgs.br, at INF/UFRGS.
 
 #+LATEX: \bibliographystyle{splncs04}
 #+LATEX: \bibliography{biblio}
-#+LATEX: \bibliography{refs}
 
 * Emacs setup                                                      :noexport:
 
