@@ -1,0 +1,195 @@
+# -*- coding: utf-8 -*-
+# -*- mode: org -*-
+
+#+TITLE: Using Mandelbrot Set and N-Body Simulation as Pedagogic Tools in the Teaching of Parallel Computing Concepts
+#+AUTHOR: Rayan Raddatz de Matos, Francisco Pegoraro Etcheverria, Kenichi Brumati, Enzo Lisbôa Peixoto, Pedro Henrique Boniatti Colle, Lucas Mello Schnorr
+
+#+STARTUP: overview indent
+#+LANGUAGE: en
+#+OPTIONS: H:3 creator:nil timestamp:nil skip:nil toc:nil num:t ^:nil ~:~
+#+OPTIONS: author:nil title:nil date:nil
+#+TAGS: noexport(n) deprecated(d) ignore(i)
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+
+#+LATEX_CLASS: LLNCS
+#+LATEX_CLASS_OPTIONS: [runningheads]
+#+LATEX_HEADER: \usepackage[T1]{fontenc}
+#+LATEX_HEADER: \usepackage{graphicx}
+#+LATEX_HEADER: \graphicspath{{img/}}
+#+LATEX_HEADER: \usepackage{hyperref}
+
+# You need at least Org 9 and Emacs 24 to make this work.
+# If you do, just type make (thanks Luka Stanisic for this).
+
+* LLNCS configuration for org export + ignore tag (Start Here)     :noexport:
+
+#+begin_src emacs-lisp :results output :session :exports both
+(add-to-list 'load-path ".")
+(require 'ox-extra)
+(ox-extras-activate '(ignore-headlines))
+(add-to-list 'org-latex-classes
+             '("LLNCS"
+               "\\documentclass[runningheads]{llncs}\n [NO-DEFAULT-PACKAGES]\n [EXTRA]\n"
+               ("\\section{%s}" . "\\section*{%s}")
+               ("\\subsection{%s}" . "\\subsection*{%s}")
+               ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+               ("\\paragraph{%s}" . "\\paragraph*{%s}")
+               ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+#+end_src
+
+#+RESULTS:
+
+* Frontpage                                                          :ignore:
+#+BEGIN_EXPORT latex
+\title{Using Mandelbrot Set and N-Body Simulation as Pedagogic Tools in the Teaching of Parallel Computing Concepts}
+%
+\titlerunning{Mandelbrot Set and N-Body Simulation to Teach Parallel Computing}
+% If the paper title is too long for the running head, you can set
+% an abbreviated paper title here
+%
+\author{%
+Rayan Raddatz de Matos \and
+Francisco Pegoraro Etcheverria \and
+Kenichi Brumati \and
+Enzo Lisbôa Peixoto \and
+Pedro Henrique Boniatti Colle \and
+Lucas Mello Schnorr\orcidID{0000-0003-4828-9942}}
+%
+\authorrunning{R. Raddatz de Matos et al.}
+% First names are abbreviated in the running head.
+% If there are more than two authors, 'et al.' is used.
+%
+\institute{Institute of Informatics, Federal University of Rio Grande do Sul, Porto Alegre, Brazil \\
+\email{\{EMAILS,schnorr\}@inf.ufrgs.br}}
+%
+\maketitle
+#+END_EXPORT
+
+* *The Paper*                                                          :ignore:
+** Abstract                                                         :ignore:
+
+#+LaTeX: \begin{abstract}
+
+TBD
+
+#+latex: \keywords{TBD \and TBD \and TBD \and TBD.}
+
+#+LaTeX: \end{abstract}
+
+** Introduction
+
+*[Context: HPC, CS and Education]*
+
+[Talk about tools and the problem]
+
+[Introduce our tool and explain why use mandelbrot]
+
+[Talk about contributions]
+
+[Other Sections]
+
+[Open science, url, etc]
+
+*** Paper Structure                                                :ignore:
+
+This document is structured as follows. Section [[#sec.rw]] reviews
+related work, covering existing tools for HPC and parallel programming
+education, the use of Mandelbrot Set and the N-Body Simulation as
+educational tools, and visualization-based teaching
+approaches. Section [[#sec.methods]] outlines the methods and materials
+used, describing the applications architecture and their MPI-based
+design, client interaction features, and how each client visualizes
+key parallel computing concepts, including granularity, load balance,
+speedup, efficiency, and scalability. Section [[#sec.results]] presents
+the pedagogic deployment and experience gathered from using the tool
+in practice along with a discussion about the findings and
+implications of the work. Finally, Section [[#sec.conclusion]] concludes
+the document and offers perspectives on future directions.
+
+# The companion material of this work is publicly available at \COMPANION.
+
+** Related Work
+:PROPERTIES:
+:CUSTOM_ID: sec.rw
+:END:
+
+[Other tools for HPC/PP teaching]
+
+[MandelBrot as a default benchmark]
+
+[Visualization as a teaching method]
+
+[Differences of our approach]
+
+** Methods and Materials
+:PROPERTIES:
+:CUSTOM_ID: sec.methods
+:END:
+
+*** Parallel Applications Design
+**** Common Client/Server Design
+**** MandelBrot Set
+ [Explain the application]
+***** Architecture
+[The application architecture, MPI, server, etc]
+***** Client
+[User interaction, movement, zoom, etc]
+**** N-Body Simulation
+[Explain the application]
+***** Architecture
+[The application architecture, MPI, server, etc]
+***** Client
+[User interaction, movement, zoom, etc]
+*** Visualizing parallel concepts
+**** Core concepts
+
+[Coupled Problem or not]
+
+[Granularity and Problem Domain Partitioning]
+
+**** Performance Metrics
+
+[Load Balance]
+
+[Speedup and Efficiency]
+
+[Scalability]
+
+**** Table mapping parallel concepts to our choice of application 
+
+** Results and Discussion
+:PROPERTIES:
+:CUSTOM_ID: sec.results
+:END:
+
+[Pedagogic Deployment and Experience]
+
+[Discussion]
+
+** Conclusion
+:PROPERTIES:
+:CUSTOM_ID: sec.conclusion
+:END:
+
+** Acknowledgments                                                 :ignore:
+
+#+LATEX:\section*{Acknowledgements}
+
+All experiments in this work used the PCAD platform,
+http://pcad.inf.ufrgs.br, at INF/UFRGS.
+
+* References                                                         :ignore:
+
+#+LATEX: \bibliographystyle{splncs04}
+#+LATEX: \bibliography{biblio}
+#+LATEX: \bibliography{refs}
+
+* Emacs setup                                                      :noexport:
+
+# Local Variables:
+# eval: (add-to-list 'load-path ".")
+# eval: (require 'ox-extra)
+# eval: (ox-extras-activate '(ignore-headlines))
+# eval: (add-to-list 'org-latex-classes '("LLNCS" "\\documentclass[runningheads]{llncs}\n [NO-DEFAULT-PACKAGES]\n [EXTRA]\n" ("\\section{%s}" . "\\section*{%s}") ("\\subsection{%s}" . "\\subsection*{%s}") ("\\subsubsection{%s}" . "\\subsubsection*{%s}") ("\\paragraph{%s}" . "\\paragraph*{%s}") ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+# End:
