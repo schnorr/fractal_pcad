@@ -92,29 +92,37 @@ TBD
 [Other Sections]
 
 [Open science, url, etc]
+*** Context                                                        :ignore:
+Modern computing is inherently parallel. From multi-core processors in
+everyday devices to the hundreds of thousands of cores in
+leadership-class supercomputers, parallelism is no longer an advanced
+specialization: it is the default execution model. Nevertheless,
+despite this reality, parallel computational thinking remains a
+late-stage topic in most Computer Science curricula. Concepts such as
+domain partitioning, task granularity, load balancing, speedup, and
+scalability are routinely deferred to upper-division or graduate
+electives, leaving students ill-equipped to reason about the hardware
+they will inevitably program. This curricular gap begins even earlier:
+prospective students arriving from high school have virtually no
+exposure to parallel computational thinking, entering undergraduate
+programs without even an informal intuition for the concepts that
+professors will address years into the students' studies. This
+situation is particularly consequential in the context of
+High-Performance Computing (HPC), where understanding the interplay
+between problem decomposition and machine architecture is a
+prerequisite for productive scientific work.
 
-*** Paper Structure                                                :ignore:
+A well-established strategy for bridging this gap is the use of
+interactive, visually rich tools that make parallel phenomena
+tangible. When a student can directly observe how domain partitioning
+affects load balance, or watch speedup curves shift in response to
+granularity choices, abstract concepts acquire intuitive
+grounding. However, tools designed with this pedagogical goal in mind
+are scarce. Existing HPC education frameworks assume prior programming
+experience, offer limited real-time visual feedback, or present
+architectures too complex to be useful in introductory settings.
 
-This document is structured as follows. Section [[#sec.rw]] reviews
-related work, covering existing tools for HPC and parallel programming
-education, the use of Mandelbrot Set and the N-Body Simulation as
-educational tools, and visualization-based teaching
-approaches. Section [[#sec.methods]] outlines the methods and materials
-used, describing the applications architecture and their MPI-based
-design, client interaction features, and how each client visualizes
-key parallel computing concepts, including granularity, load balance,
-speedup, efficiency, and scalability. Section [[#sec.results]] presents
-the pedagogic deployment and experience gathered from using the tool
-in practice along with a discussion about the findings and
-implications of the work. Finally, Section [[#sec.conclusion]] concludes
-the document and offers perspectives on future directions.
-
-# The companion material of this work is publicly available at \COMPANION.
-
-** Related Work
-:PROPERTIES:
-:CUSTOM_ID: sec.rw
-:END:
+*** TODO [Related work discussion.]                                :ignore:
 
 [Other tools for HPC/PP teaching]
 
@@ -123,6 +131,81 @@ the document and offers perspectives on future directions.
 [Visualization as a teaching method]
 
 [Differences of our approach]
+
+*** Bridge to our strategy                                         :ignore:
+
+This context motivated the development of two open-source applications
+at the Universidade Federal do Rio Grande do Sul (UFRGS). The
+immediate driver was a concrete pedagogical event: the annual Open Day
+at UFRGS, which welcomes prospective students, mostly high schoolers
+with no formal computing background, for a first hands-on encounter
+with Computer Science. This setting imposed strict design
+constraints. The tools had to be immediately accessible, visually
+compelling, and capable of conveying non-trivial parallel-computing
+concepts during a brief, informal interaction. At the same time, the
+same tools should scale in depth, remaining useful in formal
+undergraduate instruction.
+
+*** The two applications overview                                  :ignore:
+
+The two selected problems are visually compelling, computationally
+intensive, and pedagogically complementary. The first is the
+Mandelbrot set, a canonical embarrassingly parallel problem. Each
+pixel's computation is independent, making it an ideal entry point for
+introducing domain decomposition and granularity without the cognitive
+overhead of inter-process communication. Its visual richness is a key
+asset: zooming in increases the resolution demands and redistributes
+computational work across regions, allowing users to observe and
+address load imbalance directly. The second application is an N-Body
+gravitational simulation (galaxy simulation), which presents a
+fundamentally different parallel structure. With O(N²) complexity and
+mandatory communication phases between computation steps, it exposes
+students to the challenges of tightly coupled parallelism:
+synchronization, communication overhead, and the tension between
+scalability and correctness. Together, the two problems span a
+representative spectrum of parallel computing, from trivially
+decomposable to communication-bound, with a visual interactive
+framework.
+
+The rendering and simulation processes thus become live experiments in
+parallel computational thinking. Rather than reasoning about
+parallelism through code inspection alone, users observe its effects
+directly: partition granularity across the Mandelbrot canvas, particle
+mappings for workers evolving under gravitational interaction, and
+simulation speed responding to changes in process count and
+granularity. Core concepts, such as domain decomposition, granularity,
+load balance, speedup, efficiency, and scalability, emerge naturally
+from interaction, grounded in immediate visual feedback.
+
+*** Contribution Wrap-up                                           :ignore:
+
+The main contributions of this work are as follows:
+- Two open-source interactive tools for parallel computing education,
+  built on an MPI-based architecture with real-time visualization;
+- An explicit conceptual mapping between the interactive and visual
+  elements of both tools and the core concepts of parallel
+  computational thinking, namely domain partitioning, granularity,
+  load balance, speedup, efficiency, and scalability;
+- A pedagogical experience report covering two distinct audiences —
+  Open Day visitors and undergraduate students — with qualitative
+  assessment of engagement and conceptual uptake;
+- Full public availability of source code, documentation, and
+  supporting materials at \COMPANION.
+
+*** Paper Structure                                                :ignore:
+
+This document is structured as follows. Section [[#sec.methods]] outlines
+the methods and materials used, describing the applications
+architecture and their MPI-based design, client interaction features,
+and how each client visualizes key parallel computing concepts,
+including granularity, load balance, speedup, efficiency, and
+scalability. Section [[#sec.results]] presents the pedagogic deployment
+and experience gathered from using the tool in practice along with a
+discussion about the findings and implications of the work. Finally,
+Section [[#sec.conclusion]] concludes the document and offers perspectives
+on future directions.
+
+# The companion material of this work is publicly available at \COMPANION.
 
 ** Methods and Materials
 :PROPERTIES:
