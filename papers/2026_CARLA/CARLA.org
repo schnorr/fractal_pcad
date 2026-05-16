@@ -2,7 +2,7 @@
 # -*- mode: org -*-
 
 #+TITLE: Using Mandelbrot Set and N-Body Simulation as Pedagogic Tools in the Teaching of Parallel Computing Concepts
-#+AUTHOR: Rayan Raddatz de Matos, Francisco Pegoraro Etcheverria, Kenichi Brumati, Enzo Lisbôa Peixoto, Pedro Henrique Boniatti Colle, Lucas Mello Schnorr
+#+AUTHOR: Rayan Raddatz de Matos, Francisco Pegoraro Etcheverria, Kenichi Brumati, Enzo Lisbôa Peixoto, Pedro Henrique Boniatti Colle, Otho José Sirtoli Marcondes, Lucas Mello Schnorr
 
 #+STARTUP: overview indent
 #+LANGUAGE: en
@@ -54,6 +54,7 @@ Francisco Pegoraro Etcheverria \and
 Kenichi Brumati \and
 Enzo Lisbôa Peixoto \and
 Pedro Henrique Boniatti Colle \and
+Otho José Sirtoli Marcondes \and
 Lucas Mello Schnorr\orcidID{0000-0003-4828-9942}}
 %
 \authorrunning{R. Raddatz de Matos et al.}
