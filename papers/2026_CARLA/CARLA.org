@@ -50,7 +50,7 @@
 %
 \author{%
 Rayan Raddatz de Matos\orcidID{0009-0009-9323-4730} \and
-Francisco Pegoraro Etcheverria \and
+Francisco Pegoraro Etcheverria\orcidID{0009-0004-8056-1322} \and
 Kenichi Brumati \and
 Enzo Lisbôa Peixoto \and
 Pedro Henrique Boniatti Colle \and
@@ -62,7 +62,7 @@ Lucas Mello Schnorr\orcidID{0000-0003-4828-9942}}
 % If there are more than two authors, 'et al.' is used.
 %
 \institute{Institute of Informatics, Federal University of Rio Grande do Sul, Porto Alegre, Brazil \\
-\email{\{rayan.raddatz,schnorr\}@inf.ufrgs.br}}
+\email{\{rayan.raddatz,fpetcheverria,schnorr\}@inf.ufrgs.br}}
 %
 \maketitle
 #+END_EXPORT
@@ -229,13 +229,69 @@ This document is structured as follows. Section [[#sec.rw]] surveys
 :END:
 
 *** Parallel Applications Design
+
 **** Common Client/Server Design
-**** MandelBrot Set
- [Explain the application]
+
+Both applications share a common client–server architecture, in which a graphical
+client and an MPI-based server run as separate processes, communicating over
+a TCP connection. The client is a lightweight application running on a local
+machine that simply requests work from the coordinator based on user input.
+Meanwhile, the server is a distributed MPI application executing on a dedicated
+cluster, taking responsibility for domain decomposition, process synchronization, and
+the relevant numerical calculations. This distinction is important, as it gives users
+a tangible sense that their interactions are dispatching work to a larger 
+computational system.
+
+**** Mandelbrot Set
+
+***** TODO [cite sscad fractal paper?]                          :ignore:
+
+The Mandelbrot Set is a well-known compute-bound application that is considered
+embarrassingly parallel. It consists of iteratively applying the complex function
+$f(z) = z^2 + c$, starting from $z=0$. The complex number $c$ belongs to the Mandelbrot
+set if its value does not exceed a fixed radius before an iteration limit is reached.
+The Mandelbrot Set is commonly visualized by mapping points on the 2D plane of the screen
+to points $c$ on the complex plane, with each point representing a pixel colored by the
+number of iterations until the point escapes.
+
+While all points can be computed independently, different points require a varying
+number of iterations to compute before escaping, and as such, the application presents a
+highly irregular workload. This irregularity, as well as the intuitive visualization,
+makes the Mandelbrot Set an ideal pedagogical tool for introducing students to the
+concepts of load distribution and dynamic load balancing.
+
 ***** Architecture
-[The application architecture, MPI, server, etc]
+
+The Mandelbrot server relies on a demand-driven load balancer designed around
+a coordinator-worker model. The coordinator (MPI rank 0) receives the
+user's rendering request and discretizes the fractal space into smaller payloads based
+on a specified \textit{granularity}. The granularity parameter dictates the
+size of the square blocks the workload is partitioned into for workers.
+
+A pool of MPI workers actively request work from the coordinator.
+Once a worker finishes calculating the numerical depths for its assigned block, it returns
+the response to the coordinator and immediately requests a new set of points.
+This dynamic distribution ensures that computationally light regions do not cause workers
+to idle while others are stuck processing dense regions.
+
 ***** Client
-[User interaction, movement, zoom, etc]
+
+The client is designed to be interactive and responsive, allowing users to select regions
+and zoom across the complex plane via mouse and keyboard. It operates using threads to
+handle TCP communication and UI rendering simultaneously.
+
+Crucially, the coordinator delivers results back to the client block by block. As
+these responses arrive asynchronously, the client applies a coloring function
+and incrementally updates a shared pixel buffer. When users zoom into
+computationally dense fractal regions, they visually perceive load imbalance in
+real time, as the "easy" blocks render almost instantaneously, while the "hard" blocks
+stall as the worker nodes process them. Additionally, there is an option to
+overlay a unique color for each block based on the worker id, allowing users to visualize
+which workers computed which regions of the fractal.
+
+***** TODO [mandelbrot images]                           :ignore:
+
+
 **** N-Body Simulation
 [Explain the application]
 ***** Architecture
