@@ -49,7 +49,7 @@
 % an abbreviated paper title here
 %
 \author{%
-Rayan Raddatz de Matos \and
+Rayan Raddatz de Matos\orcidID{0009-0009-9323-4730} \and
 Francisco Pegoraro Etcheverria \and
 Kenichi Brumati \and
 Enzo Lisbôa Peixoto \and
@@ -62,7 +62,7 @@ Lucas Mello Schnorr\orcidID{0000-0003-4828-9942}}
 % If there are more than two authors, 'et al.' is used.
 %
 \institute{Institute of Informatics, Federal University of Rio Grande do Sul, Porto Alegre, Brazil \\
-\email{\{EMAILS,schnorr\}@inf.ufrgs.br}}
+\email{\{rayan.raddatz,schnorr\}@inf.ufrgs.br}}
 %
 \maketitle
 #+END_EXPORT
@@ -241,7 +241,7 @@ on future directions.
 
 [Scalability]
 
-**** Table mapping parallel concepts to our choice of application 
+**** Table mapping parallel concepts to our choice of application
 
 ** Results and Discussion
 :PROPERTIES:
