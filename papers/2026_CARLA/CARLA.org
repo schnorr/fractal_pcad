@@ -12,6 +12,7 @@
 #+EXPORT_SELECT_TAGS: export
 #+EXPORT_EXCLUDE_TAGS: noexport
 
+
 #+LATEX_CLASS: LLNCS
 #+LATEX_CLASS_OPTIONS: [runningheads]
 #+LATEX_HEADER: \usepackage[T1]{fontenc}
@@ -239,14 +240,14 @@ machine that simply requests work from the coordinator based on user input.
 Meanwhile, the server is a distributed MPI application executing on a dedicated
 cluster, taking responsibility for domain decomposition, process synchronization, and
 the relevant numerical calculations. This distinction is important, as it gives users
-a tangible sense that their interactions are dispatching work to a larger 
+a tangible sense that their interactions are dispatching work to a larger
 computational system.
 
 **** Mandelbrot Set
 
 ***** TODO [cite sscad fractal paper?]                          :ignore:
 
-The Mandelbrot Set is a well-known compute-bound application that is considered
+The Mandelbrot Set cite:mandelbrot1980 is a well-known compute-bound application that is considered
 embarrassingly parallel. It consists of iteratively applying the complex function
 $f(z) = z^2 + c$, starting from $z=0$. The complex number $c$ belongs to the Mandelbrot
 set if its value does not exceed a fixed radius before an iteration limit is reached.
@@ -341,12 +342,31 @@ http://pcad.inf.ufrgs.br, at INF/UFRGS.
 #+LATEX: \bibliographystyle{splncs04}
 #+LATEX: \bibliography{biblio}
 
+* Bibfile                                                          :noexport:
+
+=C-c v t= to tangle the bibfile
+
+#+begin_src bibtex :tangle biblio.bib
+
+  @article{mandelbrot1980,
+  author = {Mandelbrot, Benoit B.},
+  title = { “Fractal Aspects of the Iteration of Z → z $\Lambda$(1-Z) for Complex $\Lambda$ and Z”},
+  journal = {Annals of the New York Academy of Sciences},
+  volume = {357},
+  number = {1},
+  pages = {249-259},
+  year = {1980}
+  }
+
+#+end_src
+
 * Emacs setup                                                      :noexport:
 
 # Local Variables:
 # eval: (add-to-list 'load-path ".")
 # eval: (require 'ox-extra)
 # eval: (ox-extras-activate '(ignore-headlines))
+# eval: (require 'org-ref)
 # eval: (add-to-list 'org-latex-classes '("LLNCS" "\\documentclass[runningheads]{llncs}\n [NO-DEFAULT-PACKAGES]\n [EXTRA]\n" ("\\section{%s}" . "\\section*{%s}") ("\\subsection{%s}" . "\\subsection*{%s}") ("\\subsubsection{%s}" . "\\subsubsection*{%s}") ("\\paragraph{%s}" . "\\paragraph*{%s}") ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
 # eval: (setq org-latex-pdf-process '("latexmk -pdf -bibtex -f -interaction=nonstopmode -output-directory=%o %f"))
 # End:
