@@ -122,7 +122,7 @@ are scarce. Existing HPC education frameworks assume prior programming
 experience, offer limited real-time visual feedback, or present
 architectures too complex to be useful in introductory settings.
 
-*** TODO [Related work discussion.]                                :ignore:
+*** TODO [Related work discussion.]                               :ignore:
 
 [Other tools for HPC/PP teaching]
 
@@ -190,22 +190,38 @@ The main contributions of this work are as follows:
   Open Day visitors and undergraduate students — with qualitative
   assessment of engagement and conceptual uptake;
 - Full public availability of source code, documentation, and
-  supporting materials at \COMPANION.
+  supporting materials at .
 
 *** Paper Structure                                                :ignore:
 
-This document is structured as follows. Section [[#sec.methods]] outlines
-the methods and materials used, describing the applications
-architecture and their MPI-based design, client interaction features,
-and how each client visualizes key parallel computing concepts,
-including granularity, load balance, speedup, efficiency, and
-scalability. Section [[#sec.results]] presents the pedagogic deployment
-and experience gathered from using the tool in practice along with a
-discussion about the findings and implications of the work. Finally,
-Section [[#sec.conclusion]] concludes the document and offers perspectives
-on future directions.
+This document is structured as follows. Section [[#sec.rw]] surveys
+  existing approaches to parallel computing education, covering
+  interactive tools, benchmark applications, and visualization-based
+  teaching methods. Section [[#sec.methods]] outlines the methods and
+  materials used, describing the applications architecture and their
+  MPI-based design, client interaction features, and how each client
+  visualizes key parallel computing concepts, including granularity,
+  load balance, speedup, efficiency, and scalability. Section
+  [[#sec.results]] presents the pedagogic deployment and experience
+  gathered from using the tool in practice along with a discussion
+  about the findings and implications of the work. Finally, Section
+  [[#sec.conclusion]] concludes the document and offers perspectives on
+  future directions.
 
 # The companion material of this work is publicly available at \COMPANION.
+
+** Related Work
+:PROPERTIES:
+:CUSTOM_ID: sec.rw
+:END:
+
+[Other tools for HPC/PP teaching]
+
+[MandelBrot as a default benchmark]
+
+[Visualization as a teaching method]
+
+[Differences of our approach]
 
 ** Methods and Materials
 :PROPERTIES:
@@ -276,4 +292,5 @@ http://pcad.inf.ufrgs.br, at INF/UFRGS.
 # eval: (require 'ox-extra)
 # eval: (ox-extras-activate '(ignore-headlines))
 # eval: (add-to-list 'org-latex-classes '("LLNCS" "\\documentclass[runningheads]{llncs}\n [NO-DEFAULT-PACKAGES]\n [EXTRA]\n" ("\\section{%s}" . "\\section*{%s}") ("\\subsection{%s}" . "\\subsection*{%s}") ("\\subsubsection{%s}" . "\\subsubsection*{%s}") ("\\paragraph{%s}" . "\\paragraph*{%s}") ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+# eval: (setq org-latex-pdf-process '("latexmk -pdf -bibtex -f -interaction=nonstopmode -output-directory=%o %f"))
 # End:
