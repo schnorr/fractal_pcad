@@ -358,23 +358,18 @@ fractal, as exemplify Figure @@latex:\ref{fig:workers}@@.
   $\mathbf{r}_{ij}$ is the displacement vector from $i$ to $j$, and $\epsilon$
   is a softening length that prevents force singularities at close
   range. This sum must be done for every body, having an inherent
-  $O(N^2)$ computational complexity per step. Unlike the Mandelbrot
-  set, where each pixel can be computed by itself, the N-Body problem
-  is tightly coupled: computing the forces on any body requires the
-  current positions of every other body. This coupling makes it
-  impossible to decompose the problem into independent tasks and makes
-  communication a important concern in any parallel
-  implementation. The simulation therefore presents a complementary
-  set of parallel computing concepts to the Mandelbrot application:
-  rather than dynamic load balancing of independent work, we introduce
-  a parallel problem with static load balancing constrained by
-  synchronization barriers and communication.
-
-  # Our application instantiates this problem as a galaxy simulation:
-  # initial conditions are generated following a physically motivated
-  # galaxy model, comprising an exponential stellar disk, a Hernquist
-  # bulge, a static dark-matter halo background potential, and a central
-  # supermassive black hole anchored at the origin.
+  $O(N^2)$ computational complexity per step. Our application
+  instantiates this problem as a galaxy simulation, where particles
+  orbit a central black hole. Unlike the Mandelbrot set, where each pixel can be
+  computed by itself, the N-Body problem is tightly coupled: computing
+  the forces on any body requires the current positions of every other
+  body. This coupling makes it impossible to decompose the problem
+  into independent tasks and makes communication a important concern
+  in any parallel implementation. The simulation therefore presents a
+  complementary set of parallel computing concepts to the Mandelbrot
+  application: rather than dynamic load balancing of independent work,
+  we introduce a parallel problem with static load balancing
+  constrained by synchronization barriers and communication.
 
 ***** Architecture
 [The application architecture, MPI, server, etc]
@@ -403,6 +398,7 @@ fractal, as exemplify Figure @@latex:\ref{fig:workers}@@.
 :END:
 
 [Pedagogic Deployment and Experience]
+[Tell about how we showed the applications: one machine vs cluster, etc]
 
 [Discussion]
 
