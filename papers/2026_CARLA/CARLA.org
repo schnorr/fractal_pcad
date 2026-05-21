@@ -264,7 +264,7 @@ until the point escapes.
 
 While all points can be computed independently, different points
 require a varying number of iterations to compute before escaping, and
-as such, the application presents a highly irregular workload. This
+as such, the application shows a highly irregular workload. This
 irregularity, as well as the intuitive visualization, makes the
 Mandelbrot Set an ideal pedagogical tool for introducing students to
 the concepts of load distribution and dynamic load balancing.
@@ -300,9 +300,9 @@ the square blocks the workload is partitioned into for workers.
 A pool of MPI workers actively request work from the coordinator.
 Once a worker finishes calculating the numerical depths for its
 assigned block, it returns the response to the coordinator and
-immediately requests a new set of points.  This dynamic distribution
-ensures that computationally light regions do not cause workers to
-idle while others are stuck processing dense regions.
+requests a new set of points.  This dynamic distribution ensures that
+computationally light regions do not cause workers to idle while
+others are stuck processing dense regions.
 
 ***** Client
 
