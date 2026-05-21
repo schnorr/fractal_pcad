@@ -13,12 +13,17 @@
 #+EXPORT_EXCLUDE_TAGS: noexport
 
 
+#+CITE_EXPORT: basic
+#+BIBLIOGRAPHY: biblio
+
 #+LATEX_CLASS: LLNCS
 #+LATEX_CLASS_OPTIONS: [runningheads]
 #+LATEX_HEADER: \usepackage[T1]{fontenc}
 #+LATEX_HEADER: \usepackage{graphicx}
 #+LATEX_HEADER: \graphicspath{{img/}}
 #+LATEX_HEADER: \usepackage{hyperref}
+#+LATEX_HEADER: \usepackage{subcaption}
+
 
 # You need at least Org 9 and Emacs 24 to make this work.
 # If you do, just type make (thanks Luka Stanisic for this).
@@ -245,53 +250,107 @@ computational system.
 
 **** Mandelbrot Set
 
-***** TODO [cite sscad fractal paper?]                          :ignore:
+***** TODO [cite sscad fractal paper?]                           :ignore:
 
-The Mandelbrot Set cite:mandelbrot1980 is a well-known compute-bound application that is considered
-embarrassingly parallel. It consists of iteratively applying the complex function
-$f(z) = z^2 + c$, starting from $z=0$. The complex number $c$ belongs to the Mandelbrot
-set if its value does not exceed a fixed radius before an iteration limit is reached.
-The Mandelbrot Set is commonly visualized by mapping points on the 2D plane of the screen
-to points $c$ on the complex plane, with each point representing a pixel colored by the
-number of iterations until the point escapes.
+The Mandelbrot Set cite:mandelbrot1980 is a well-known compute-bound
+application that is considered embarrassingly parallel. It consists of
+iteratively applying the complex function $f(z) = z^2 + c$, starting
+from $z=0$. The complex number $c$ belongs to the Mandelbrot set if
+its value does not exceed a fixed radius before an iteration limit is
+reached.  The Mandelbrot Set is commonly visualized by mapping points
+on the 2D plane of the screen to points $c$ on the complex plane, with
+each point representing a pixel colored by the number of iterations
+until the point escapes.
 
-While all points can be computed independently, different points require a varying
-number of iterations to compute before escaping, and as such, the application presents a
-highly irregular workload. This irregularity, as well as the intuitive visualization,
-makes the Mandelbrot Set an ideal pedagogical tool for introducing students to the
-concepts of load distribution and dynamic load balancing.
+While all points can be computed independently, different points
+require a varying number of iterations to compute before escaping, and
+as such, the application presents a highly irregular workload. This
+irregularity, as well as the intuitive visualization, makes the
+Mandelbrot Set an ideal pedagogical tool for introducing students to
+the concepts of load distribution and dynamic load balancing.
+
+
+#+BEGIN_EXPORT latex
+\begin{figure}[htbp]
+  \centering
+  \begin{minipage}[b]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{imgs/mandelbrot2.pdf}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[b]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{imgs/mandelbrot1.pdf}
+  \end{minipage}
+  \caption{Example vizualitation from our Mandelbrot Set application}
+  \label{fig:example}
+\end{figure}
+#+END_EXPORT
+
 
 ***** Architecture
 
-The Mandelbrot server relies on a demand-driven load balancer designed around
-a coordinator-worker model. The coordinator (MPI rank 0) receives the
-user's rendering request and discretizes the fractal space into smaller payloads based
-on a specified \textit{granularity}. The granularity parameter dictates the
-size of the square blocks the workload is partitioned into for workers.
+The Mandelbrot server relies on a demand-driven load balancer designed
+around a coordinator-worker model. The coordinator (MPI rank 0)
+receives the user's rendering request and discretizes the fractal
+space into smaller payloads based on a specified
+\textit{granularity}. The granularity parameter dictates the size of
+the square blocks the workload is partitioned into for workers.
 
 A pool of MPI workers actively request work from the coordinator.
-Once a worker finishes calculating the numerical depths for its assigned block, it returns
-the response to the coordinator and immediately requests a new set of points.
-This dynamic distribution ensures that computationally light regions do not cause workers
-to idle while others are stuck processing dense regions.
+Once a worker finishes calculating the numerical depths for its
+assigned block, it returns the response to the coordinator and
+immediately requests a new set of points.  This dynamic distribution
+ensures that computationally light regions do not cause workers to
+idle while others are stuck processing dense regions.
 
 ***** Client
 
-The client is designed to be interactive and responsive, allowing users to select regions
-and zoom across the complex plane via mouse and keyboard. It operates using threads to
-handle TCP communication and UI rendering simultaneously.
+The client is designed to be interactive and responsive, allowing
+users to select color scheme, set configurations such as granularity
+and select regions to zoom across the complex plane via mouse and
+keyboard. It operates using threads to handle TCP communication and UI
+rendering simultaneously.
 
-Crucially, the coordinator delivers results back to the client block by block. As
-these responses arrive asynchronously, the client applies a coloring function
-and incrementally updates a shared pixel buffer. When users zoom into
-computationally dense fractal regions, they visually perceive load imbalance in
-real time, as the "easy" blocks render almost instantaneously, while the "hard" blocks
-stall as the worker nodes process them. Additionally, there is an option to
-overlay a unique color for each block based on the worker id, allowing users to visualize
-which workers computed which regions of the fractal.
+Crucially, the coordinator delivers results back to the client block
+by block. As these responses arrive asynchronously, the client applies
+a coloring function and incrementally updates a shared pixel
+buffer. When users zoom into computationally dense fractal regions,
+they visually perceive load imbalance in real time, as the "easy"
+blocks render almost instantaneously, while the "hard" blocks stall as
+the worker nodes process them. Additionally, there is an option to
+overlay a unique color for each block based on the worker id, allowing
+users to visualize which workers computed which regions of the
+fractal, as exemplify Figure @@latex:\ref{fig:workers}@@.
+
+#+NAME: fig:workers
+#+BEGIN_EXPORT latex
+ \begin{figure}[htbp]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{imgs/mandelbrot-no-threads.pdf}
+      \caption{}
+      \label{fig:mandelbrot-a}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{imgs/mandelbrot-threads.pdf}
+      \caption{}
+      \label{fig:mandelbrot-b}
+    \end{subfigure}
+    \caption{(b) uses per-worker colors to show how work was distributed across (a) (2 workers, granularity 100)}
+    \label{fig:workers}
+  \end{figure}
+#+END_EXPORT
+
+
+
+
+
 
 ***** TODO [mandelbrot images]                           :ignore:
-
 
 **** N-Body Simulation
 [Explain the application]
@@ -366,7 +425,6 @@ http://pcad.inf.ufrgs.br, at INF/UFRGS.
 # eval: (add-to-list 'load-path ".")
 # eval: (require 'ox-extra)
 # eval: (ox-extras-activate '(ignore-headlines))
-# eval: (require 'org-ref)
 # eval: (add-to-list 'org-latex-classes '("LLNCS" "\\documentclass[runningheads]{llncs}\n [NO-DEFAULT-PACKAGES]\n [EXTRA]\n" ("\\section{%s}" . "\\section*{%s}") ("\\subsection{%s}" . "\\subsection*{%s}") ("\\subsubsection{%s}" . "\\subsubsection*{%s}") ("\\paragraph{%s}" . "\\paragraph*{%s}") ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
 # eval: (setq org-latex-pdf-process '("latexmk -pdf -bibtex -f -interaction=nonstopmode -output-directory=%o %f"))
 # End:
