@@ -301,7 +301,7 @@ others are stuck processing dense regions.
 
 ***** Client
 
-The client is designed to be interactive and responsive, allowing
+The graphical client is designed to be interactive and responsive, allowing
 users to select color scheme, set configurations such as granularity
 and select regions to zoom across the complex plane via mouse and
 keyboard. It operates using threads to handle TCP communication and UI
@@ -371,8 +371,25 @@ fractal, as exemplify Figure @@latex:\ref{fig:workers}@@.
   we introduce a parallel problem with static load balancing
   constrained by synchronization barriers and communication.
 
+***** TODO Add some images of the N-body simulation             :ignore:
+
 ***** Architecture
-[The application architecture, MPI, server, etc]
+
+The N-Body simulation server adopts a different parallel model that
+reflects the tightly coupled nature of gravitational
+computation. Rather than a demand-driven coordinator-worker split, all
+MPI ranks participate equally in the computation. The N particles are
+statically partitioned into equal slices across all ranks, and each
+rank computes the gravitational forces on its own slice. Since every
+particle interacts with every other, each rank must read the full
+particle array at every step. After each iteration, the workers
+exchanges information through collective operations about the updated
+positions, ensuring every process holds the complete system state
+before the next step begins. Rank 0 additionally manages TCP
+networking, receiving simulation requests from the client and
+forwarding per-iteration results back as a stream of responses.
+
+
 ***** Client
 [User interaction, movement, zoom, etc]
 *** Visualizing parallel concepts
