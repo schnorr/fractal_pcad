@@ -12,10 +12,6 @@
 #+EXPORT_SELECT_TAGS: export
 #+EXPORT_EXCLUDE_TAGS: noexport
 
-
-#+CITE_EXPORT: basic
-#+BIBLIOGRAPHY: biblio
-
 #+LATEX_CLASS: LLNCS
 #+LATEX_CLASS_OPTIONS: [runningheads]
 #+LATEX_HEADER: \usepackage[T1]{fontenc}
@@ -233,7 +229,6 @@ This document is structured as follows. Section [[#sec.rw]] surveys
 :PROPERTIES:
 :CUSTOM_ID: sec.methods
 :END:
-
 *** Parallel Applications Design
 
 **** Common Client/Server Design
@@ -353,7 +348,34 @@ fractal, as exemplify Figure @@latex:\ref{fig:workers}@@.
 ***** TODO [mandelbrot images]                           :ignore:
 
 **** N-Body Simulation
-[Explain the application]
+  The N-Body gravitational simulation is a classical problem in
+  computational physics in which $N$ bodies interact pairwise through
+  Newtonian gravity. At each time step, the gravitational acceleration
+  acting on body $i$ is computed by summing the contributions of all
+  other $N-1$ bodies: $$\mathbf{a}i = \sum{j \neq i} \frac{G ,
+  m_j}{|\mathbf{r}{ij}|^2 + \epsilon^2} \hat{\mathbf{r}}{ij}$$ where $G$ is
+  the gravitational constant, $m_j$ is the mass of body $j$,
+  $\mathbf{r}_{ij}$ is the displacement vector from $i$ to $j$, and $\epsilon$
+  is a softening length that prevents force singularities at close
+  range. This sum must be done for every body, having an inherent
+  $O(N^2)$ computational complexity per step. Unlike the Mandelbrot
+  set, where each pixel can be computed by itself, the N-Body problem
+  is tightly coupled: computing the forces on any body requires the
+  current positions of every other body. This coupling makes it
+  impossible to decompose the problem into independent tasks and makes
+  communication a important concern in any parallel
+  implementation. The simulation therefore presents a complementary
+  set of parallel computing concepts to the Mandelbrot application:
+  rather than dynamic load balancing of independent work, we introduce
+  a parallel problem with static load balancing constrained by
+  synchronization barriers and communication.
+
+  # Our application instantiates this problem as a galaxy simulation:
+  # initial conditions are generated following a physically motivated
+  # galaxy model, comprising an exponential stellar disk, a Hernquist
+  # bulge, a static dark-matter halo background potential, and a central
+  # supermassive black hole anchored at the origin.
+
 ***** Architecture
 [The application architecture, MPI, server, etc]
 ***** Client
@@ -424,6 +446,7 @@ http://pcad.inf.ufrgs.br, at INF/UFRGS.
 # Local Variables:
 # eval: (add-to-list 'load-path ".")
 # eval: (require 'ox-extra)
+# eval: (require 'org-ref)
 # eval: (ox-extras-activate '(ignore-headlines))
 # eval: (add-to-list 'org-latex-classes '("LLNCS" "\\documentclass[runningheads]{llncs}\n [NO-DEFAULT-PACKAGES]\n [EXTRA]\n" ("\\section{%s}" . "\\section*{%s}") ("\\subsection{%s}" . "\\subsection*{%s}") ("\\subsubsection{%s}" . "\\subsubsection*{%s}") ("\\paragraph{%s}" . "\\paragraph*{%s}") ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
 # eval: (setq org-latex-pdf-process '("latexmk -pdf -bibtex -f -interaction=nonstopmode -output-directory=%o %f"))
