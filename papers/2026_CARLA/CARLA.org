@@ -389,9 +389,17 @@ before the next step begins. Rank 0 additionally manages TCP
 networking, receiving simulation requests from the client and
 forwarding per-iteration results back as a stream of responses.
 
-
 ***** Client
-[User interaction, movement, zoom, etc]
+
+The graphical client provides an interactive real-time view of the galaxy
+simulation, where users can start new simulations, adjust the number
+of particles and navigate the scene by zooming and panning with the
+mouse. Particle positions are updated on screen as responses stream in
+from the server, producing a smooth animation of the galaxy evolving
+under gravity. Users can also switch the coloring mode to highlight
+which MPI process computed each particle, making the domain partition
+across workers directly visible.
+
 *** Visualizing parallel concepts
 **** Core concepts
 
