@@ -381,6 +381,30 @@ under gravity.
 
 [Granularity and Problem Domain Partitioning]
 
+**** Problem Structure and Coupling
+
+A key characteristic of any parallel application is the degree of
+coupling between its tasks, that is, how much they depend on each
+other's data during computation. At one extreme, embarrassingly
+parallel problems cite:wiksinson2005 decompose into fully independent
+tasks that require no communication. At the other, tightly coupled
+problems require frequent data exchange between tasks, making
+communication a fundamental part of the computation. The two
+applications sit at different ends of this spectrum. The Mandelbrot
+set is embarrassingly parallel: each pixel is computed independently,
+and workers never need to exchange data during computation. The N-Body
+simulation is tightly coupled: since every particle interacts with
+every other, all workers must exchange their updated positions after
+each iteration before the next step can begin. The consequence of this
+difference becomes apparent when scaling the number of work and
+workers: adding more workers to the Mandelbrot set consistently
+reduces rendering time, while the N-Body simulation gains less and
+less from additional workers as the cost of the mandatory
+synchronization grows. This gives users an immediate intuition of the
+different problems each application needs to face and the fundamental
+structural difference of the problem.
+
+
 **** Performance Metrics
 
 [Load Balance]
@@ -398,6 +422,8 @@ under gravity.
 
 [Pedagogic Deployment and Experience]
 [Tell about how we showed the applications: one machine vs cluster, etc]
+[Show that this applications can be used to show concepts, but also to
+further studies about parallelism, cite our SSCAD-WIC paper]
 
 [Discussion]
 
