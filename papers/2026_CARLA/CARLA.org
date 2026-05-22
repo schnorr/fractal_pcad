@@ -365,11 +365,6 @@ mouse. Particle positions are updated on screen as responses stream in
 from the server, producing a smooth animation of the galaxy evolving
 under gravity.
 *** Visualizing parallel concepts
-**** Core concepts
-
-[Coupled Problem or not]
-
-[Granularity and Problem Domain Partitioning]
 
 **** Problem Structure and Coupling
 
@@ -408,7 +403,7 @@ problem across all available workers. The client then makes this
 decomposition directly observable through a per-worker color mode. In
 the Mandelbrot client, the pixel grid is partitioned into square
 blocks of pixels, where the size of these blocks is controlled by the
-\textit{granularity} parameter. The user can activate a coloring mode to
+=granularity= parameter. The user can activate a coloring mode to
 view which worker computed each region of the image, as shown in
 Figure @@latex:\ref{fig:workers-m}@@. In the N-Body client,
 the particle array is divided into equal contiguous slices across
@@ -465,6 +460,62 @@ user can also view only the particles of a specific worker.
     \label{fig:workers-n}
   \end{figure}
 #+END_EXPORT
+
+
+**** Granularity
+
+Granularity refers to the size of the tasks into which a problem is
+divided. Fine-grained decomposition produces many small tasks, each
+doing little work before interacting with the coordinator, while
+coarse-grained decomposition produces fewer, larger tasks with more
+computation per interaction. The choice of granularity directly
+affects the trade-off between load balance and coordination
+overhead. In the Mandelbrot application, granularity is an explicit,
+user-controlled parameter that directly sets the side length of the
+square blocks into which the image is partitioned. Users can observe
+its effect in real time: with a coarse granularity, the canvas is
+divided into few large blocks, some of which may take much longer than
+others to compute, leaving workers idle; with a fine granularity, work
+is spread across many small blocks and the rendering progresses more
+uniformly. Figure @@latex:\ref{fig:mandelbrot-g}@@ shows a example of
+the Mandelbrot application rendering the same area with different
+granularity and representing how the work as distributed. By changing
+the =granularity= value and showing the resultant work partition, one
+can easily explain why granularity has important impacts in load
+balance and the whole computation time. The N-Body application, there
+is no equivalent parameter as the partition is always one slice per
+rank.
+
+
+#+BEGIN_EXPORT latex
+ \begin{figure}[htbp]
+    \centering
+    \begin{subfigure}[b]{0.3\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{imgs/mandelbrot-10.pdf}
+      \caption{Granularity 10}
+      \label{fig:mandelbrot-g-a}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{imgs/mandelbrot-100.pdf}
+      \caption{Granularity 100}
+      \label{fig:mandelbrot-g-b}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{imgs/mandelbrot-250.pdf}
+      \caption{Granularity 250}
+      \label{fig:mandelbrot-g-b}
+    \end{subfigure}
+    \caption{Computation per-work for different granularity configuration in a 1920x1080 screen (3 workers)}
+    \label{fig:mandelbrot-g}
+  \end{figure}
+#+END_EXPORT
+
+
 **** Performance Metrics
 
 [Load Balance]
