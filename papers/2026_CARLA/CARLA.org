@@ -405,6 +405,76 @@ different problems each application needs to face and the fundamental
 structural difference of the problem.
 
 
+**** Domain Decomposition
+
+Another foundational strategy in parallel programming is Domain
+decomposition cite:foster1995. With this strategy, the problem data is
+first divided into pieces of approximately equal size, and the
+computation follows and each worker becomes responsible for the work
+associated with its portion. When a computation requires data owned by
+another worker, communication then becomes necessary. Both
+applications' architecture allows the main coordinator to decompose the
+problem across all available workers. The client then makes this
+decomposition directly observable through a per-worker color mode. In
+the Mandelbrot client, the pixel grid is partitioned into square
+blocks of pixels, where the size of these blocks is controlled by the
+\textit{granularity} parameter. The user can activate a coloring mode to
+view which worker computed each region of the image, as shown in
+Figure @@latex:\ref{fig:workers-m}@@. In the N-Body client,
+the particle array is divided into equal contiguous slices across
+workers. This division is visible on screen when per-worker coloring
+is enabled, as shown in Figure @@latex:\ref{fig:workers-n}@@, and the
+user can also view only the particles of a specific worker.
+
+#+BEGIN_EXPORT latex
+ \begin{figure}[htbp]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{imgs/mandelbrot-no-threads.pdf}
+      \caption{}
+      \label{fig:mandelbrot-a}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{imgs/mandelbrot-threads.pdf}
+      \caption{}
+      \label{fig:mandelbrot-b}
+    \end{subfigure}
+    \caption{(b) uses per-worker colors to show how work was distributed across (a) (2 workers, granularity 100)}
+    \label{fig:workers-m}
+  \end{figure}
+#+END_EXPORT
+
+
+#+BEGIN_EXPORT latex
+ \begin{figure}[htbp]
+    \centering
+    \begin{subfigure}[b]{0.3\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{imgs/nbody-random.pdf}
+      \caption{}
+      \label{fig:nbody-a}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{imgs/nbody-workers.pdf}
+      \caption{}
+      \label{fig:nbody-b}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{imgs/nbody-worker0.pdf}
+      \caption{}
+      \label{fig:nbody-b}
+    \end{subfigure}
+    \caption{(a) shows the particles colored randomly, (b) uses per-worker colors to show how work was distributed across (a), (c) shows only the particles for worker with rank 0 (4 workers, 10000 particles)}
+    \label{fig:workers-n}
+  \end{figure}
+#+END_EXPORT
 **** Performance Metrics
 
 [Load Balance]
