@@ -254,14 +254,13 @@ its value does not exceed a fixed radius before an iteration limit is
 reached.  The Mandelbrot Set is commonly visualized by mapping points
 on the 2D plane of the screen to points $c$ on the complex plane, with
 each point representing a pixel colored by the number of iterations
-until the point escapes.
-
-While all points can be computed independently, different points
-require a varying number of iterations to compute before escaping, and
-as such, the application shows a highly irregular workload. This
-irregularity, as well as the intuitive visualization, makes the
-Mandelbrot Set an ideal pedagogical tool for introducing students to
-the concepts of load distribution and dynamic load balancing.
+until the point escapes. While all points can be computed
+independently, different points require a varying number of iterations
+to compute before escaping, and as such, the application shows a
+highly irregular workload. This irregularity, as well as the intuitive
+visualization, makes the Mandelbrot Set an ideal pedagogical tool for
+introducing students to the concepts of load distribution and dynamic
+load balancing.
 
 
 #+BEGIN_EXPORT latex
@@ -289,30 +288,28 @@ around a coordinator-worker model. The coordinator (MPI rank 0)
 receives the user's rendering request and discretizes the fractal
 space into smaller payloads based on a specified
 \textit{granularity}. The granularity parameter dictates the size of
-the square blocks the workload is partitioned into for workers.
-
-A pool of MPI workers actively request work from the coordinator.
-Once a worker finishes calculating the numerical depths for its
-assigned block, it returns the response to the coordinator and
-requests a new set of points.  This dynamic distribution ensures that
-computationally light regions do not cause workers to idle while
-others are stuck processing dense regions.
+the square blocks the workload is partitioned into for workers.  A
+pool of MPI workers actively request work from the coordinator.  Once
+a worker finishes calculating the numerical depths for its assigned
+block, it returns the response to the coordinator and requests a new
+set of points.  This dynamic distribution ensures that computationally
+light regions do not cause workers to idle while others are stuck
+processing dense regions.
 
 ***** Client
 
-The graphical client is designed to be interactive and responsive, allowing
-users to select color scheme, set configurations such as granularity
-and select regions to zoom across the complex plane via mouse and
-keyboard. It operates using threads to handle TCP communication and UI
-rendering simultaneously.
-
-Crucially, the coordinator delivers results back to the client block
-by block. As these responses arrive asynchronously, the client applies
-a coloring function and incrementally updates a shared pixel
-buffer. When users zoom into computationally dense fractal regions,
-they visually perceive load imbalance in real time, as the "easy"
-blocks render almost instantaneously, while the "hard" blocks stall as
-the worker nodes process them.
+The graphical client is designed to be interactive and responsive,
+allowing users to select color scheme, set configurations such as
+granularity and select regions to zoom across the complex plane via
+mouse and keyboard. It operates using threads to handle TCP
+communication and UI rendering simultaneously. Crucially, the
+coordinator delivers results back to the client block by block. As
+these responses arrive asynchronously, the client applies a coloring
+function and incrementally updates a shared pixel buffer. When users
+zoom into computationally dense fractal regions, they visually
+perceive load imbalance in real time, as the "easy" blocks render
+almost instantaneously, while the "hard" blocks stall as the worker
+nodes process them.
 
 **** N-Body Simulation
   The N-Body gravitational simulation is a classical problem in
@@ -320,25 +317,14 @@ the worker nodes process them.
   pairwise through Newtonian gravity. At each time step, the
   gravitational acceleration acting on body $i$ is computed by summing
   the contributions of all other $N-1$ bodies: $$\mathbf{a}_i = \sum_{j \neq i}
-  \frac{G \, m_j}{\|\mathbf{r}_{ij}\|^2 + \epsilon^2} \hat{\mathbf{r}}_{ij}$$ where
-  $G$ is the gravitational constant, $m_j$ is the mass of body $j$,
-  $\mathbf{r}_{ij}$ is the displacement vector from $i$ to $j$, and $\epsilon$
-  is a softening length that prevents force singularities at close
-  range. This sum must be done for every body, having an inherent
-  $O(N^2)$ computational complexity per step.
-
-  Our application instantiates this problem as a 2D galaxy simulation,
-  where particles orbit a central black hole. Unlike the Mandelbrot
-  set, where each pixel can be computed by itself, the N-Body problem
-  is tightly coupled: computing the forces on any body requires the
-  current positions of every other body. This coupling makes it
-  impossible to decompose the problem into independent tasks and makes
-  communication an important concern in any parallel
-  implementation. The simulation therefore presents a complementary
-  set of parallel computing concepts to the Mandelbrot application:
-  rather than dynamic load balancing of independent work, we introduce
-  a parallel problem with static load balancing constrained by
-  synchronization barriers and communication.
+  \frac{G \, m_j \, \mathbf{r}_{ij}}{(\|\mathbf{r}_{ij}\|^2 + \epsilon^2)^{3/2}}$$
+  where $G$ is the gravitational constant, $m_j$ is the mass of body
+  $j$, $\mathbf{r}_{ij} = \mathbf{r}_j - \mathbf{r}_i$ is the
+  displacement vector from $i$ to $j$, and $\epsilon$ is a softening length
+  that prevents force singularities at close range. This sum must be
+  computed for every body, yielding an inherent $O(N^2)$ computational
+  complexity per step. Our application instantiates this problem as a
+  2D galaxy simulation, where particles orbit a central black hole.
 
 
 #+BEGIN_EXPORT latex
@@ -352,19 +338,23 @@ the worker nodes process them.
 
 ***** Architecture
 
-The N-Body simulation server adopts a different parallel model that
-reflects the tightly coupled nature of gravitational
-computation. Rather than a demand-driven coordinator-worker split, all
-MPI ranks participate equally in the computation. The N particles are
-statically partitioned into equal slices across all ranks, and each
-rank computes the gravitational forces on its own slice. Since every
-particle interacts with every other, each rank must read the full
-particle array at every step. After each iteration, workers
-exchange information through collective operations about the updated
-positions, ensuring every process holds the complete system state
-before the next step begins. Rank 0 additionally manages TCP
-networking, receiving simulation requests from the client and
-forwarding per-iteration results back as a stream of responses.
+The N-Body server adopts a symmetric parallel model in which all MPI
+ranks participate equally in the gravitational computation. When a
+simulation request arrives, the coordinator (rank 0) divides the $N$
+particles into contiguous slices of approximately equal size, one per
+rank. Each rank is responsible for computing the forces and updating
+the positions of the particles in its assigned slice. However, since
+gravitational force is long-range, every rank must read the positions
+of all $N$ particles at each step and not only its own slice. After
+completing each iteration, all ranks participate in a collective
+operation that exchanges updated positions across the entire
+communicator, ensuring every rank holds the complete system state
+before the next step begins. Unlike the Mandelbrot coordinator, rank 0
+is also a worker, and not only a coordinator: it computes its own
+particle slice alongside all other ranks. It additionally manages TCP
+networking through dedicated threads, receiving simulation requests
+from the client and forwarding results back as a stream of per-rank,
+per-iteration responses.
 
 ***** Client
 
