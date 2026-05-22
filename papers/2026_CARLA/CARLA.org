@@ -276,7 +276,7 @@ the concepts of load distribution and dynamic load balancing.
     \centering
     \includegraphics[width=\textwidth]{imgs/mandelbrot1.pdf}
   \end{minipage}
-  \caption{Example vizualitation from our Mandelbrot Set application}
+  \caption{Example visualization from our Mandelbrot Set application}
   \label{fig:example}
 \end{figure}
 #+END_EXPORT
@@ -316,12 +316,12 @@ the worker nodes process them.
 
 **** N-Body Simulation
   The N-Body gravitational simulation is a classical problem in
-  computational physics cite:aarseth2003 in which $N$ bodies interact pairwise through
-  Newtonian gravity. At each time step, the gravitational acceleration
-  acting on body $i$ is computed by summing the contributions of all
-  other $N-1$ bodies: $$\mathbf{a}i = \sum{j \neq i} \frac{G ,
-  m_j}{|\mathbf{r}{ij}|^2 + \epsilon^2} \hat{\mathbf{r}}{ij}$$ where $G$ is
-  the gravitational constant, $m_j$ is the mass of body $j$,
+  computational physics cite:aarseth2003 in which $N$ bodies interact
+  pairwise through Newtonian gravity. At each time step, the
+  gravitational acceleration acting on body $i$ is computed by summing
+  the contributions of all other $N-1$ bodies: $$\mathbf{a}_i = \sum_{j \neq i}
+  \frac{G \, m_j}{\|\mathbf{r}_{ij}\|^2 + \epsilon^2} \hat{\mathbf{r}}_{ij}$$ where
+  $G$ is the gravitational constant, $m_j$ is the mass of body $j$,
   $\mathbf{r}_{ij}$ is the displacement vector from $i$ to $j$, and $\epsilon$
   is a softening length that prevents force singularities at close
   range. This sum must be done for every body, having an inherent
@@ -333,7 +333,7 @@ the worker nodes process them.
   is tightly coupled: computing the forces on any body requires the
   current positions of every other body. This coupling makes it
   impossible to decompose the problem into independent tasks and makes
-  communication a important concern in any parallel
+  communication an important concern in any parallel
   implementation. The simulation therefore presents a complementary
   set of parallel computing concepts to the Mandelbrot application:
   rather than dynamic load balancing of independent work, we introduce
@@ -345,8 +345,8 @@ the worker nodes process them.
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.5\textwidth]{imgs/nbody.pdf}
-  \caption{Example vizualitation from our N-Body Set application}
-  \label{fig:example}
+  \caption{Example visualization from our N-Body simulation}
+  \label{fig:nbody-example}
 \end{figure}
 #+END_EXPORT
 
@@ -359,8 +359,8 @@ MPI ranks participate equally in the computation. The N particles are
 statically partitioned into equal slices across all ranks, and each
 rank computes the gravitational forces on its own slice. Since every
 particle interacts with every other, each rank must read the full
-particle array at every step. After each iteration, the workers
-exchanges information through collective operations about the updated
+particle array at every step. After each iteration, workers
+exchange information through collective operations about the updated
 positions, ensuring every process holds the complete system state
 before the next step begins. Rank 0 additionally manages TCP
 networking, receiving simulation requests from the client and
@@ -396,7 +396,7 @@ and workers never need to exchange data during computation. The N-Body
 simulation is tightly coupled: since every particle interacts with
 every other, all workers must exchange their updated positions after
 each iteration before the next step can begin. The consequence of this
-difference becomes apparent when scaling the number of work and
+difference becomes apparent when scaling the number of
 workers: adding more workers to the Mandelbrot set consistently
 reduces rendering time, while the N-Body simulation gains less and
 less from additional workers as the cost of the mandatory
