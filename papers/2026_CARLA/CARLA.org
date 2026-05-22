@@ -245,7 +245,6 @@ computational system.
 
 **** Mandelbrot Set
 
-***** TODO [cite sscad fractal paper?]                           :ignore:
 
 The Mandelbrot Set cite:mandelbrot1980 is a well-known compute-bound
 application that is considered embarrassingly parallel. It consists of
@@ -313,43 +312,11 @@ a coloring function and incrementally updates a shared pixel
 buffer. When users zoom into computationally dense fractal regions,
 they visually perceive load imbalance in real time, as the "easy"
 blocks render almost instantaneously, while the "hard" blocks stall as
-the worker nodes process them. Additionally, there is an option to
-overlay a unique color for each block based on the worker id, allowing
-users to visualize which workers computed which regions of the
-fractal, as exemplify Figure @@latex:\ref{fig:workers}@@.
-
-#+NAME: fig:workers
-#+BEGIN_EXPORT latex
- \begin{figure}[htbp]
-    \centering
-    \begin{subfigure}[b]{0.48\textwidth}
-      \centering
-      \includegraphics[width=\textwidth]{imgs/mandelbrot-no-threads.pdf}
-      \caption{}
-      \label{fig:mandelbrot-a}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{0.48\textwidth}
-      \centering
-      \includegraphics[width=\textwidth]{imgs/mandelbrot-threads.pdf}
-      \caption{}
-      \label{fig:mandelbrot-b}
-    \end{subfigure}
-    \caption{(b) uses per-worker colors to show how work was distributed across (a) (2 workers, granularity 100)}
-    \label{fig:workers}
-  \end{figure}
-#+END_EXPORT
-
-
-
-
-
-
-***** TODO [mandelbrot images]                           :ignore:
+the worker nodes process them.
 
 **** N-Body Simulation
   The N-Body gravitational simulation is a classical problem in
-  computational physics in which $N$ bodies interact pairwise through
+  computational physics cite:aarseth2003 in which $N$ bodies interact pairwise through
   Newtonian gravity. At each time step, the gravitational acceleration
   acting on body $i$ is computed by summing the contributions of all
   other $N-1$ bodies: $$\mathbf{a}i = \sum{j \neq i} \frac{G ,
@@ -358,20 +325,30 @@ fractal, as exemplify Figure @@latex:\ref{fig:workers}@@.
   $\mathbf{r}_{ij}$ is the displacement vector from $i$ to $j$, and $\epsilon$
   is a softening length that prevents force singularities at close
   range. This sum must be done for every body, having an inherent
-  $O(N^2)$ computational complexity per step. Our application
-  instantiates this problem as a galaxy simulation, where particles
-  orbit a central black hole. Unlike the Mandelbrot set, where each pixel can be
-  computed by itself, the N-Body problem is tightly coupled: computing
-  the forces on any body requires the current positions of every other
-  body. This coupling makes it impossible to decompose the problem
-  into independent tasks and makes communication a important concern
-  in any parallel implementation. The simulation therefore presents a
-  complementary set of parallel computing concepts to the Mandelbrot
-  application: rather than dynamic load balancing of independent work,
-  we introduce a parallel problem with static load balancing
-  constrained by synchronization barriers and communication.
+  $O(N^2)$ computational complexity per step.
 
-***** TODO Add some images of the N-body simulation             :ignore:
+  Our application instantiates this problem as a 2D galaxy simulation,
+  where particles orbit a central black hole. Unlike the Mandelbrot
+  set, where each pixel can be computed by itself, the N-Body problem
+  is tightly coupled: computing the forces on any body requires the
+  current positions of every other body. This coupling makes it
+  impossible to decompose the problem into independent tasks and makes
+  communication a important concern in any parallel
+  implementation. The simulation therefore presents a complementary
+  set of parallel computing concepts to the Mandelbrot application:
+  rather than dynamic load balancing of independent work, we introduce
+  a parallel problem with static load balancing constrained by
+  synchronization barriers and communication.
+
+
+#+BEGIN_EXPORT latex
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.5\textwidth]{imgs/nbody.pdf}
+  \caption{Example vizualitation from our N-Body Set application}
+  \label{fig:example}
+\end{figure}
+#+END_EXPORT
 
 ***** Architecture
 
@@ -396,10 +373,7 @@ simulation, where users can start new simulations, adjust the number
 of particles and navigate the scene by zooming and panning with the
 mouse. Particle positions are updated on screen as responses stream in
 from the server, producing a smooth animation of the galaxy evolving
-under gravity. Users can also switch the coloring mode to highlight
-which MPI process computed each particle, making the domain partition
-across workers directly visible.
-
+under gravity.
 *** Visualizing parallel concepts
 **** Core concepts
 
@@ -450,15 +424,76 @@ http://pcad.inf.ufrgs.br, at INF/UFRGS.
 
 #+begin_src bibtex :tangle biblio.bib
 
-  @article{mandelbrot1980,
-  author = {Mandelbrot, Benoit B.},
-  title = { “Fractal Aspects of the Iteration of Z → z $\Lambda$(1-Z) for Complex $\Lambda$ and Z”},
-  journal = {Annals of the New York Academy of Sciences},
-  volume = {357},
-  number = {1},
-  pages = {249-259},
-  year = {1980}
+      @article{mandelbrot1980,
+      author = {Mandelbrot, Benoit B.},
+      title = { “Fractal Aspects of the Iteration of Z → z $\Lambda$(1-Z) for Complex $\Lambda$ and Z”},
+      journal = {Annals of the New York Academy of Sciences},
+      volume = {357},
+      number = {1},
+      pages = {249-259},
+      year = {1980}
+      }
+
+  @book{wiksinson2005,
+    title={Parallel Programming: Techniques and Applications Using Networked Workstations and Parallel Computers},
+    author={Wilkinson, B. and Allen, C.M.},
+    isbn={9780131918658},
+    lccn={2004044449},
+    series={An Alan R. Apt book},
+    year={2005},
+    publisher={Pearson/Prentice Hall}
   }
+
+      @inproceedings{amdahl1967,
+      author    = {Amdahl, Gene M.},
+      title     = {Validity of the Single Processor Approach to Achieving
+                   Large Scale Computing Capabilities},
+      booktitle = {Proceedings of the AFIPS Spring Joint Computer Conference},
+      year      = {1967},
+      pages     = {483--485}
+      }
+
+      @article{gustafson1988,
+      author  = {Gustafson, John L.},
+      title   = {Reevaluating {Amdahl's} Law},
+      journal = {Communications of the ACM},
+      volume  = {31},
+      number  = {5},
+      pages   = {532--533},
+      year    = {1988}
+      }
+
+      @article{cybenko1989,
+      author  = {Cybenko, George},
+      title   = {Dynamic Load Balancing for Distributed Memory Multiprocessors},
+      journal = {Journal of Parallel and Distributed Computing},
+      volume  = {7},
+      number  = {2},
+      pages   = {279--301},
+      year    = {1989}
+      }
+
+      @book{kumar2003,
+      author    = {Grama, Ananth and Gupta, Anshul and Karypis, George and Kumar, Vipin},
+      title     = {Introduction to Parallel Computing},
+      publisher = {Addison-Wesley},
+      edition   = {2nd},
+      year      = {2003}
+      }
+
+      @book{foster1995,
+      author    = {Foster, Ian},
+      title     = {Designing and Building Parallel Programs},
+      publisher = {Addison-Wesley},
+      year      = {1995}
+      }
+
+      @book{aarseth2003,
+      author    = {Aarseth, Sverre J.},
+      title     = {Gravitational N-Body Simulations: Tools and Algorithms},
+      publisher = {Cambridge University Press},
+      year      = {2003}
+      }
 
 #+end_src
 
