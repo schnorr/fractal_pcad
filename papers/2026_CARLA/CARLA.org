@@ -482,9 +482,9 @@ the Mandelbrot application rendering the same area with different
 granularity and representing how the work as distributed. By changing
 the =granularity= value and showing the resultant work partition, one
 can easily explain why granularity has important impacts in load
-balance and the whole computation time. The N-Body application, there
-is no equivalent parameter as the partition is always one slice per
-rank.
+balance and the whole computation time. There is no equivalent of this
+parameter for the N-Body application as the partition is always one
+slice per rank.
 
 
 #+BEGIN_EXPORT latex
