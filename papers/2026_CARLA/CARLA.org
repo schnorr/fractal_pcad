@@ -19,6 +19,7 @@
 #+LATEX_HEADER: \graphicspath{{img/}}
 #+LATEX_HEADER: \usepackage{hyperref}
 #+LATEX_HEADER: \usepackage{subcaption}
+#+LATEX_HEADER: \usepackage[normalem]{ulem}
 
 
 # You need at least Org 9 and Emacs 24 to make this work.
@@ -53,10 +54,10 @@
 \author{%
 Rayan Raddatz de Matos\orcidID{0009-0009-9323-4730} \and
 Francisco Pegoraro Etcheverria\orcidID{0009-0004-8056-1322} \and
-Kenichi Brumati \and
-Enzo Lisbôa Peixoto \and
 Pedro Henrique Boniatti Colle \and
-Otho José Sirtoli Marcondes \and
+Kenichi Brumati \and
+Enzo Lisbôa Peixoto\orcidID{0009-0002-7722-7943} \and
+Otho José Sirtoli Marcondes\orcidID{0009-0000-6918-9508} \and
 Lucas Mello Schnorr\orcidID{0000-0003-4828-9942}}
 %
 \authorrunning{R. Raddatz de Matos et al.}
@@ -64,7 +65,7 @@ Lucas Mello Schnorr\orcidID{0000-0003-4828-9942}}
 % If there are more than two authors, 'et al.' is used.
 %
 \institute{Institute of Informatics, Federal University of Rio Grande do Sul, Porto Alegre, Brazil \\
-\email{\{rayan.raddatz,fpetcheverria,schnorr\}@inf.ufrgs.br}}
+\email{\{rayan.raddatz, fpetcheverria, phbcolle, elpeixoto, ojsmarcondes, schnorr\}@inf.ufrgs.br}}
 %
 \maketitle
 #+END_EXPORT
@@ -95,46 +96,52 @@ TBD
 
 [Open science, url, etc]
 *** Context                                                        :ignore:
-Modern computing is inherently parallel. From multi-core processors in
-everyday devices to the hundreds of thousands of cores in
-leadership-class supercomputers, parallelism is no longer an advanced
-specialization: it is the default execution model. Nevertheless,
-despite this reality, parallel computational thinking remains a
-late-stage topic in most Computer Science curricula. Concepts such as
-domain partitioning, task granularity, load balancing, speedup, and
-scalability are routinely deferred to upper-division or graduate
-electives, leaving students ill-equipped to reason about the hardware
-they will inevitably program. This curricular gap begins even earlier:
+Modern computing is inherently parallel. With the start of the new
+millenum and the comercialization of multi-core processor, all
+sequencial computation taught became only a parte of how moderm
+computer systems work.  Since 2013, IEEE/ACM teaching guidelines
+cite:curricula_computer_2013 includes parallel and distributed
+computing (PDC) as a required knowledge for Computer Science
+curricula.  Nevertheless, despite this reality, parallel computational
+teachings remains a late-stage topic in most Computer Science
+curricula. Concepts such as domain partitioning, task granularity,
+load balancing, speedup, and scalability are routinely deferred to
+upper-division or graduate electives, leaving students ill-equipped to
+reason PDC problems.  This curricular gap begins even earlier:
 prospective students arriving from high school have virtually no
 exposure to parallel computational thinking, entering undergraduate
 programs without even an informal intuition for the concepts that
-professors will address years into the students' studies. This
-situation is particularly consequential in the context of
-High-Performance Computing (HPC), where understanding the interplay
-between problem decomposition and machine architecture is a
-prerequisite for productive scientific work.
+professors will address years into the students' studies
+cite:lara_soares_parallel_2019,libert_analysis_2019,lammers_exploring_2012.
+
+
+This situation is particularly consequential in the context of
+High-Performance Computing (HPC). Students arrive with knowledge of
+computer architecture and operating systems at the latter part of
+their undergraduate studies, but not with the fundamental concepts
+required to see the interplay between those tools and more basic
+concepts of PDC.  The construction of parallism as a way of seeing
+problems, not just a tool of the hardware is a prerequisite for
+productive scientific work.
 
 A well-established strategy for bridging this gap is the use of
 interactive, visually rich tools that make parallel phenomena
 tangible. When a student can directly observe how domain partitioning
 affects load balance, or watch speedup curves shift in response to
 granularity choices, abstract concepts acquire intuitive
-grounding. However, tools designed with this pedagogical goal in mind
-are scarce. Existing HPC education frameworks assume prior programming
-experience, offer limited real-time visual feedback, or present
-architectures too complex to be useful in introductory settings.
+grounding. Most tools focus on direct student interaction, focussing
+on the visualization of the user's inputed code
+cite:noauthor_threadmentor_nodate,carr_concurrentmentor_nodate.  Other
+work, from courses developed to students starting CS
+cite:feldhausen_minimum_2014,ghafoor_integrating_2018,conte_teaching_2020,
+focus on developing PCD thinking with the student's current knowledge
+at that point in the curricula. Most of these tools and resources can
+be graded with the framework proposited in Brown's work
+cite:brown_framework_2020. There is a clear blind spot work resources
+able to comunicate to the layman the concepts of PDC, and instigate
+the non-tech savy of the possibilities of parallel programming.
 
-*** TODO [Related work discussion.]                               :ignore:
-
-[Other tools for HPC/PP teaching]
-
-[MandelBrot as a default benchmark]
-
-[Visualization as a teaching method]
-
-[Differences of our approach]
-
-*** Bridge to our strategy                                         :ignore:
+# *** Bridge to our strategy                                         :ignore:
 
 This context motivated the development of two open-source applications
 at the Universidade Federal do Rio Grande do Sul (UFRGS). The
@@ -169,15 +176,17 @@ representative spectrum of parallel computing, from trivially
 decomposable to communication-bound, with a visual interactive
 framework.
 
-The rendering and simulation processes thus become live experiments in
-parallel computational thinking. Rather than reasoning about
-parallelism through code inspection alone, users observe its effects
-directly: partition granularity across the Mandelbrot canvas, particle
-mappings for workers evolving under gravitational interaction, and
-simulation speed responding to changes in process count and
-granularity. Core concepts, such as domain decomposition, granularity,
-load balance, speedup, efficiency, and scalability, emerge naturally
-from interaction, grounded in immediate visual feedback.
+The rendering and simulation processes then become live experiments in
+parallel computational thinking. Instead of reasoning about
+parallelism only through code inspection, users can observe its
+effects directly on the image being rendered. Partition granularity
+control how the image appears across the Mandelbrot canvas, how
+particle are mapped across workers under gravitational interaction,
+and how simulation speed responds to changes in process count and
+granularity. Students are immediately compelled to think about core
+concepts, such as domain decomposition, granularity, load balance,
+speedup, efficiency, and scalability. This topics emerge naturally from
+interaction, grounded in immediate visual feedback.
 
 *** Contribution Wrap-up                                           :ignore:
 
@@ -188,27 +197,26 @@ The main contributions of this work are as follows:
   elements of both tools and the core concepts of parallel
   computational thinking, namely domain partitioning, granularity,
   load balance, speedup, efficiency, and scalability;
-- A pedagogical experience report covering two distinct audiences —
-  Open Day visitors and undergraduate students — with qualitative
-  assessment of engagement and conceptual uptake;
+- A pedagogical experience report on Open Day visitors describing how
+  the tools were used in practice and the observations gathered from
+  these interactions;
 - Full public availability of source code, documentation, and
-  supporting materials at .
+  supporting materials at [[https://github.com/rddtz/pcad-applications][https://github.com/rddtz/pcad-applications]].
 
 *** Paper Structure                                                :ignore:
 
 This document is structured as follows. Section [[#sec.rw]] surveys
   existing approaches to parallel computing education, covering
-  interactive tools, benchmark applications, and visualization-based
-  teaching methods. Section [[#sec.methods]] outlines the methods and
-  materials used, describing the applications architecture and their
-  MPI-based design, client interaction features, and how each client
-  visualizes key parallel computing concepts, including granularity,
-  load balance, speedup, efficiency, and scalability. Section
-  [[#sec.results]] presents the pedagogic deployment and experience
-  gathered from using the tool in practice along with a discussion
-  about the findings and implications of the work. Finally, Section
-  [[#sec.conclusion]] concludes the document and offers perspectives on
-  future directions.
+  interactive tools and different teaching methods. Section
+  [[#sec.methods]] outlines the methods and materials used, describing the
+  applications architecture and their MPI-based design, client
+  interaction features, and how each client visualizes key parallel
+  computing concepts, including granularity, load balance, speedup,
+  efficiency, and scalability. Section [[#sec.results]] presents the
+  pedagogic deployment and experience gathered from using the tool in
+  practice along with a discussion about the findings and implications
+  of the work. Finally, Section [[#sec.conclusion]] concludes the document
+  and offers perspectives on future directions.
 
 # The companion material of this work is publicly available at \COMPANION.
 
@@ -217,13 +225,43 @@ This document is structured as follows. Section [[#sec.rw]] surveys
 :CUSTOM_ID: sec.rw
 :END:
 
-[Other tools for HPC/PP teaching]
+The related works for this paper where extrated from two literature
+mappings of the state of the art in the teaching of PDC
+cite:lara_soares_parallel_2019,de_jesus_oliveira_duraes_research_2020. Their
+findings reflect the common sense, the world needs more programmers
+able to work in PCD, but the curricula is not suficient to catter to
+that demand. Soares cite:lara_soares_parallel_2019, reforces the
+necessity of bringing the teaching of PDC earlier in CS curriculums.
 
-[MandelBrot as a default benchmark]
+The work of Feldhausen et al. cite:feldhausen_minimum_2014 with
+Scratch in CS0 and oureach programs shows the capacity of highly
+visual and interactive tools to bring PCD to high school students. In
+it, students coded in Scratch cite:scratch with extension to
+simulate a parallel interface. Using this to code aplications such as
+a weather simulation, allowing them to use the high level coding
+interface o Scratch with its visualization first approach to better
+understand the concepts of PCD.
 
-[Visualization as a teaching method]
-
-[Differences of our approach]
+Brown et al. cite:brown_framework_2020 developed a system to classify
+educational resources for PCD. It divides them between /Instructional/
+for use in the classroom with a professor; /Hardware/, where the
+students can execute their parallel code; and /Tools/, which resources
+are available for students to work hands-on and exercise their
+knowledge. For each of these categories, one scale was proposed to
+evaluate them. Tools such as Parallel Game cite:ontanon_designing_2017
+and DeadLock Empire Game cite:hudecek2014deadlocks are incredible
+introductory tools for early or inexperience programmers. They gamefy
+concepts of PDC, making them more aproachable for High School and
+early CS students. This translation of concepts to a visual and
+interactive medium demonstrates that tools like such are extremely
+effective in comunicating information to students, as they can engage
+them more then a simple speed up in an arbitrary code. Our work does
+not neatly fit in any of those categories, as it introduce two tools
+for instructional use. Our tools are meant to be used as a instructed
+introduction for PDC concepts. Although it could be used in advanced
+courses as a more hands-on building and evaluation exercise, as was
+done with the LU fatorization and the many ways to parallelize it
+cite:bernabe_high_2014.
 
 ** Methods and Materials
 :PROPERTIES:
@@ -561,77 +599,367 @@ http://pcad.inf.ufrgs.br, at INF/UFRGS.
 
 #+begin_src bibtex :tangle biblio.bib
 
-      @article{mandelbrot1980,
-      author = {Mandelbrot, Benoit B.},
-      title = { “Fractal Aspects of the Iteration of Z → z $\Lambda$(1-Z) for Complex $\Lambda$ and Z”},
-      journal = {Annals of the New York Academy of Sciences},
-      volume = {357},
-      number = {1},
-      pages = {249-259},
-      year = {1980}
-      }
+          @article{mandelbrot1980,
+          author = {Mandelbrot, Benoit B.},
+          title = { “Fractal Aspects of the Iteration of Z → z $\Lambda$(1-Z) for Complex $\Lambda$ and Z”},
+          journal = {Annals of the New York Academy of Sciences},
+          volume = {357},
+          number = {1},
+          pages = {249-259},
+          year = {1980}
+          }
 
-  @book{wiksinson2005,
-    title={Parallel Programming: Techniques and Applications Using Networked Workstations and Parallel Computers},
-    author={Wilkinson, B. and Allen, C.M.},
-    isbn={9780131918658},
-    lccn={2004044449},
-    series={An Alan R. Apt book},
-    year={2005},
-    publisher={Pearson/Prentice Hall}
+
+  @article{scratch,
+  author = {Resnick, Mitchel and Maloney, John and Monroy-Hern\'{a}ndez, Andr\'{e}s and Rusk, Natalie and Eastmond, Evelyn and Brennan, Karen and Millner, Amon and Rosenbaum, Eric and Silver, Jay and Silverman, Brian and Kafai, Yasmin},
+  title = {Scratch: programming for all},
+  year = {2009},
+  issue_date = {November 2009},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  volume = {52},
+  number = {11},
+  issn = {0001-0782},
+  url = {https://doi.org/10.1145/1592761.1592779},
+  doi = {10.1145/1592761.1592779},
+  abstract = {"Digital fluency" should mean designing, creating, and remixing, not just browsing, chatting, and interacting.},
+  journal = {Commun. ACM},
+  month = nov,
+  pages = {60–67},
+  numpages = {8}
   }
 
-      @inproceedings{amdahl1967,
-      author    = {Amdahl, Gene M.},
-      title     = {Validity of the Single Processor Approach to Achieving
-                   Large Scale Computing Capabilities},
-      booktitle = {Proceedings of the AFIPS Spring Joint Computer Conference},
-      year      = {1967},
-      pages     = {483--485}
+      @book{wiksinson2005,
+        title={Parallel Programming: Techniques and Applications Using Networked Workstations and Parallel Computers},
+        author={Wilkinson, B. and Allen, C.M.},
+        isbn={9780131918658},
+        lccn={2004044449},
+        series={An Alan R. Apt book},
+        year={2005},
+        publisher={Pearson/Prentice Hall}
       }
 
-      @article{gustafson1988,
-      author  = {Gustafson, John L.},
-      title   = {Reevaluating {Amdahl's} Law},
-      journal = {Communications of the ACM},
-      volume  = {31},
-      number  = {5},
-      pages   = {532--533},
-      year    = {1988}
-      }
+          @inproceedings{amdahl1967,
+          author    = {Amdahl, Gene M.},
+          title     = {Validity of the Single Processor Approach to Achieving
+                       Large Scale Computing Capabilities},
+          booktitle = {Proceedings of the AFIPS Spring Joint Computer Conference},
+          year      = {1967},
+          pages     = {483--485}
+          }
 
-      @article{cybenko1989,
-      author  = {Cybenko, George},
-      title   = {Dynamic Load Balancing for Distributed Memory Multiprocessors},
-      journal = {Journal of Parallel and Distributed Computing},
-      volume  = {7},
-      number  = {2},
-      pages   = {279--301},
-      year    = {1989}
-      }
+          @article{gustafson1988,
+          author  = {Gustafson, John L.},
+          title   = {Reevaluating {Amdahl's} Law},
+          journal = {Communications of the ACM},
+          volume  = {31},
+          number  = {5},
+          pages   = {532--533},
+          year    = {1988}
+          }
 
-      @book{kumar2003,
-      author    = {Grama, Ananth and Gupta, Anshul and Karypis, George and Kumar, Vipin},
-      title     = {Introduction to Parallel Computing},
-      publisher = {Addison-Wesley},
-      edition   = {2nd},
-      year      = {2003}
-      }
+          @article{cybenko1989,
+          author  = {Cybenko, George},
+          title   = {Dynamic Load Balancing for Distributed Memory Multiprocessors},
+          journal = {Journal of Parallel and Distributed Computing},
+          volume  = {7},
+          number  = {2},
+          pages   = {279--301},
+          year    = {1989}
+          }
 
-      @book{foster1995,
-      author    = {Foster, Ian},
-      title     = {Designing and Building Parallel Programs},
-      publisher = {Addison-Wesley},
-      year      = {1995}
-      }
+          @book{kumar2003,
+          author    = {Grama, Ananth and Gupta, Anshul and Karypis, George and Kumar, Vipin},
+          title     = {Introduction to Parallel Computing},
+          publisher = {Addison-Wesley},
+          edition   = {2nd},
+          year      = {2003}
+          }
 
-      @book{aarseth2003,
-      author    = {Aarseth, Sverre J.},
-      title     = {Gravitational N-Body Simulations: Tools and Algorithms},
-      publisher = {Cambridge University Press},
-      year      = {2003}
-      }
+          @book{foster1995,
+          author    = {Foster, Ian},
+          title     = {Designing and Building Parallel Programs},
+          publisher = {Addison-Wesley},
+          year      = {1995}
+          }
 
+          @book{aarseth2003,
+          author    = {Aarseth, Sverre J.},
+          title     = {Gravitational N-Body Simulations: Tools and Algorithms},
+          publisher = {Cambridge University Press},
+          year      = {2003}
+          }
+
+
+
+    @inproceedings{de_jesus_oliveira_duraes_research_2020,
+    	title = {Research on {Parallel} {Computing} {Teaching}: state of the art and future directions},
+    	issn = {2377-634X},
+    	shorttitle = {Research on {Parallel} {Computing} {Teaching}},
+    	url = {https://ieeexplore.ieee.org/abstract/document/9273914},
+    	doi = {10.1109/FIE44824.2020.9273914},
+    	abstract = {This research full paper identifies how the teaching of parallel computing has been developing over the years. The learning of parallel and distributed computing is fundamental for computing professionals, due to the popularization of parallel architectures. Teaching parallel computing involves theoretical concepts and the development of practical skills. Its content is dense and comprises different disciplines in computer courses. Although there is growing concerned about this type of teaching, the organization and depth of parallel computing teaching at universities change widely. The available literature on the teaching of parallel computing shows some experiences about how to teach parallel computing; however, it is not easy to determine the state of the art with challenges and gaps. Our objective is to identify essential aspects related to the teaching of parallel computing as methodologies, supporting resources, subjects taught, the satisfaction of students with learning and curricula. We carried out a systematic mapping to extract information from the literature, which is composed of three phases: planning, conduction, and reporting. We initially selected 819 papers from the Scopus, IEEE, ACM, and Google Scholar databases. After a previous analysis, we performed a full read of 94 papers. The use of different teaching methodologies appears in the publications, however, the traditional teaching methodology still is the most used. There is a small number of students in parallel computing courses, a concern of different authors. Educational software or hardware resources are reported, with software proposals corresponding to most of them. The teaching of parallel computing at the beginning of undergraduate courses appear in different papers. This paper contributes to research in teaching parallel computing, pointing out the state of the art of this area, highlighting challenges that should be the focus of investigations.},
+    	urldate = {2026-05-14},
+    	booktitle = {2020 {IEEE} {Frontiers} in {Education} {Conference} ({FIE})},
+    	author = {de Jesus Oliveira Duraes, Thiago and Sergio Lopes de Souza, Paulo and Martins, Guilherme and Jose Conte, Davi and Garcia Bachiega, Naylor and Mazzini Bruschi, Sarita},
+    	month = oct,
+    	year = {2020},
+    	note = {ISSN: 2377-634X},
+    	keywords = {Databases, Education, Educational Methods, Educational Resources, Parallel Computing, Parallel processing, Parallel programming, Proposals, Software, Systematic Re-view, Systematics},
+    	pages = {1--9},
+    }
+
+    @article{lara_soares_parallel_2019,
+    	title = {Parallel {Programming} in {Computing} {Undergraduate} {Courses}: a {Systematic} {Mapping} of the {Literature}},
+    	volume = {17},
+    	issn = {1548-0992},
+    	shorttitle = {Parallel {Programming} in {Computing} {Undergraduate} {Courses}},
+    	url = {https://ieeexplore.ieee.org/abstract/document/8932371},
+    	doi = {10.1109/TLA.2019.8932371},
+    	abstract = {Due to the current scenario in which multi-core architectures are predominant in most personal computers and servers, the knowledge of parallel programming content becomes fundamental for computer students to develop software capable of obtaining the best performance of these architectures. Considering the importance of this context, this paper presents the results of a systematic mapping of the literature related to the teaching-learning process of parallel programming in the computing programmes in three important databases: ACM, IEEE and Science Direct. The results obtained showed that in order to solve the challenges and differences found in teaching-learning parallel programming, reorganization is necessary in the undergraduate programmes. A standard for parallel programming teaching is important. This can be established by defining where and how to insert parallelism in the courses, adopting a methodology to teach the contents of parallelism in several different courses, beginning the study in the first year. The main languages, libraries, difficulties encountered and methods of classroom and distance teaching for parallel programming are presented in this paper. Distance learning is still little explored in this area of knowledge, but it can support the teaching and study of these contents.},
+    	number = {08},
+    	urldate = {2026-05-14},
+    	journal = {IEEE Latin America Transactions},
+    	author = {Lara Soares, Felipe Augusto and Neri Nobre, Cristiane and Cota de Freitas, Henrique},
+    	month = aug,
+    	year = {2019},
+    	keywords = {Parallel processing, Parallel programming, Computer aided instruction, Distributed Computing, IEEE transactions, Instruction sets, Learning, Parallel Programming, Teaching, Undergraduate},
+    	pages = {1371--1381},
+    }
+
+    @inproceedings{brown_framework_2020,
+    	title = {A {Framework} for the {Evaluation} of {Parallel} and {Distributed} {Computing} {Educational} {Resources}},
+    	url = {https://ieeexplore.ieee.org/abstract/document/9150314/citations},
+    	doi = {10.1109/IPDPSW50202.2020.00057},
+    	abstract = {This paper proposes a classification scheme for categorization of PDC educational resources. We have also proposed an evaluation framework for assessing the PDC resources. Under the proposed framework, each resource type has a set of criteria and an associated score. A PDC resource will obtain a score if evaluated under our proposed framework that is the sum of the scores of the criteria that the resource satisfies. The evaluation of whether a resource met a criterion is subjective. We have also presented our evaluation of PDC educational resources appropriate for CS1, CS2 (Computer Science 1 and 2), and DS/A (Data Structures and Algorithms) available on the web using our proposed framework.},
+    	urldate = {2026-05-14},
+    	booktitle = {2020 {IEEE} {International} {Parallel} and {Distributed} {Processing} {Symposium} {Workshops} ({IPDPSW})},
+    	author = {Brown, David W. and Ford, Vitaly and Ghafoor, Sheikh K.},
+    	month = may,
+    	year = {2020},
+    	keywords = {Education, Parallel processing, Computer science, CS1, CS2, DS/A, Graphics processing units, Handheld computers, Hardware, PDC Educational Resource, Resource Evaluation Framework, Tools},
+    	pages = {261--268},
+    }
+
+    @inproceedings{conte_teaching_2020,
+    	title = {Teaching {Parallel} {Programming} for {Beginners} in {Computer} {Science}},
+    	issn = {2377-634X},
+    	url = {https://ieeexplore.ieee.org/abstract/document/9274155},
+    	doi = {10.1109/FIE44824.2020.9274155},
+    	abstract = {This research full paper describes our experience in teaching parallel programming for students without previous knowledge of basic concepts of computing, comparing their levels of learning. The use of parallel software grew considerably in recent years due to the increasing availability of multi and many-core devices. The evolution of hardware and software resources collaborated for a remarkable computational processing power offered by parallel programs. However, parallel programming is taught usually in more advanced years of the undergraduate computer courses, due to its supposed prerequisites as sequential programming, operating systems, computer architectures and others. Postponing parallel programming teaching hinder students to apply parallelism other subjects, reducing the probability of these future professionals think on parallel solutions naturally. We executed 05 experiments teaching parallel programming subjects for 252 students. We analyzed whether students without prerequisites could learn parallel programming in the same level verified with students with prior computing knowledge. We used three different teaching methodologies: traditional, Problem Based Learning (PBL), and Team-Based Learning (TBL). The teaching and learning evaluation took into account such metrics: parallelism thinking of students, use of programming-model, correct output of the program, source-code readability and satisfaction of the students. The paper shows that it is possible to teach parallel programming to students without previous knowledge of computing, obtaining high scores and interest in such learning. Our results contribute positively to disseminate parallel programming, which is vital to extract performance from nowadays computers.},
+    	urldate = {2026-05-14},
+    	booktitle = {2020 {IEEE} {Frontiers} in {Education} {Conference} ({FIE})},
+    	author = {Conte, Davi Jose and de Souza, Paulo Sergio Lopes and Martins, Guilherme and Bruschi, Sarita Mazzini},
+    	month = oct,
+    	year = {2020},
+    	note = {ISSN: 2377-634X},
+    	keywords = {Education, Parallel processing, Parallel programming, Software, Learning, Parallel Programming, Teaching, Computer architecture, Computer Science Teaching, Measurement, Programming profession},
+    	pages = {1--9},
+    }
+
+    @article{curricula_computer_2013,
+    	title = {Computer {Science} {Curricula} 2013: {Curriculum} {Guidelines} for {Undergraduate} {Degree} {Programs} in {Computer} {Science}},
+    	issn = {978-1-4503-2309-3},
+    	shorttitle = {Computer {Science} {Curricula} 2013},
+    	doi = {10.1145/2534860},
+    	author = {Curricula, Association},
+    	month = jan,
+    	year = {2013},
+    }
+
+    @inproceedings{desprez_experiences_2017,
+    	address = {Cham},
+    	title = {Experiences with {Teaching} a {Second} {Year} {Distributed} {Computing} {Course}},
+    	volume = {10104},
+    	isbn = {978-3-319-58942-8 978-3-319-58943-5},
+    	url = {https://link.springer.com/10.1007/978-3-319-58943-5_3},
+    	doi = {10.1007/978-3-319-58943-5_3},
+    	abstract = {The proliferation of parallel and distributed computing in the last years has led to calls for the early introduction of parallel and distributed computing in the undergraduate curriculum arguing that the topic should and can be offered at different levels but some basic knowledge must be acquired by every computer science graduate. However, there is no widespread agreement on how this can be achieved. This paper contributes to the debate by presenting the approach and experiences from designing and teaching a second year undergraduate distributed computing course that has been running for a decade in the School of Computer Science of the University of Manchester. The course evolved to follow an approach which presents material in a way that attempts to emphasize the importance of four key pillars of abstraction, which underpin the design and management of modern distributed systems, namely: trade-offs, failures, concurrency and synchronization, performance. The paper presents the details of this approach arguing that the use of suitable abstractions allows for a rewarding learning experience that helps students familiarize with and appreciate the challenges of distributed computing at an early stage.},
+    	language = {en},
+    	urldate = {2026-05-20},
+    	publisher = {Springer International Publishing},
+    	author = {Sakellariou, Rizos},
+    	editor = {Desprez, Frédéric and Dutot, Pierre-François and Kaklamanis, Christos and Marchal, Loris and Molitorisz, Korbinian and Ricci, Laura and Scarano, Vittorio and Vega-Rodríguez, Miguel A. and Varbanescu, Ana Lucia and Hunold, Sascha and Scott, Stephen L. and Lankes, Stefan and Weidendorfer, Josef},
+    	year = {2017},
+    	doi = {10.1007/978-3-319-58943-5_3},
+    	note = {Book Title: Euro-Par 2016: Parallel Processing Workshops
+    Series Title: Lecture Notes in Computer Science},
+    	pages = {28--37},
+    }
+
+    @article{bernabe_high_2014,
+    	series = {2014 {International} {Conference} on {Computational} {Science}},
+    	title = {A {High} {Performance} {Computing} {Course} {Guided} by the {LU} {Factorization}},
+    	volume = {29},
+    	issn = {1877-0509},
+    	url = {https://www.sciencedirect.com/science/article/pii/S1877050914003081},
+    	doi = {10.1016/j.procs.2014.05.131},
+    	abstract = {This paper presents an experience of Problem-based learning in a High Performance Computing course. The course is part of the specialization in High Performance Architectures and Supercomputing on a Master in New Technologies in Computer Science. It is supposed the students have a basic knowledge of Parallel Programming, but previous studies and the place where they were taken mean the group is heterogeneous. The Problem-based learning approach therefore has to facilitate the individual development and supervision of the students. The course focuses on HPC, matrix computation, parallel libraries, heterogeneous computing and scientific applications of parallelism. The students work on the different aspects of the course using the LU factorization, developing their own implementations, using different libraries, combining different levels of parallelism and conducting experiments in a small heterogeneous cluster composed of multicores of different characteristics and with GPU of different types.},
+    	urldate = {2026-05-20},
+    	journal = {Procedia Computer Science},
+    	author = {Bernabé, Gregorio and Cuenca, Javier and García, Luis-Pedro and Giménez, Domingo and Rivas-Gomez, Sergio},
+    	month = jan,
+    	year = {2014},
+    	keywords = {GPU, High Performance Computing, Master's studies, multicore, Problem-based learning},
+    	pages = {1446--1457},
+    }
+
+    @misc{noauthor_threadmentor_nodate,
+    	title = {{ThreadMentor}: a pedagogical tool for multithreaded programming: {Journal} on {Educational} {Resources} in {Computing}: {Vol} 3, {No} 1},
+    	url = {https://dl.acm.org/doi/10.1145/958795.958796},
+    	urldate = {2026-05-20},
+    }
+
+    @article{carr_concurrentmentor_nodate,
+    	title = {{ConcurrentMentor}: {A} {Visualization} {System} for {Distributed} {Programming} {Education}},
+    	abstract = {The study of distributed systems is increasingly fundamental to a Computer Science curriculum. Yet, the design of applications to run over distributed systems is complex and mastery of fundamental concepts is challenging for students. In order to assist in distributed systems instruction, we have developed ConcurrentMentor, a visualization system for distributed programming. This system reveals the behavior of a distributed program and its underlying communication protocols while the program executes. Input to the visualization system is generated by an accompanying communication library that closely follows abstractions of communication found in distributed systems literature. No program instrumentation is required.},
+    	language = {en},
+    	author = {Carr, Steve and Fang, Changpeng and Jozwowski, Tim and Mayo, Jean and Shene, Ching-Kuang},
+    }
+
+    @inproceedings{rague_measuring_2011,
+    	title = {Measuring {CS1} perceptions of parallelism},
+    	issn = {2377-634X},
+    	url = {https://ieeexplore.ieee.org/document/6142705},
+    	doi = {10.1109/FIE.2011.6142705},
+    	abstract = {Educators in Computer Science (CS) generally agree that teaching concurrency can be difficult. CS programs typically offer parallel and distributed computing topics as advanced courses. A potential alternative approach is to provide instruction on parallelism early in the undergraduate curriculum, emphasizing conceptual design rather than implementation issues. This introduction of “parallel-thinking” to beginning CS undergraduates represents an innovation and significant extension to existing standard Computer Science curricula. The research described in this paper investigated the feasibility of integrating parallel computing concepts into a first-year CS course. To quantitatively assess student comprehension of parallel computing, an experimental two-factor mixed group design educational study was conducted to evaluate a control group and two instructional interventions: (1) lecture only, and (2) lecture with laboratory work using a software visualization Parallel Analysis Tool (PAT) specifically designed for this project. The Perceptions of Parallelism Survey (PoPS), a new evaluation instrument developed for this study and modeled after the Force Concept Inventory (FCI), was used to measure student learning. The results from this educational study show a statistically significant main effect among the repeated measures. PoPS results measured during the ninth week of the course reveal that performance levels remained high compared to pre-course performance scores.},
+    	urldate = {2026-05-20},
+    	booktitle = {2011 {Frontiers} in {Education} {Conference} ({FIE})},
+    	author = {Rague, Brian},
+    	month = oct,
+    	year = {2011},
+    	note = {ISSN: 2377-634X},
+    	keywords = {Parallel processing, Programming profession, Assessment, Concurrent computing, Concurrent Programming, Content Inventory, Educational institutions, Instruments, Parallelism},
+    	pages = {S3E--1--S3E--6},
+    }
+
+    @inproceedings{ghafoor_integrating_2018,
+    	address = {Cham},
+    	title = {Integrating {Parallel} {Computing} in {Introductory} {Programming} {Classes}: {An} {Experience} and {Lessons} {Learned}},
+    	isbn = {978-3-319-75178-8},
+    	shorttitle = {Integrating {Parallel} {Computing} in {Introductory} {Programming} {Classes}},
+    	doi = {10.1007/978-3-319-75178-8_18},
+    	abstract = {Parallel and distributed computing (PDC) has become ubiquitous to the extent that even common users depend on parallel programming. This points to the need for every programmer to understand how parallelism and distributed programming affect problem solving, teaching only traditional sequential programming is no longer sufficient. To address the rapidly widening gap between emerging highly-parallel computer architectures and the sequential programming approach taught in traditional CS/CE courses, the Computer Science Department at Tennessee Technological University has integrated PDC into their introductory programming course sequence. This paper presents our implementation efforts, experience and lessons learned, as well as preliminary evaluation results.},
+    	language = {en},
+    	booktitle = {Euro-{Par} 2017: {Parallel} {Processing} {Workshops}},
+    	publisher = {Springer International Publishing},
+    	author = {Ghafoor, Sheikh and Brown, David W. and Rogers, Mike},
+    	editor = {Heras, Dora B. and Bougé, Luc and Mencagli, Gabriele and Jeannot, Emmanuel and Sakellariou, Rizos and Badia, Rosa M. and Barbosa, Jorge G. and Ricci, Laura and Scott, Stephen L. and Lankes, Stefan and Weidendorfer, Josef},
+    	year = {2018},
+    	keywords = {Introductory programming, Parallel and distributed computing, Undergraduate education},
+    	pages = {216--226},
+    }
+
+    @inproceedings{lammers_exploring_2012,
+    	title = {Exploring student understanding of parallelism using concept maps},
+    	issn = {2377-634X},
+    	url = {https://ieeexplore.ieee.org/document/6462511},
+    	doi = {10.1109/FIE.2012.6462511},
+    	abstract = {This work explores the conceptual understanding attained by students in the area of parallel computing. Parallelism is continuing to grow as an important topic area in computer engineering and computer science. Even as it increases in popularity, only a limited amount of research has been done to determine how well students construct their knowledge of the field. This work aims to begin exploring the structure of parallel computing as understood by undergraduate computer engineering students. A small group of students was selected to create concept maps that illustrate their understanding. These maps have been used in many different areas of science and engineering. The maps were then analyzed and compared to a reference concept map developed by a group of computer engineering faculty. The results of this analysis revealed that students in this sample demonstrated a limited knowledge of parallelism and concurrency through the organization of their concept maps. The analysis of the concept maps also provides evidence that there is a moderate level of understanding of the challenges to implementing and controlling concurrency. However, the linkages created in the maps reveal students' misinterpretation of the goals of exploiting parallelism.},
+    	urldate = {2026-05-20},
+    	booktitle = {2012 {Frontiers} in {Education} {Conference} {Proceedings}},
+    	author = {Lammers, Greg and Brown, Cordelia M.},
+    	month = oct,
+    	year = {2012},
+    	note = {ISSN: 2377-634X},
+    	keywords = {Parallel processing, Computer architecture, Concurrent computing, Educational institutions, Computers, concept maps, conceptual understanding, concurrency, Parallel computing, parallelism, Programming},
+    	pages = {1--5},
+    }
+
+    @inproceedings{libert_analysis_2019,
+    	address = {New York, NY, USA},
+    	series = {{EASEAI} 2019},
+    	title = {Analysis of students’ preconceptions of concurrency},
+    	isbn = {978-1-4503-6852-0},
+    	url = {https://dl.acm.org/doi/10.1145/3340435.3342721},
+    	doi = {10.1145/3340435.3342721},
+    	abstract = {In previous literature, several authors have recommended teaching concurrent programming, as the current evolution of IT involves concurrency. However, in order to teach concurrent programming properly, in a constructivist educational learning framework, we need to know the preconceptions students have regarding it. In this paper, we report on the results found from data collected through a questionnaire submitted in secondary schools to 101 students aged from 12 to 15. We detail the preconceptions of concurrent programming we extracted from the questionnaire answers and formulate recommendations toward creating a course teaching concurrent programming.},
+    	urldate = {2026-05-19},
+    	booktitle = {Proceedings of the 1st {ACM} {SIGSOFT} {International} {Workshop} on {Education} through {Advanced} {Software} {Engineering} and {Artificial} {Intelligence}},
+    	publisher = {Association for Computing Machinery},
+    	author = {Libert, Cédric and Vanhoof, Wim},
+    	month = aug,
+    	year = {2019},
+    	pages = {9--12},
+    }
+
+    @inproceedings{feldhausen_minimum_2014,
+    	address = {New York, NY, USA},
+    	series = {{XSEDE} '14},
+    	title = {Minimum {Time}, {Maximum} {Effect}: {Introducing} {Parallel} {Computing} in {CS0} and {STEM} {Outreach} {Activities} {Using} {Scratch}},
+    	isbn = {978-1-4503-2893-7},
+    	shorttitle = {Minimum {Time}, {Maximum} {Effect}},
+    	url = {https://dl.acm.org/doi/10.1145/2616498.2616568},
+    	doi = {10.1145/2616498.2616568},
+    	abstract = {This paper presents our experiences and outcomes using Scratch to teach parallel computing concepts to students just learning about computer science. We presented versions of this material to middle school and high school girls during a STEM workshop and then to undergraduate university students enrolled in an introductory computer science course. Using the Scratch development environment, students are able to build, modify and observe the changes in the performance of applications which utilize multi-threaded, concurrent, operations. This includes scenarios which involve more advanced topics such as race conditions and mutex locks.Developing these materials has allowed us to introduce these concepts in a programming environment much earlier than we have previously, giving instructors in down-stream courses the ability to build upon this early exposure. Survey results show that this approach resulted in a significant increase in both of these areas. For example, the number of students in our CS0 course who felt they could apply parallel programming to other problems using Scratch more than doubled, rising from 25 to 55 (out of 61 students that responded to both surveys). Likewise, the number of students who felt they understood what parallel programming means rose from 27 to 56. These results were achieved after just one class period. Similarly, 27 of the 37 girls responding to the workshop survey felt that they were capable of learning to write computer programs and 22 of 41 indicated they had an interest in a job using HPC to solve problems.},
+    	urldate = {2026-05-19},
+    	booktitle = {Proceedings of the 2014 {Annual} {Conference} on {Extreme} {Science} and {Engineering} {Discovery} {Environment}},
+    	publisher = {Association for Computing Machinery},
+    	author = {Feldhausen, Russell and Bell, Scott and Andresen, Daniel},
+    	month = jul,
+    	year = {2014},
+    	pages = {1--7},
+    }
+
+    @article{brodanac_has_2022,
+    	title = {Has the time come to teach parallel programming to secondary school students?},
+    	volume = {8},
+    	issn = {2405-8440},
+    	url = {https://www.cell.com/heliyon/abstract/S2405-8440(21)02765-1},
+    	doi = {10.1016/j.heliyon.2021.e08662},
+    	abstract = {{\textless}h2{\textgreater}Abstract{\textless}/h2{\textgreater}{\textless}p{\textgreater}Today, almost every computer has at least one multicore processor. To remain in stride with hardware developments, numerous university faculties oriented towards computer science have introduced parallel programming as an integral part of their courses. The question is, given the availability of parallel architectures, and considering future trends in programming, whether it is time for parallel programming to also become an integral part of the informatics curriculum in secondary schools? This paper presents research conducted in three schools in Croatia over several school years. A total of 162 students from the science-mathematic high schools participated in the research. The results, based on student evaluations, suggest that this course content is equally interesting and somewhat more difficult, and perceived as equally useful as other course content taught to students. Moreover, the findings indicate that students can understand and later apply some of the fundamental concepts of parallel programming.{\textless}/p{\textgreater}},
+    	language = {English},
+    	number = {1},
+    	urldate = {2026-05-20},
+    	journal = {Heliyon},
+    	publisher = {Elsevier},
+    	author = {Brođanac, Predrag and Novak, Josip and Boljat, Ivica},
+    	month = jan,
+    	year = {2022},
+    }
+
+    @inproceedings{geist_problem-based_2015,
+    	address = {New York, NY, USA},
+    	series = {{EduHPC} '15},
+    	title = {A problem-based learning approach to {GPU} computing},
+    	isbn = {978-1-4503-3961-2},
+    	url = {https://dl.acm.org/doi/10.1145/2831425.2833197},
+    	doi = {10.1145/2831425.2833197},
+    	abstract = {Compared to CPUs, modern GPUs exhibit a high ratio of computing performance per watt, and so current supercomputer designs often include multiple racks of GPUs in order to achieve high teraflop counts at minimal energy cost. GPU programming is thus becoming increasingly important, and yet it remains a challenging task. This paper describes a course in GPU programming for senior undergraduates and first-year graduates that has been taught at Clemson University annually since 2010. The course uses problem-based learning, with focus on a large, real-world problem, in particular, a system for parallel solution of partial differential equations. Although the system for solving PDEs is useful in its own right, the problem is used as a vehicle in which to explore design issues that face those attempting to achieve new levels of performance on architectures.},
+    	urldate = {2026-05-21},
+    	booktitle = {Proceedings of the {Workshop} on {Education} for {High}-{Performance} {Computing}},
+    	publisher = {Association for Computing Machinery},
+    	author = {Geist, Robert and Levine, Joshua A. and Westall, James},
+    	month = nov,
+    	year = {2015},
+    	pages = {1--8},
+    }
+
+    @inproceedings{ontanon_designing_2017,
+    author = {Onta\~{n}\'{o}n, Santiago and Zhu, Jichen and Smith, Brian K. and Char, Bruce and Freed, Evan and Furqan, Anushay and Howard, Michael and Nguyen, Anna and Patterson, Justin and Valls-Vargas, Josep},
+    title = {Designing Visual Metaphors for an Educational Game for Parallel Programming},
+    year = {2017},
+    isbn = {9781450346566},
+    publisher = {Association for Computing Machinery},
+    address = {New York, NY, USA},
+    url = {https://doi.org/10.1145/3027063.3053253},
+    doi = {10.1145/3027063.3053253},
+    abstract = {Modern computing is increasingly handled in a parallel fashion, however, little is known about how individuals learn parallel programming. This paper focuses on the design of an educational game called Parallel, designed for both teaching parallel programming education for CS undergraduate curricula, as well as for gathering insights into how students learn, and solve parallel programming problems. Specifically, we focus on the key challenge of choosing the appropriate metaphors in order to facilitate transference between parallel programming and the game. In this paper, we describe our design methodology and results from our preliminary user evaluations.},
+    booktitle = {Proceedings of the 2017 CHI Conference Extended Abstracts on Human Factors in Computing Systems},
+    pages = {2818–2824},
+    numpages = {7},
+    keywords = {educational games, parallel programming, visual metaphors},
+    location = {Denver, Colorado, USA},
+    series = {CHI EA '17}
+    }
+
+ @misc{hudecek2014deadlock,
+      author       = {Hude{\v{c}}ek, Petr and Pokorn{\'y}, Michal},
+      title        = {{The Deadlock Empire}: Slay dragons, master concurrency!},
+      howpublished = {\url{https://deadlockempire.github.io}},
+      year         = {2014},
+      note         = {Accessed: 2026}
+    }
 #+end_src
 
 * Emacs setup                                                      :noexport:
@@ -641,6 +969,6 @@ http://pcad.inf.ufrgs.br, at INF/UFRGS.
 # eval: (require 'ox-extra)
 # eval: (require 'org-ref)
 # eval: (ox-extras-activate '(ignore-headlines))
-# eval: (add-to-list 'org-latex-classes '("LLNCS" "\\documentclass[runningheads]{llncs}\n [NO-DEFAULT-PACKAGES]\n [EXTRA]\n" ("\\section{%s}" . "\\section*{%s}") ("\\subsection{%s}" . "\\subsection*{%s}") ("\\subsubsection{%s}" . "\\subsubsection*{%s}") ("\\paragraph{%s}" . "\\paragraph*{%s}") ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
 # eval: (setq org-latex-pdf-process '("latexmk -pdf -bibtex -f -interaction=nonstopmode -output-directory=%o %f"))
+# eval: (add-to-list 'org-latex-classes '("LLNCS" "\\documentclass[runningheads]{llncs}\n [NO-DEFAULT-PACKAGES]\n [EXTRA]\n" ("\\section{%s}" . "\\section*{%s}") ("\\subsection{%s}" . "\\subsection*{%s}") ("\\subsubsection{%s}" . "\\subsubsection*{%s}") ("\\paragraph{%s}" . "\\paragraph*{%s}") ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
 # End:
