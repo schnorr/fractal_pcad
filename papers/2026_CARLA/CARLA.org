@@ -155,11 +155,11 @@ work, from courses developed for students beginning their CS studies
 cite:feldhausen_minimum_2014,ghafoor_integrating_2018,conte_teaching_2020,
 focus on developing PDC thinking with the student's current knowledge
 at that point in the curricula. Most of these tools and resources can
-be graded with the framework proposed in Brown's work
-cite:brown_framework_2020. However, there is a blind spot in existing resources
-that are able to communicate to the layman the concepts of PDC, and
-instigate those with no prior computing background the possibilities
-of parallel programming.
+be evaluated using the framework proposed in Brown's work
+cite:brown_framework_2020. However, existing resources largely overlook the challenge of
+communicating PDC concepts to a general audience and of inspiring those
+with no prior computing background to explore the possibilities of
+parallel programming.
 
 # *** Bridge to our strategy :ignore:
 
@@ -376,9 +376,9 @@ processing dense regions.
 ***** Client
 
 The graphical client is designed to be interactive and responsive,
-allowing users to select color scheme, set configurations such as
-granularity and select regions to zoom across the complex plane via
-mouse and keyboard. It operates using threads to handle TCP
+allowing users to select a color scheme, configure parameters such as
+granularity, and zoom into regions of the complex plane via mouse and
+keyboard. It operates using threads to handle TCP
 communication and UI rendering simultaneously. Crucially, the
 coordinator delivers results back to the client block by block. As
 these responses arrive asynchronously, the client applies a coloring
@@ -463,9 +463,9 @@ difference becomes apparent when scaling the number of workers: adding
 more workers to the Mandelbrot set consistently reduces rendering
 time, while the N-Body simulation gains less and less from additional
 workers as the cost of the mandatory synchronization grows. This gives
-users an immediate intuition about the different problems each
-application needs to face and the fundamental structural difference of
-the problems.
+users an immediate intuition about the different challenges each
+application needs to face and the fundamental structural differences
+between the two problems.
 
 **** Domain Decomposition
 
@@ -808,8 +808,8 @@ application and walked them through the concepts.
 
 The most effective pedagogical sequence that emerged from both
 deployments was to first show the application running locally with few
-workers, showing how the computation can get visibly slow and then
-switch to the full cluster configuration. Using the per-worker
+workers, demonstrating how the computation can become visibly slow, and
+then switch to the full cluster configuration. Using the per-worker
 coloring mode, we demonstrated how each additional worker takes on a
 smaller share of the same problem, directly connecting the visual
 partition to faster execution. This progression from slow to fast,
