@@ -404,7 +404,7 @@ stall as the worker nodes process them.
 \begin{figure}[htbp]
   \centering
   \fbox{\includegraphics[width=0.5\textwidth]{imgs/nbody-white.pdf}}
-  \caption{Example visualization from our N-Body simulation}
+  \caption{Example visualization from our N-Body simulation.}
   \label{fig:nbody-example}
 \end{figure}
 #+END_EXPORT
