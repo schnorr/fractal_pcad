@@ -226,43 +226,52 @@ This document is structured as follows. Section [[#sec.rw]] surveys
 :CUSTOM_ID: sec.rw
 :END:
 
-The related works for this paper where extrated from two literature
+The related works for this paper were extracted from two literature
 mappings of the state of the art in the teaching of PDC
 cite:lara_soares_parallel_2019,de_jesus_oliveira_duraes_research_2020. Their
-findings reflect the common sense, the world needs more programmers
-able to work in PCD, but the curricula is not suficient to catter to
-that demand. Soares cite:lara_soares_parallel_2019, reforces the
-necessity of bringing the teaching of PDC earlier in CS curriculums.
+findings reflect a shared consensus: the world needs more programmers
+able to work in PDC, but the curricula is not sufficient to cater to
+that demand. Soares cite:lara_soares_parallel_2019 reinforces the
+necessity of bringing the teaching of PDC earlier in CS curriculum.
 
 The work of Feldhausen et al. cite:feldhausen_minimum_2014 with
-Scratch in CS0 and oureach programs shows the capacity of highly
-visual and interactive tools to bring PCD to high school students. In
-it, students coded in Scratch cite:scratch with extension to
-simulate a parallel interface. Using this to code aplications such as
-a weather simulation, allowing them to use the high level coding
-interface o Scratch with its visualization first approach to better
-understand the concepts of PCD.
+Scratch in CS0 and outreach programs shows the capacity of highly
+visual and interactive tools to bring PDC to high school students. In
+it, students coded in Scratch cite:scratch with extensions to
+simulate a parallel interface. Students used this to code applications
+such as a weather simulation, using Scratch's high level coding
+interface and its visualization-first approach to better understand
+the concepts of PDC.
 
 Brown et al. cite:brown_framework_2020 developed a system to classify
-educational resources for PCD. It divides them between /Instructional/
+educational resources for PDC. It divides them between /Instructional/
 for use in the classroom with a professor; /Hardware/, where the
 students can execute their parallel code; and /Tools/, which resources
 are available for students to work hands-on and exercise their
 knowledge. For each of these categories, one scale was proposed to
 evaluate them. Tools such as Parallel Game cite:ontanon_designing_2017
-and DeadLock Empire Game cite:hudecek2014deadlocks are incredible
-introductory tools for early or inexperience programmers. They gamefy
-concepts of PDC, making them more aproachable for High School and
+and DeadLock Empire Game cite:hudecek2014deadlock are effective
+introductory tools for early or inexperienced programmers. They gamefy
+concepts of PDC, making them more approachable for High School and
 early CS students. This translation of concepts to a visual and
 interactive medium demonstrates that tools like such are extremely
-effective in comunicating information to students, as they can engage
-them more then a simple speed up in an arbitrary code. Our work does
-not neatly fit in any of those categories, as it introduce two tools
-for instructional use. Our tools are meant to be used as a instructed
-introduction for PDC concepts. Although it could be used in advanced
-courses as a more hands-on building and evaluation exercise, as was
-done with the LU fatorization and the many ways to parallelize it
-cite:bernabe_high_2014.
+effective in communicating information to students, as they can engage
+them more than a simple speed up in an arbitrary code. While some
+tools focus on visualizing user-written code and others engage
+students through programming exercises, our applications take a
+different stance: rather than teaching how to write parallel programs,
+they aim to instill parallel thinking through direct observation of
+live computations. By adjusting parameters and watching
+decompositions, load distributions, and performance evolve in real
+time, users develop intuition for PDC concepts without any programming
+prerequisite. This focus on visual understanding of the concepts makes
+our tools well-suited for outreach demonstrations targeting audiences
+with no computing background. At the same time, they carry enough
+depth to support further study in formal undergraduate courses as was
+done with the LU factorization as a vehicle to explore the many ways
+to parallelize a problem cite:bernabe_high_2014, and as we ourselves
+have done in a deeper analysis of the Mandelbrot application
+cite:sscad_estendido.
 
 ** Methods and Materials
 :PROPERTIES:
