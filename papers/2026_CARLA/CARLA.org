@@ -610,10 +610,93 @@ slice per rank.
   N-Body simulation, load balance is near-perfect by
   construction. Since every particle requires the same $O(N)$ force
   evaluations, equal particle slices imply equal work per worker at
-  every step. The user can see that all workers have a almost equal
-  work load by cycling through color modes.
+  every step. The user can see that all workers have an almost equal
+  workload by cycling through color modes.
 
-**** Table mapping parallel concepts to our choice of application
+**** Speedup, Efficiency and Scalability
+
+  Speedup measures how much faster a parallel execution is compared to
+  a sequential one cite:amdahl1967. Formally, $S(p) = T_1 / T_p$,
+  where $T_1$ is the execution time with one worker and $T_p$ is the
+  time with $p$ workers. Efficiency normalizes speedup by the number
+  of workers: $E(p) = S(p) / p$, indicating how well each additional
+  worker is being utilized. Scalability describes how these metrics
+  behave as the number of workers grows cite:gustafson1988, that is,
+  whether the application sustains its gains or experiences diminishing returns.
+  In the Mandelbrot application, speedup depends on the granularity
+  parameter and the computational intensity of the fractal region. For
+  compute-intensive regions with an appropriate granularity,
+  near-linear speedup is achievable cite:sscad_estendido. However, a
+  granularity that is too fine floods the coordinator with small
+  tasks, reducing efficiency. Users can observe this by varying
+  granularity and comparing rendering times, discovering that even an
+  embarrassingly parallel problem requires careful tuning to scale
+  well. In the N-Body simulation, because every particle requires the
+  same number of force evaluations, dividing particles equally across
+  workers produces a naturally balanced load. Users can experience
+  this directly: with few workers, the simulation appears freezing,
+  and as more workers are added, each taking an equal share of the
+  computation, the simulation becomes visibly smoother and more
+  responsive. Figure @@latex:\ref{fig:nbody-speedup}@@ contrasts the
+  work distribution with 2 and 8 workers: with more workers, each
+  slice is smaller, meaning every worker has proportionally less to
+  compute before the next iteration. Users can reproduce this view
+  directly in the application by enabling the per-worker coloring
+  mode, gaining an intuitive understanding of why more workers lead
+  to faster execution. However, the mandatory position exchange after
+  every iteration imposes a growing communication cost, which limits
+  how well the application scales as the number of workers increases.
+
+
+#+BEGIN_EXPORT latex
+ \begin{figure}[htbp]
+    \centering
+    \begin{subfigure}[b]{0.3\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{imgs/ncorpos-scal.pdf}
+      \caption{}
+      \label{fig:nbody-a}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{imgs/ncorpos-scal-2.pdf}
+      \caption{2 workers}
+      \label{fig:nbody-b}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{imgs/ncorpos-scal-8.pdf}
+      \caption{8 workers}
+      \label{fig:nbody-b}
+    \end{subfigure}
+    \caption{Comparison of per-worker distribution between 2 workers (b) and 8 workers (c). (a) shows the total particles without specific coloring. With more workers, each worker holds a smaller slice of particles, explaining the speedup gained from additional workers. (15000 particles)}
+    \label{fig:nbody-speedup}
+  \end{figure}
+#+END_EXPORT
+
+**** Concept Mapping
+
+Table [[tab:concepts]] summarizes how each application maps to the
+parallel concepts covered in this section. The two applications are
+deliberately complementary. Where one offers a natural and direct
+illustration of a concept, the other provides a contrasting
+perspective, together covering essential challenges and concepts of
+parallel programming.
+
+#+LATEX: \setlength{\tabcolsep}{4pt}
+#+CAPTION: Mapping of parallel concepts to the two applications.
+#+NAME: tab:concepts
+#+ATTR_LATEX: :booktabs t :align lll :center t
+| Concept               | Mandelbrot                         | N-Body                           |
+|-----------------------+------------------------------------+----------------------------------|
+| Problem coupling      | Embarrassingly parallel            | Tightly coupled                  |
+| Domain decomposition  | Square blocks, variable size       | Equal contiguous particle slices |
+| Granularity           | Explicit user-controlled parameter | Fixed (one slice per rank)       |
+| Load balance          | Irregular, dynamically managed     | Balanced by construction         |
+| Speedup & scalability | Granularity-dependent              | Communication-bounded            |
+#+LATEX: \setlength{\tabcolsep}{6pt}
 
 ** Results and Discussion
 :PROPERTIES:
