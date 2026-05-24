@@ -767,8 +767,8 @@ The deployment confirmed that both applications are effective at
 conveying parallel computing concepts to audiences with no prior
 background. The combination of interactive visualization and a
 physical cluster tour created a layered experience: visitors first
-built intuition through direct interaction, then anchored that
-intuition by seeing the hardware responsible for the computation.
+built intuition through direct interaction, then anchored it by seeing
+the hardware that performed the computation.
 
 Beyond public demonstration, the tools also support deeper study. The
 Mandelbrot application was later used in an Operating Systems
@@ -788,35 +788,35 @@ to support formal academic use.
 The Open Day format also revealed inherent limitations. The short
 duration of each interaction and the informal setting made it
 impossible to conduct a formal assessment of learning outcomes or to
-delve deeply into the concepts. Nevertheless, the goal was never to fully
-teach parallel computing in a single session, but to give visitors an
-idea and an intuition for the concepts, and this proved achievable.
-The physical cluster tour, while a highlight of the experience, is
-not straightforwardly reproducible in other contexts; however, any
-available parallel machine can serve the same purpose of grounding
-the abstract notion of parallelism in something concrete and
+delve deeply into the concepts. Nevertheless, the goal was never to
+teach parallel computing in a single session fully, but to give
+visitors an idea and an intuition for the concepts, and this proved
+achievable. The physical cluster tour, while a highlight of the
+experience, is not straightforwardly reproducible in other contexts;
+however, any available parallel machine can serve the same purpose of
+grounding the abstract notion of parallelism in something concrete and
 physical. Finally, the N-Body simulation offers less direct user
 interaction than the Mandelbrot application, as visitors cannot
-control the granularity themselves. In practice, this turned out to
-be an advantage: with fewer parameters to explore, visitors focused
-more attentively on the explanations while we controlled the
-application and walked them through the concepts.
+control the granularity themselves. In practice, this turned out to be
+an advantage: with fewer parameters to explore, visitors paid closer
+attention to the explanations while we controlled the application and
+walked them through the concepts.
 
 The most effective pedagogical sequence that emerged from both
-deployments was to first show the application running locally with few
-workers, demonstrating how the computation can become visibly slow, and
-then switch to the full cluster configuration. Using the per-worker
-coloring mode, we demonstrated how each additional worker takes on a
-smaller share of the same problem, directly connecting the visual
-partition to faster execution. This progression from slow to fast,
-with a visual explanation of why, appeared to be the moment where the
-concepts clicked for most visitors. Beyond the application itself, the
-cluster tour carried its own weight: many visitors had never seen a
-computing cluster outside of films, and the prior interaction with the
-application gave them a concrete use case to attach to what they were
-seeing. This allowed for a deeper discussion about how scientific
-research in HPC actually works and why clusters are used in everyday
-computational science.
+deployments was to first show the application running locally with a
+few workers, demonstrating how the computation can become visibly
+slow, and then switch to the full cluster configuration. Using the
+per-worker coloring mode, we demonstrated how each additional worker
+takes on a smaller share of the same problem, directly connecting the
+visual partition to faster execution. This progression from slow to
+fast, with a visual explanation of why, appeared to be the moment
+where the concepts clicked for most visitors. Beyond the application
+itself, the cluster tour carried its own weight: many visitors had
+never seen a computing cluster in real life, and their prior
+interaction with the application gave them a concrete use case to
+relate to what they were seeing. This method enabled a deeper
+discussion of how scientific research in HPC actually works and why
+clusters are everywhere in everyday computational science and beyond.
 
 ** Conclusion
 :PROPERTIES:
