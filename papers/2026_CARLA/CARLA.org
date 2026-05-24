@@ -215,27 +215,27 @@ The main contributions of this work are as follows:
   elements of both tools and the core concepts of parallel
   computational thinking, namely domain partitioning, granularity,
   load balance, speedup, efficiency, and scalability;
-- A pedagogical experience report on Open Day visitors describing how
-  the tools were used in practice and the observations gathered from
+- A pedagogical experience report on Open Day visitors, describing how
+  we employ the tools in practice and the observations gathered from
   these interactions;
-- Full public availability of source code, documentation and
+- Full public availability of source code, documentation, and
   supporting materials for each application at
   [[https://github.com/rddtz/pcad-applications][https://github.com/rddtz/pcad-applications]].
 
 *** Paper Structure                                                :ignore:
 
 This document is structured as follows. Section [[#sec.rw]] surveys
-  existing approaches to parallel computing education, covering
-  interactive tools and different teaching methods. Section
-  [[#sec.methods]] outlines the methods and materials used, describing the
-  applications' architecture and their MPI-based design, client
-  interaction features, and how each client visualizes key parallel
-  computing concepts, including granularity, load balance, speedup,
-  efficiency, and scalability. Section [[#sec.results]] presents the
-  pedagogic deployment and experience gathered from using the tools in
-  practice along with a discussion about the findings and implications
-  of the work. Finally, Section [[#sec.conclusion]] concludes the work
-  and offers perspectives on future directions.
+existing approaches to parallel computing education, covering
+interactive tools and different teaching methods. Section [[#sec.methods]]
+outlines the methods and materials used, describing the applications'
+architecture and MPI-based design, client interaction features, and
+how each client visualizes key parallel computing concepts, including
+granularity, load balance, speedup, efficiency, and
+scalability. Section [[#sec.results]] presents the pedagogical deployment
+and experience from using the tools in practice, along with a
+discussion of the findings and implications of the work. Finally,
+Section [[#sec.conclusion]] concludes the work and offers perspectives on
+future directions.
 
 # The companion material of this work is publicly available at \COMPANION.
 
