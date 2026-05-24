@@ -703,24 +703,156 @@ parallel programming.
 :CUSTOM_ID: sec.results
 :END:
 
-[Pedagogic Deployment and Experience]
-[Tell about how we showed the applications: one machine vs cluster, etc]
-[Show that this applications can be used to show concepts, but also to
-further studies about parallelism, cite our SSCAD-WIC paper]
+# [Pedagogic Deployment and Experience]
+# [Tell about how we showed the applications: one machine vs cluster, etc]
+# [Show that this applications can be used to show concepts, but also to
+# further studies about parallelism, cite our SSCAD-WIC paper]
 
-[Discussion]
+# [Discussion]
+
+
+*** Pedagogical Deployment
+
+The two applications were deployed in consecutive editions of the
+annual Open Day at UFRGS, each receiving waves of prospective
+students, predominantly high schoolers with no formal computing
+background. The Mandelbrot application was featured in the 2025
+edition, and the N-Body simulation in the 2026 edition. In both
+cases, the setup consisted of a local workstation running the
+graphical client, connected over the network to the PCAD cluster as
+the server, which provided six machines with 24 physical cores each,
+totaling 144 cores for the parallel computation.
+
+The experience was structured in two stages. First, visitors
+interacted with the application through the client interface while we
+guided them through the core parallel computing concepts: how the
+problem was decomposed across workers, what granularity means and why
+it matters, how load distributes across the fractal image or the
+particle array, and how adding more workers affects performance. The
+per-worker coloring mode was particularly effective at making these
+abstract concepts tangible, as visitors could directly observe how the
+work was split and rendered across the cluster in real time, and see
+how the parallel concepts were directly influencing the image on
+screen. For the N-Body simulation, we also directly compared a local
+execution with the cluster execution while guiding the students. They
+were able to see the galaxy slow down as particles were added in the
+local version, and recover smoothness when more workers were engaged
+as we switched to the cluster execution, providing an immediate and
+intuitive sense of parallel speedup.
+
+In the second stage, visitors were guided through the physical cluster
+to see the machines where the computation was actually executed. This
+connection between the visual output on the screen and the physical
+hardware running the computation proved to be a highlight of the
+experience, making the abstract notion of a distributed parallel
+system concrete and memorable. Visitors were notably engaged by the
+visual nature of the applications, and many were visibly excited at
+the idea of seeing the cluster in person.
+
+*** Discussion
+
+The deployment confirmed that both applications are effective at
+conveying parallel computing concepts to audiences with no prior
+background. The combination of interactive visualization and a
+physical cluster tour created a layered experience: visitors first
+built intuition through direct interaction, then anchored that
+intuition by seeing the hardware responsible for the computation.
+
+Beyond public demonstration, the tools also support deeper study. The
+Mandelbrot application was later used in an Operating Systems
+undergraduate course to introduce students to processes and how they
+work, demonstrating that the tool adapts naturally to formal classroom
+instruction. Furthermore, a rigorous performance analysis of the
+Mandelbrot application, employing a full factorial experimental design
+across multiple granularity levels and node counts, was conducted and
+published separately cite:sscad_estendido. Together, these experiences
+illustrate that the same application accessible to high school
+visitors can serve as a vehicle for both formal undergraduate
+instruction and research-level investigation into parallel computing
+performance, reinforcing the dual-purpose design goal established for
+this work: tools that are accessible to any audience, yet deep enough
+to support formal academic use.
+
+The Open Day format also revealed inherent limitations. The short
+duration of each interaction and the informal setting made it
+impossible to conduct a formal assessment of learning outcomes or to
+go deep into the concepts. Nevertheless, the goal was never to fully
+teach parallel computing in a single session, but to give visitors an
+idea and an intuition for the concepts, and this proved achievable.
+The physical cluster tour, while a highlight of the experience, is
+not straightforwardly reproducible in other contexts; however, any
+available parallel machine can serve the same purpose of grounding
+the abstract notion of parallelism in something concrete and
+physical. Finally, the N-Body simulation offers less direct user
+interaction than the Mandelbrot application, as visitors cannot
+control the granularity themselves. In practice, this turned out to
+be an advantage: with fewer parameters to explore, visitors focused
+more attentively on the explanations while we controlled the
+application and walked them through the concepts.
+
+The most effective pedagogical sequence that emerged from both
+deployments was to first show the application running locally with few
+workers, showing how the computation can get visibly slow and then
+switch to the full cluster configuration. Using the per-worker
+coloring mode, we demonstrated how each additional worker takes on a
+smaller share of the same problem, directly connecting the visual
+partition to faster execution. This progression from slow to fast,
+with a visual explanation of why, appeared to be the moment where the
+concepts clicked for most visitors. Beyond the application itself, the
+cluster tour carried its own weight: many visitors had never seen a
+computing cluster outside of films, and the prior interaction with the
+application gave them a concrete use case to attach to what they were
+seeing. This allowed for a deeper discussion about how scientific
+research in HPC actually works and why clusters are used in everyday
+computational science.
 
 ** Conclusion
 :PROPERTIES:
 :CUSTOM_ID: sec.conclusion
 :END:
 
+This work presented two open-source interactive applications,
+the Mandelbrot Set and an N-Body gravitational simulation, as
+pedagogical tools for teaching parallel and distributed computing
+concepts. Both tools are built on an MPI-based client-server
+architecture and provide real-time visualization of the computation,
+making abstract concepts such as domain decomposition, granularity,
+load balance, speedup and scalability directly observable without
+requiring any programming background from the user.
+
+The tools were deployed at the UFRGS Open Day in 2025 and 2026,
+reaching waves of prospective students with no prior computing
+experience. The combination of guided interactive visualization and a
+physical cluster tour proved to be an effective pedagogical strategy:
+by first showing the computation running with few workers and then
+scaling to the full 144-core cluster, visitors could directly observe
+the effect of parallelism and understand why it matters. The
+Mandelbrot application was further used in an undergraduate Operating
+Systems course, confirming that the tools scale beyond outreach into
+formal academic instruction.
+
+The lessons gathered from these deployments suggest that visually
+rich, interactive tools are a powerful entry point for parallel
+computing education, even for audiences with no computing background.
+Future work includes conducting formal assessments of learning
+outcomes, extending or creating new tools to tackle additional
+parallel concepts, and exploring their use in further undergraduate
+courses to build a broader pedagogical experience report.
+
 ** Acknowledgments                                                 :ignore:
 
 #+LATEX:\section*{Acknowledgements}
 
-All experiments in this work used the PCAD platform,
-http://pcad.inf.ufrgs.br, at INF/UFRGS.
+We would like to thank the Institute of Informatics at the Universidade Federal do
+Rio Grande do Sul (INF/UFRGS) for the support during the Open Day
+editions in which the applications were demonstrated, and for
+providing access to the PCAD cluster (http://pcad.inf.ufrgs.br), which
+served as the parallel computing infrastructure for both the
+demonstrations and the cluster tours conducted with visitors.
+# This study was financed in part by the Coordenação de Aperfeiçoamento
+# de Pessoal de Nível Superior - Brasil (CAPES) - Finance Code 001.
+# We thank FAPERGS and CNPq for financial support, including scientific
+# initiation scholarships from FAPERGS (PROBIC) and CNPq (PBIC).
 
 * References                                                         :ignore:
 
