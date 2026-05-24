@@ -883,12 +883,13 @@ demonstrations and the cluster tours conducted with visitors.
 
            @article{mandelbrot1980,
            author = {Mandelbrot, Benoit B.},
-           title = { “Fractal Aspects of the Iteration of Z → z $\Lambda$(1-Z) for Complex $\Lambda$ and Z”},
+           title = {Fractal Aspects of the Iteration of $z \to \Lambda z(1-z)$ for Complex $\Lambda$ and $z$},
            journal = {Annals of the New York Academy of Sciences},
            volume = {357},
            number = {1},
-           pages = {249-259},
-           year = {1980}
+           pages = {249--259},
+           year = {1980},
+           doi = {10.1111/j.1749-6632.1980.tb29690.x}
            }
 
 
