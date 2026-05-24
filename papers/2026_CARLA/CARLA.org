@@ -536,28 +536,27 @@ user can also view only the particles of a specific worker.
 
 **** Granularity
 
-Granularity refers to the size of the tasks into which a problem is
-divided. Fine-grained decomposition produces many small tasks, each
-doing little work before interacting with the coordinator, while
+Granularity refers to the size of the tasks used for problem
+partitioning. Fine-grained decomposition produces many small tasks,
+each doing little work before interacting with the coordinator, while
 coarse-grained decomposition produces fewer, larger tasks with more
 computation per interaction. The choice of granularity directly
 affects the trade-off between load balance and coordination
 overhead. In the Mandelbrot application, granularity is an explicit,
 user-controlled parameter that directly sets the side length of the
-square blocks into which the image is partitioned. Users can observe
-its effect in real time: with a coarse granularity, the canvas is
-divided into few large blocks, some of which may take much longer than
-others to compute, leaving workers idle; with a fine granularity, work
-is spread across many small blocks and the rendering progresses more
+square blocks used for image partitioning. Users can observe its
+effect in real time: with coarse granularity, a few large blocks
+divide the canvas, some of which may take much longer to compute,
+leaving workers idle; with fine granularity, many small blocks have a
+more evenly distributed workload, and rendering progresses more
 uniformly. Figure @@latex:\ref{fig:mandelbrot-g}@@ shows an example of
 the Mandelbrot application rendering the same area with different
-granularity and illustrating how the work was distributed. By changing
-the =granularity= value and showing the resulting work partition, one
-can easily explain why granularity has significant impacts on load
-balance and overall computation time. There is no equivalent of this
-parameter for the N-Body application as the partition is always one
-slice per rank.
-
+granularity and illustrating work distribution. By changing the
+=granularity= value and showing the resulting work partition, one can
+easily see why granularity has a significant impact on load balance
+and overall computation time. There is no equivalent of this parameter
+for the N-Body application, as the partition is always one slice per
+rank.
 
 #+BEGIN_EXPORT latex
  \begin{figure}[htbp]
@@ -589,70 +588,68 @@ slice per rank.
 
 **** Load Balance
 
-  Load balance refers to how evenly computational work is distributed
-  across workers cite:cybenko1989. A perfectly balanced execution has
-  all workers finishing at the same time. Imbalance occurs when some
-  workers complete their tasks early and sit idle while others are still
-  computing.  The two applications present contrasting situations. In the
-  Mandelbrot set, load imbalance is inherent to the problem: different
-  regions of the complex plane require vastly different numbers of
-  iterations, so blocks of equal pixel size carry unequal
-  computational cost. The demand-driven coordinator-worker
-  architecture addresses this dynamically: workers that finish early
-  immediately request new blocks rather than waiting, keeping all
-  workers busy. This imbalance and its mitigation are directly
-  observable: when rendering a dense fractal region, some blocks
-  appear almost instantly while others remain blank for several
-  seconds. Users can also use the per-worker coloring to understand how
-  the load balance works across the Mandelbrot set. Blocks adjacent to
-  the set boundary are the most computationally expensive, requiring
-  the maximum number of iterations. While most workers remain occupied
-  processing these dense blocks, the first worker to finish a boundary
-  block immediately claims the fast-to-compute blocks above it,
-  producing the characteristic vertical stripes of a single color
-  observed in Figure @@latex:\ref{fig:mandelbrot-granularity-a}@@. In regions
-  away from the black area, where all blocks complete quickly, the
-  distribution is more symmetric and no such stripes appear. In the
-  N-Body simulation, load balance is near-perfect by
-  construction. Since every particle requires the same $O(N)$ force
-  evaluations, equal particle slices imply equal work per worker at
-  every step. The user can see that all workers have an almost equal
-  workload by cycling through color modes.
+Load balancing refers to how work is distributed evenly across workers
+cite: cybenko1989. A perfectly balanced execution has all workers
+finishing at the same time. Imbalance occurs when some workers
+complete their tasks early and sit idle while others are still
+computing. The two applications present contrasting situations. In the
+Mandelbrot set, load imbalance is inherent to the problem: different
+regions of the complex plane require vastly different numbers of
+iterations, so blocks of equal pixel size carry unequal computational
+cost. The demand-driven coordinator-worker architecture addresses this
+dynamically: workers that finish early immediately request new blocks
+rather than waiting, keeping all workers busy. This imbalance and its
+mitigation are directly observable: when rendering a dense fractal
+region, some blocks appear almost instantly while others remain blank
+for several seconds. Users can also use the per-worker coloring to
+understand how the load balance works across the Mandelbrot
+set. Blocks adjacent to the set boundary are the most computationally
+intensive, requiring the most iterations. While most workers remain
+occupied processing these dense blocks, the first worker to finish a
+boundary block immediately claims the fast-to-compute blocks above it,
+producing the characteristic vertical stripes of a single color
+observed in Figure @@latex:\ref{fig:mandelbrot-granularity-a}@@. In
+regions away from the black area, where all blocks complete quickly,
+the distribution is more symmetric, and no such stripes appear. In the
+N-Body simulation, load balance is near-perfect by construction. Since
+every particle requires the same $O(N)$ force evaluations, equal
+particle slices imply equal work per worker at every step. The user
+can see that all workers have an almost equal workload by cycling
+through color modes.
 
 **** Speedup, Efficiency and Scalability
 
-  Speedup measures how much faster a parallel execution is compared to
-  a sequential one cite:amdahl1967. Formally, $S(p) = T_1 / T_p$,
-  where $T_1$ is the execution time with one worker and $T_p$ is the
-  time with $p$ workers. Efficiency normalizes speedup by the number
-  of workers: $E(p) = S(p) / p$, indicating how well each additional
-  worker is being utilized. Scalability describes how these metrics
-  behave as the number of workers grows cite:gustafson1988, that is,
-  whether the application sustains its gains or experiences diminishing returns.
-  In the Mandelbrot application, speedup depends on the granularity
-  parameter and the computational intensity of the fractal region. For
-  compute-intensive regions with an appropriate granularity,
-  near-linear speedup is achievable cite:sscad_estendido. However, a
-  granularity that is too fine floods the coordinator with small
-  tasks, reducing efficiency. Users can observe this by varying
-  granularity and comparing rendering times, discovering that even an
-  embarrassingly parallel problem requires careful tuning to scale
-  well. In the N-Body simulation, because every particle requires the
-  same number of force evaluations, dividing particles equally across
-  workers produces a naturally balanced load. Users can experience
-  this directly: with few workers, the simulation appears frozen,
-  and as more workers are added, each taking an equal share of the
-  computation, the simulation becomes visibly smoother and more
-  responsive. Figure @@latex:\ref{fig:nbody-speedup}@@ contrasts the
-  work distribution with 2 and 8 workers: with more workers, each
-  slice is smaller, meaning every worker has proportionally less to
-  compute before the next iteration. Users can reproduce this view
-  directly in the application by enabling the per-worker coloring
-  mode, gaining an intuitive understanding of why more workers lead
-  to faster execution. However, the mandatory position exchange after
-  every iteration imposes a growing communication cost, which limits
-  how well the application scales as the number of workers increases.
-
+Speedup measures how much faster a parallel execution is relative to
+the sequential version cite:amdahl1967. Formally, $S(p) = T_1 / T_p$,
+where $T_1$ is the execution time with one worker and $T_p$ is the
+time with $p$ workers. Efficiency normalizes speedup by the number of
+workers: $E(p) = S(p) / p$, indicating how effectively the system
+utilizes each additional worker. Scalability describes how these
+metrics behave as the number of workers grows cite:gustafson1988, that
+is, whether the application sustains its gains or experiences
+diminishing returns. In the Mandelbrot application, speedup depends on
+the granularity parameter and the fractal region's computational
+intensity. In compute-intensive regions with appropriate granularity,
+near-linear speedup is achievable cite:sscad_estendido. However, a
+granularity that is too fine floods the coordinator with small tasks,
+reducing efficiency. Users can observe this by varying granularity and
+comparing rendering times, discovering that even an embarrassingly
+parallel problem requires careful tuning to scale well. In the N-Body
+simulation, because every particle requires the same number of force
+evaluations, dividing particles equally across workers produces a
+naturally balanced load. Users can experience this directly: with few
+workers, the simulation appears frozen, and as we add more workers,
+each taking an equal share of the computation, the simulation becomes
+visibly smoother and more responsive. Figure
+@@latex:\ref{fig:nbody-speedup}@@ contrasts the work distribution with
+2 and 8 workers: with more workers, each slice is smaller, meaning
+every worker has proportionally less to compute before the next
+iteration. Users can reproduce this view directly in the application
+by enabling per-worker coloring, gaining an intuitive understanding of
+why more workers lead to faster execution. However, the mandatory
+position exchange after every iteration incurs a growing communication
+cost, limiting how well the application scales as the number of
+workers increases.
 
 #+BEGIN_EXPORT latex
  \begin{figure}[htbp]
@@ -718,10 +715,10 @@ parallel programming.
 
 This section presents the pedagogical deployment of both applications
 and discusses the insights gathered from their use in practice. We
-describe how the tools were introduced to visitors at the UFRGS Open
-Day and then reflect on the observations collected across both editions,
-including the limitations of the format and the most effective
-pedagogical strategies that emerged from the experience.
+describe how the tools appear to visitors at the UFRGS Open Day and
+then reflect on observations collected across both editions, including
+the limitations of the format and the most effective pedagogical
+strategies that emerged from the experience.
 
 *** Pedagogical Deployment
 
