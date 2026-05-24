@@ -295,6 +295,16 @@ cite:sscad_estendido.
 :PROPERTIES:
 :CUSTOM_ID: sec.methods
 :END:
+
+This section describes the design and implementation of the two
+educational applications, together with the parallel computing concepts
+they are designed to convey. We first present the common client--server
+architecture shared by both tools, then detail the individual design
+choices of the Mandelbrot and N-Body applications. We then explain how
+each application maps to the core parallel computing concepts covered in
+this work, including problem coupling, domain decomposition, granularity,
+load balance, speedup, efficiency, and scalability.
+
 *** Parallel Applications Design
 
 **** Common Client/Server Design
