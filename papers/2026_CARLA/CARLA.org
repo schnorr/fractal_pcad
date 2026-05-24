@@ -85,14 +85,14 @@ applications, a Mandelbrot Set renderer and an N-Body gravitational
 simulation, developed as pedagogical tools to convey core PDC concepts
 through direct visual observation. Both tools are built on an
 MPI-based client-server architecture and provide real-time
-visualization of the parallel computation, allowing users to observe
-domain decomposition, granularity, load balance, speedup and
-scalability without any programming prerequisite. The applications
+visualization of parallel computation, allowing users to observe
+domain decomposition, granularity, load balance, speedup, and
+scalability without any programming prerequisites. The applications
 were deployed at the UFRGS Open Day in 2025 and 2026, reaching waves
 of prospective students with no computing background. The deployments
 followed a two-stage approach: first interacting with the application,
-then visiting the physical cluster where the computation was
-executed. The experience reinforces the case for visually rich,
+then visiting the physical cluster where the computation takes
+place. The experience reinforces the case for visually rich,
 interactive tools as a good entry point for PDC education, while also
 having enough depth for formal academic use.
 
