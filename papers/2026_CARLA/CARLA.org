@@ -500,7 +500,8 @@ user can also view only the particles of a specific worker.
       \caption{}
       \label{fig:mandelbrot-colormode-b}
     \end{subfigure}
-    \caption{(b) uses per-worker colors to show how work was distributed across (a) (2 workers, granularity 100)}
+    \caption{Mandelbrot set of a selected region (a);
+             and per-worker colors to illustrate how particles distribution appears among 2 workers with granularity 100 (b).}
     \label{fig:workers-m}
   \end{figure}
 #+END_EXPORT
