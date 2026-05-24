@@ -20,6 +20,7 @@
 #+LATEX_HEADER: \usepackage{hyperref}
 #+LATEX_HEADER: \usepackage{subcaption}
 #+LATEX_HEADER: \usepackage[normalem]{ulem}
+#+LATEX_HEADER: \usepackage{booktabs}
 
 
 # You need at least Org 9 and Emacs 24 to make this work.
@@ -54,7 +55,7 @@
 \author{%
 Rayan Raddatz de Matos\orcidID{0009-0009-9323-4730} \and
 Francisco Pegoraro Etcheverria\orcidID{0009-0004-8056-1322} \and
-Pedro Henrique Boniatti Colle \and
+Pedro Henrique Boniatti Colle\orcidID{0009-0002-7340-9213} \and
 Kenichi Brumati \and
 Enzo Lisbôa Peixoto\orcidID{0009-0002-7722-7943} \and
 Otho José Sirtoli Marcondes\orcidID{0009-0000-6918-9508} \and
@@ -65,7 +66,7 @@ Lucas Mello Schnorr\orcidID{0000-0003-4828-9942}}
 % If there are more than two authors, 'et al.' is used.
 %
 \institute{Institute of Informatics, Federal University of Rio Grande do Sul, Porto Alegre, Brazil \\
-\email{\{rayan.raddatz, fpetcheverria, phbcolle, elpeixoto, ojsmarcondes, schnorr\}@inf.ufrgs.br}}
+\email{\{rayan.raddatz, fpetcheverria, phbcolle, kbrumati, elpeixoto, ojsmarcondes, schnorr\}@inf.ufrgs.br}}
 %
 \maketitle
 #+END_EXPORT
@@ -75,9 +76,26 @@ Lucas Mello Schnorr\orcidID{0000-0003-4828-9942}}
 
 #+LaTeX: \begin{abstract}
 
-TBD
+Parallel and distributed computing (PDC) concepts are routinely
+deferred to late stages of Computer Science curricula, leaving
+students and prospective learners without even an informal intuition
+for parallelism. This work presents two open-source interactive
+applications, a Mandelbrot Set renderer and an N-Body gravitational
+simulation, developed as pedagogical tools to convey core PDC concepts
+through direct visual observation. Both tools are built on an
+MPI-based client-server architecture and provide real-time
+visualization of the parallel computation, allowing users to observe
+domain decomposition, granularity, load balance, speedup and
+scalability without any programming prerequisite. The applications
+were deployed at the UFRGS Open Day in 2025 and 2026, reaching waves
+of prospective students with no computing background. The deployments
+followed a two-stage approach: first interacting with the application,
+then visiting the physical cluster where the computation was
+executed. The experience reinforces the case for visually rich,
+interactive tools as a good entry point for PDC education, at the same
+time having enough depth for formal academic use.
 
-#+latex: \keywords{TBD \and TBD \and TBD \and TBD.}
+#+latex: \keywords{Parallel Computing Education \and HPC Teaching \and Interactive Visualization \and Mandelbrot Set \and N-Body Simulation \and Pedagogical Tools.}
 
 #+LaTeX: \end{abstract}
 
@@ -97,17 +115,17 @@ TBD
 [Open science, url, etc]
 *** Context                                                        :ignore:
 Modern computing is inherently parallel. With the start of the new
-millennium and the commercialization of multi-core processor, all
+millennium and the commercialization of multi-core processors, all
 sequential computation taught became only a part of how modern
 computer systems work.  Since 2013, IEEE/ACM teaching guidelines
 cite:curricula_computer_2013 includes parallel and distributed
 computing (PDC) as a required knowledge for Computer Science
 curricula.  Nevertheless, despite this reality, parallel computational
-teachings remains a late-stage topic in most Computer Science
+teaching remains a late-stage topic in most Computer Science
 curricula. Concepts such as domain partitioning, task granularity,
 load balancing, speedup, and scalability are routinely deferred to
 upper-division or graduate electives, leaving students ill-equipped to
-reason PDC problems.  This curricular gap begins even earlier:
+reason about PDC problems.  This curricular gap begins even earlier:
 prospective students arriving from high school have virtually no
 exposure to parallel computational thinking, entering undergraduate
 programs without even an informal intuition for the concepts that
@@ -135,7 +153,7 @@ the visualization of the user's inputted code
 cite:noauthor_threadmentor_nodate,carr_concurrentmentor_nodate.  Other
 work, from courses developed to students starting CS
 cite:feldhausen_minimum_2014,ghafoor_integrating_2018,conte_teaching_2020,
-focus on developing PCD thinking with the student's current knowledge
+focus on developing PDC thinking with the student's current knowledge
 at that point in the curricula. Most of these tools and resources can
 be graded with the framework proposed in Brown's work
 cite:brown_framework_2020. However, there is a blind spot in existing resources
@@ -153,8 +171,7 @@ with no formal computing background, for a first hands-on encounter
 with Computer Science. This setting imposed strict design
 constraints. The tools had to be immediately accessible, visually
 compelling, and capable of conveying non-trivial parallel-computing
-concepts during a brief, informal interaction. At the same time, the
-same tools should scale in depth, remaining useful in formal
+concepts during a brief, informal interaction. At the same time, these tools should scale in depth, remaining useful in formal
 undergraduate instruction.
 
 *** The two applications overview                                  :ignore:
@@ -182,8 +199,8 @@ The rendering and simulation processes then become live experiments in
 parallel computational thinking. Instead of reasoning about
 parallelism only through code inspection, users can observe its
 effects directly on the image being rendered. Partition granularity
-control how the image appears across the Mandelbrot canvas, how
-particle are mapped across workers under gravitational interaction,
+controls how the image appears across the Mandelbrot canvas, how
+particles are mapped across workers under gravitational interaction,
 and how simulation speed responds to changes in process count and
 granularity. Students are immediately compelled to think about core
 concepts, such as domain decomposition, granularity, load balance,
@@ -201,8 +218,9 @@ The main contributions of this work are as follows:
 - A pedagogical experience report on Open Day visitors describing how
   the tools were used in practice and the observations gathered from
   these interactions;
-- Full public availability of source code, documentation, and
-  supporting materials at [[https://github.com/rddtz/pcad-applications][https://github.com/rddtz/pcad-applications]].
+- Full public availability of source code, documentation and
+  supporting materials for each application at
+  [[https://github.com/rddtz/pcad-applications][https://github.com/rddtz/pcad-applications]].
 
 *** Paper Structure                                                :ignore:
 
@@ -210,7 +228,7 @@ This document is structured as follows. Section [[#sec.rw]] surveys
   existing approaches to parallel computing education, covering
   interactive tools and different teaching methods. Section
   [[#sec.methods]] outlines the methods and materials used, describing the
-  applications architecture and their MPI-based design, client
+  applications' architecture and their MPI-based design, client
   interaction features, and how each client visualizes key parallel
   computing concepts, including granularity, load balance, speedup,
   efficiency, and scalability. Section [[#sec.results]] presents the
@@ -230,7 +248,7 @@ The related works for this paper were extracted from two literature
 mappings of the state of the art in the teaching of PDC
 cite:lara_soares_parallel_2019,de_jesus_oliveira_duraes_research_2020. Their
 findings reflect a shared consensus: the world needs more programmers
-able to work in PDC, but the curricula is not sufficient to cater to
+able to work in PDC, but the curriculum is not sufficient to cater to
 that demand. Soares cite:lara_soares_parallel_2019 reinforces the
 necessity of bringing the teaching of PDC earlier in CS curriculum.
 
@@ -239,24 +257,24 @@ Scratch in CS0 and outreach programs shows the capacity of highly
 visual and interactive tools to bring PDC to high school students. In
 it, students coded in Scratch cite:scratch with extensions to
 simulate a parallel interface. Students used this to code applications
-such as a weather simulation, using Scratch's high level coding
+such as a weather simulation, using Scratch's high-level coding
 interface and its visualization-first approach to better understand
 the concepts of PDC.
 
 Brown et al. cite:brown_framework_2020 developed a system to classify
 educational resources for PDC. It divides them between /Instructional/
 for use in the classroom with a professor; /Hardware/, where the
-students can execute their parallel code; and /Tools/, which resources
+students can execute their parallel code; and /Tools/, where resources
 are available for students to work hands-on and exercise their
 knowledge. For each of these categories, one scale was proposed to
 evaluate them. Tools such as Parallel Game cite:ontanon_designing_2017
 and DeadLock Empire Game cite:hudecek2014deadlock are effective
-introductory tools for early or inexperienced programmers. They gamefy
-concepts of PDC, making them more approachable for High School and
+introductory tools for early or inexperienced programmers. They gamify
+concepts of PDC, making them more approachable for high school and
 early CS students. This translation of concepts to a visual and
-interactive medium demonstrates that tools like such are extremely
+interactive medium demonstrates that such tools are extremely
 effective in communicating information to students, as they can engage
-them more than a simple speed up in an arbitrary code. While some
+them more than a simple speedup of an arbitrary program. While some
 tools focus on visualizing user-written code and others engage
 students through programming exercises, our applications take a
 different stance: rather than teaching how to write parallel programs,
@@ -267,7 +285,7 @@ time, users develop intuition for PDC concepts without any programming
 prerequisite. This focus on visual understanding of the concepts makes
 our tools well-suited for outreach demonstrations targeting audiences
 with no computing background. At the same time, they carry enough
-depth to support further study in formal undergraduate courses as was
+depth to support further study in formal undergraduate courses, as was
 done with the LU factorization as a vehicle to explore the many ways
 to parallelize a problem cite:bernabe_high_2014, and as we ourselves
 have done in a deeper analysis of the Mandelbrot application
@@ -281,15 +299,16 @@ cite:sscad_estendido.
 
 **** Common Client/Server Design
 
-Both applications share a common client–server architecture, in which a graphical
-client and an MPI-based server run as separate processes, communicating over
-a TCP connection. The client is a lightweight application running on a local
-machine that simply requests work from the coordinator based on user input.
-Meanwhile, the server is a distributed MPI application executing on a dedicated
-cluster, taking responsibility for domain decomposition, process synchronization, and
-the relevant numerical calculations. This distinction is important, as it gives users
-a tangible sense that their interactions are dispatching work to a larger
-computational system.
+Both applications share a common client–server architecture, in which
+a graphical client and an MPI-based server run as separate processes,
+communicating over a TCP connection. The client is a lightweight
+application running on a local machine that simply requests work from
+the coordinator based on user input.  Meanwhile, the server is a
+distributed MPI application executing on a dedicated cluster, taking
+responsibility for domain decomposition, process synchronization, and
+the relevant numerical calculations. This distinction is important, as
+it gives users a tangible sense that their interactions are
+dispatching work to a larger computational system.
 
 **** Mandelbrot Set
 
@@ -337,7 +356,7 @@ receives the user's rendering request and discretizes the fractal
 space into smaller payloads based on a specified
 \textit{granularity}. The granularity parameter dictates the size of
 the square blocks the workload is partitioned into for workers.  A
-pool of MPI workers actively request work from the coordinator.  Once
+pool of MPI workers actively requests work from the coordinator.  Once
 a worker finishes calculating the numerical depths for its assigned
 block, it returns the response to the coordinator and requests a new
 set of points.  This dynamic distribution ensures that computationally
@@ -430,18 +449,17 @@ and workers never need to exchange data during computation. The N-Body
 simulation is tightly coupled: since every particle interacts with
 every other, all workers must exchange their updated positions after
 each iteration before the next step can begin. The consequence of this
-difference becomes apparent when scaling the number of
-workers: adding more workers to the Mandelbrot set consistently
-reduces rendering time, while the N-Body simulation gains less and
-less from additional workers as the cost of the mandatory
-synchronization grows. This gives users an immediate intuition of the
-different problems each application needs to face and the fundamental
-structural difference of the problem.
-
+difference becomes apparent when scaling the number of workers: adding
+more workers to the Mandelbrot set consistently reduces rendering
+time, while the N-Body simulation gains less and less from additional
+workers as the cost of the mandatory synchronization grows. This gives
+users an immediate intuition about the different problems each
+application needs to face and the fundamental structural difference of
+the problems.
 
 **** Domain Decomposition
 
-Another foundational strategy in parallel programming is Domain
+Another foundational strategy in parallel programming is domain
 decomposition cite:foster1995. With this strategy, the problem data is
 first divided into pieces of approximately equal size, then the
 computation follows and each worker becomes responsible for the work
@@ -449,7 +467,7 @@ associated with its portion. When a computation requires data owned by
 another worker, communication then becomes necessary. Both
 applications' architecture allows the main coordinator to decompose the
 problem across all available workers. The client then makes this
-decomposition directly observable through a per-worker color mode. In
+decomposition directly observable through a per-worker coloring mode. In
 the Mandelbrot client, the pixel grid is partitioned into square
 blocks of pixels, where the size of these blocks is controlled by the
 =granularity= parameter. The user can activate a coloring mode to
@@ -510,7 +528,6 @@ user can also view only the particles of a specific worker.
   \end{figure}
 #+END_EXPORT
 
-
 **** Granularity
 
 Granularity refers to the size of the tasks into which a problem is
@@ -526,12 +543,12 @@ its effect in real time: with a coarse granularity, the canvas is
 divided into few large blocks, some of which may take much longer than
 others to compute, leaving workers idle; with a fine granularity, work
 is spread across many small blocks and the rendering progresses more
-uniformly. Figurecicling @@latex:\ref{fig:mandelbrot-g}@@ shows a example of
+uniformly. Figure @@latex:\ref{fig:mandelbrot-g}@@ shows an example of
 the Mandelbrot application rendering the same area with different
-granularity and representing how the work as distributed. By changing
-the =granularity= value and showing the resultant work partition, one
-can easily explain why granularity has important impacts in load
-balance and the whole computation time. There is no equivalent of this
+granularity and representing how the work was distributed. By changing
+the =granularity= value and showing the resulting work partition, one
+can easily explain why granularity has significant impacts on load
+balance and overall computation time. There is no equivalent of this
 parameter for the N-Body application as the partition is always one
 slice per rank.
 
@@ -564,27 +581,23 @@ slice per rank.
   \end{figure}
 #+END_EXPORT
 
-
-
 **** Load Balance
 
   Load balance refers to how evenly computational work is distributed
   across workers cite:cybenko1989. A perfectly balanced execution has
   all workers finishing at the same time. Imbalance occurs when some
   workers complete their tasks early and idle while others are still
-  computing.
-
-  The two applications present contrasting situations. In the
+  computing.  The two applications present contrasting situations. In the
   Mandelbrot set, load imbalance is inherent to the problem: different
   regions of the complex plane require vastly different numbers of
   iterations, so blocks of equal pixel size carry unequal
   computational cost. The demand-driven coordinator-worker
-  architecture addresses this dynamically, workers that finish early
+  architecture addresses this dynamically: workers that finish early
   immediately request new blocks rather than waiting, keeping all
   workers busy. This imbalance and its mitigation are directly
   observable: when rendering a dense fractal region, some blocks
   appear almost instantly while others remain blank for several
-  seconds. One can also use the per-worker coloring to understand how
+  seconds. Users can also use the per-worker coloring to understand how
   the load balance works across the Mandelbrot set. Blocks adjacent to
   the set boundary are the most computationally expensive, requiring
   the maximum number of iterations. While most workers remain occupied
@@ -593,7 +606,7 @@ slice per rank.
   producing the characteristic vertical stripes of a single color
   observed in Figure @@latex:\ref{fig:mandelbrot-g-a}@@. In regions
   away from the black area, where all blocks complete quickly, the
-  distribution is more symmetric and no such stripes appear.. In the
+  distribution is more symmetric and no such stripes appear. In the
   N-Body simulation, load balance is near-perfect by
   construction. Since every particle requires the same $O(N)$ force
   evaluations, equal particle slices imply equal work per worker at
