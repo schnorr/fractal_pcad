@@ -938,7 +938,8 @@ demonstrations and the cluster tours conducted with visitors.
            volume  = {31},
            number  = {5},
            pages   = {532--533},
-           year    = {1988}
+           year    = {1988},
+           doi     = {10.1145/42411.42415}
            }
 
            @article{cybenko1989,
