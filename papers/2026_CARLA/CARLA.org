@@ -949,7 +949,8 @@ demonstrations and the cluster tours conducted with visitors.
            volume  = {7},
            number  = {2},
            pages   = {279--301},
-           year    = {1989}
+           year    = {1989},
+           doi     = {10.1016/0743-7315(89)90021-X}
            }
 
            @book{kumar2003,
