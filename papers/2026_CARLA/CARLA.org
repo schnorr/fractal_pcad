@@ -823,33 +823,36 @@ clusters are everywhere in everyday computational science and beyond.
 :CUSTOM_ID: sec.conclusion
 :END:
 
-This work presented two open-source interactive applications,
-the Mandelbrot Set and an N-Body gravitational simulation, as
-pedagogical tools for teaching parallel and distributed computing
-concepts. Both tools are built on an MPI-based client-server
-architecture and provide real-time visualization of the computation,
-making abstract concepts such as domain decomposition, granularity,
-load balance, speedup and scalability directly observable without
-requiring any programming background from the user.
+This work presented two open-source interactive applications, the
+Mandelbrot Set and an N-Body gravitational simulation, as pedagogical
+tools for teaching parallel and distributed computing concepts. Both
+tools are built on an MPI-based client-server architecture and provide
+real-time visualization of the computation, making abstract concepts
+such as domain decomposition, granularity, load balance, speedup, and
+scalability directly observable without requiring any programming
+background from the user.
 
 The tools were deployed at the UFRGS Open Day in 2025 and 2026,
 reaching waves of prospective students with no prior computing
 experience. The combination of guided interactive visualization and a
-physical cluster tour proved to be an effective pedagogical strategy:
-by first showing the computation running with few workers and then
-scaling to the full 144-core cluster, visitors could directly observe
-the effect of parallelism and understand why it matters. The
+physical cluster tour proved to be an effective pedagogical
+strategy. By first showing the computation running with a few workers
+and then scaling to the full 144-core cluster, visitors could directly
+observe the effect of parallelism and understand why it matters. The
 Mandelbrot application was further used in an undergraduate Operating
 Systems course, confirming that the tools scale beyond outreach into
 formal academic instruction.
 
 The lessons gathered from these deployments suggest that visually
 rich, interactive tools are a powerful entry point for parallel
-computing education, even for audiences with no computing background.
-Future work includes conducting formal assessments of learning
-outcomes, extending or creating new tools to tackle additional
-parallel concepts, and exploring their use in further undergraduate
-courses to build a broader body of pedagogical experience.
+computing education, even for audiences with no computing
+background. Future work includes conducting formal assessments of
+learning outcomes, extending or creating new tools to tackle
+additional parallel concepts, and exploring their use in further
+undergraduate courses to build a broader body of pedagogical
+experience. We also aim to improve our design so that the balance
+between network and compute capability becomes intuition for our
+visitors.
 
 ** Acknowledgments                                                 :ignore:
 
