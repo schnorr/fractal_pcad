@@ -89,7 +89,7 @@ visualization of parallel computation, allowing users to observe
 domain decomposition, granularity, load balance, speedup, and
 scalability without any programming prerequisites. The applications
 were deployed at the UFRGS Open Day in 2025 and 2026, reaching waves
-of prospective students with no computing background. The deployments
+of prospective high-school students with no computing background. The deployments
 followed a two-stage approach: first interacting with the application,
 then visiting the physical cluster where the computation takes
 place. The experience reinforces the case for visually rich,
