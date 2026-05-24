@@ -244,51 +244,52 @@ future directions.
 :CUSTOM_ID: sec.rw
 :END:
 
-The related work for this paper was drawn from two literature
-mappings of the state of the art in the teaching of PDC
+The related work derives from two literature mappings of the state of
+the art in the teaching of PDC
 cite:lara_soares_parallel_2019,de_jesus_oliveira_duraes_research_2020. Their
-findings reflect a shared consensus: the world needs more programmers
-able to work in PDC, but the curriculum is not sufficient to cater to
-that demand. Soares cite:lara_soares_parallel_2019 reinforces the
-necessity of bringing the teaching of PDC earlier in the CS curriculum.
+findings reflect a consensus: the world needs more programmers able to
+work in PDC, but the curriculum is insufficient to meet that
+demand. Soares cite:lara_soares_parallel_2019 reinforces the need to
+introduce the teaching of PDC earlier in the CS curriculum.
 
 The work of Feldhausen et al. cite:feldhausen_minimum_2014 with
-Scratch in CS0 and outreach programs shows the capacity of highly
-visual and interactive tools to bring PDC to high school students. In
-it, students coded in Scratch cite:scratch with extensions to
-simulate a parallel interface. Students used this to code applications
-such as a weather simulation, using Scratch's high-level coding
-interface and its visualization-first approach to better understand
-the concepts of PDC.
+Scratch in CS0 and outreach programs demonstrates the capacity of
+highly visual and interactive tools to bring PDC to high school
+students. In it, students coded in Scratch cite:scratch with
+extensions to simulate a parallel interface. Students used this to
+code applications, such as a weather simulation, using Scratch's
+high-level coding interface and its visualization-first approach to
+understand PDC concepts better.
 
 Brown et al. cite:brown_framework_2020 developed a system to classify
-educational resources for PDC. It divides them between /Instructional/
-for use in the classroom with a professor; /Hardware/, where the
-students can execute their parallel code; and /Tools/, where resources
-are available for students to work hands-on and exercise their
-knowledge. For each of these categories, a scale was proposed to
-evaluate them. Tools such as Parallel Game cite:ontanon_designing_2017
-and DeadLock Empire Game cite:hudecek2014deadlock are effective
-introductory tools for early or inexperienced programmers. They gamify
-concepts of PDC, making them more approachable for high school and
-early CS students. This translation of concepts to a visual and
-interactive medium demonstrates that such tools are extremely
-effective in communicating information to students, as they engage
-students more effectively than a simple speedup measurement of an arbitrary program. While some
-tools focus on visualizing user-written code and others engage
-students through programming exercises, our applications take a
-different stance: rather than teaching how to write parallel programs,
-they aim to instill parallel thinking through direct observation of
-live computations. By adjusting parameters and watching
-decompositions, load distributions, and performance evolve in real
-time, users develop intuition for PDC concepts without any programming
-prerequisite. This focus on visual understanding of the concepts makes
-our tools well-suited for outreach demonstrations targeting audiences
-with no computing background. At the same time, they carry enough
-depth to support further study in formal undergraduate courses, as was
-done with the LU factorization as a vehicle to explore the many ways
-to parallelize a problem cite:bernabe_high_2014, and as we ourselves
-have done in a deeper analysis of the Mandelbrot application
+educational resources for PDC. It divides them into/Instructional/,
+for use in the classroom with a professor; /Hardware/, where students
+can execute their parallel code; and /Tools/, where resources are
+available for students to work hands-on and exercise their
+knowledge. For each of these categories, there is a suggested scale
+for evaluation. Tools such as Parallel Game
+cite:ontanon_designing_2017 and DeadLock Empire Game
+cite:hudecek2014deadlock are effective introductory tools for early or
+inexperienced programmers. They gamify concepts of PDC, making them
+more approachable for high school and early CS students. This
+translation of concepts into a visual interactive medium demonstrates
+that such tools are extremely effective at communicating information
+to students, as they engage students more than a simple speedup
+measurement of an arbitrary program. While some tools focus on
+visualizing user-written code and others engage students through
+programming exercises, our applications take a different stance:
+rather than teaching how to write parallel programs, they aim to
+instill parallel thinking through direct observation of live
+computations. By adjusting parameters and watching decompositions,
+load distributions, and performance evolve in real time, users develop
+intuition for PDC concepts without any programming prerequisites. This
+focus on visual understanding of the concepts makes our tools
+well-suited for outreach demonstrations targeting audiences with no
+computing background. At the same time, they carry enough depth to
+support further study in formal undergraduate courses, as was done
+with the LU factorization as a vehicle to explore the many ways to
+parallelize a problem cite:bernabe_high_2014, and as we ourselves have
+done in a deeper analysis of the Mandelbrot application
 cite:sscad_estendido.
 
 ** Methods and Materials
