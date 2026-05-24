@@ -1078,13 +1078,12 @@ demonstrations and the cluster tours conducted with visitors.
      	pages = {1--9},
      }
 
-     @article{curricula_computer_2013,
+     @techreport{curricula_computer_2013,
      	title = {Computer {Science} {Curricula} 2013: {Curriculum} {Guidelines} for {Undergraduate} {Degree} {Programs} in {Computer} {Science}},
-     	issn = {978-1-4503-2309-3},
      	shorttitle = {Computer {Science} {Curricula} 2013},
+     	author = {{ACM/IEEE-CS Joint Task Force on Computing Curricula}},
+     	institution = {ACM Press and IEEE Computer Society Press},
      	doi = {10.1145/2534860},
-     	author = {Curricula, Association},
-     	month = jan,
      	year = {2013},
      }
 
