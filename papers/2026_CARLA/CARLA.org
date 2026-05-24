@@ -97,8 +97,8 @@ TBD
 [Open science, url, etc]
 *** Context                                                        :ignore:
 Modern computing is inherently parallel. With the start of the new
-millenum and the comercialization of multi-core processor, all
-sequencial computation taught became only a parte of how moderm
+millennium and the commercialization of multi-core processor, all
+sequential computation taught became only a part of how modern
 computer systems work.  Since 2013, IEEE/ACM teaching guidelines
 cite:curricula_computer_2013 includes parallel and distributed
 computing (PDC) as a required knowledge for Computer Science
@@ -116,34 +116,36 @@ cite:lara_soares_parallel_2019,libert_analysis_2019,lammers_exploring_2012.
 
 
 This situation is particularly consequential in the context of
-High-Performance Computing (HPC). Students arrive with knowledge of
-computer architecture and operating systems at the latter part of
-their undergraduate studies, but not with the fundamental concepts
-required to see the interplay between those tools and more basic
-concepts of PDC.  The construction of parallism as a way of seeing
-problems, not just a tool of the hardware is a prerequisite for
-productive scientific work.
+High-Performance Computing (HPC), where the construction of
+parallelism as a way of seeing problems is not just a tool of the
+hardware, but a pre-requisite for productive scientific work. Students
+arrive with knowledge of computer architecture and operating systems
+at the latter part of their undergraduate studies, but not with the
+fundamental concepts required to see the interplay between those tools
+and basic concepts of PDC.
+
 
 A well-established strategy for bridging this gap is the use of
 interactive, visually rich tools that make parallel phenomena
 tangible. When a student can directly observe how domain partitioning
 affects load balance, or watch speedup curves shift in response to
 granularity choices, abstract concepts acquire intuitive
-grounding. Most tools focus on direct student interaction, focussing
-on the visualization of the user's inputed code
+grounding. Most tools focus on direct student interaction, focusing on
+the visualization of the user's inputted code
 cite:noauthor_threadmentor_nodate,carr_concurrentmentor_nodate.  Other
 work, from courses developed to students starting CS
 cite:feldhausen_minimum_2014,ghafoor_integrating_2018,conte_teaching_2020,
 focus on developing PCD thinking with the student's current knowledge
 at that point in the curricula. Most of these tools and resources can
-be graded with the framework proposited in Brown's work
-cite:brown_framework_2020. There is a clear blind spot work resources
-able to comunicate to the layman the concepts of PDC, and instigate
-the non-tech savy of the possibilities of parallel programming.
+be graded with the framework proposed in Brown's work
+cite:brown_framework_2020. However, there is a blind spot in existing resources
+that are able to communicate to the layman the concepts of PDC, and
+instigate those with no prior computing background the possibilities
+of parallel programming.
 
-# *** Bridge to our strategy                                         :ignore:
+# *** Bridge to our strategy :ignore:
 
-This context motivated the development of two open-source applications
+This gap motivated the development of two open-source applications
 at the Universidade Federal do Rio Grande do Sul (UFRGS). The
 immediate driver was a concrete pedagogical event: the annual Open Day
 at UFRGS, which welcomes prospective students, mostly high schoolers
@@ -185,8 +187,7 @@ particle are mapped across workers under gravitational interaction,
 and how simulation speed responds to changes in process count and
 granularity. Students are immediately compelled to think about core
 concepts, such as domain decomposition, granularity, load balance,
-speedup, efficiency, and scalability. This topics emerge naturally from
-interaction, grounded in immediate visual feedback.
+speedup, efficiency, and scalability.
 
 *** Contribution Wrap-up                                           :ignore:
 
@@ -213,9 +214,9 @@ This document is structured as follows. Section [[#sec.rw]] surveys
   interaction features, and how each client visualizes key parallel
   computing concepts, including granularity, load balance, speedup,
   efficiency, and scalability. Section [[#sec.results]] presents the
-  pedagogic deployment and experience gathered from using the tool in
+  pedagogic deployment and experience gathered from using the tools in
   practice along with a discussion about the findings and implications
-  of the work. Finally, Section [[#sec.conclusion]] concludes the document
+  of the work. Finally, Section [[#sec.conclusion]] concludes the work
   and offers perspectives on future directions.
 
 # The companion material of this work is publicly available at \COMPANION.
