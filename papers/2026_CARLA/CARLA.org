@@ -385,20 +385,20 @@ blocks render almost instantaneously. In contrast, the "hard" blocks
 stall as the worker nodes process them.
 
 **** N-Body Simulation
-  The N-Body gravitational simulation is a classical problem in
-  computational physics cite:aarseth2003 in which $N$ bodies interact
-  pairwise through Newtonian gravity. At each time step, the
-  gravitational acceleration acting on body $i$ is computed by summing
-  the contributions of all other $N-1$ bodies: $$\mathbf{a}_i = \sum_{j \neq i}
-  \frac{G \, m_j \, \mathbf{r}_{ij}}{(\|\mathbf{r}_{ij}\|^2 + \epsilon^2)^{3/2}}$$
-  where $G$ is the gravitational constant, $m_j$ is the mass of body
-  $j$, $\mathbf{r}_{ij} = \mathbf{r}_j - \mathbf{r}_i$ is the
-  displacement vector from $i$ to $j$, and $\epsilon$ is a softening length
-  that prevents force singularities at close range. This sum must be
-  computed for every body, yielding an inherent $O(N^2)$ computational
-  complexity per step. Our application instantiates this problem as a
-  2D galaxy simulation, where particles orbit a central black hole.
 
+The N-Body gravitational simulation is a classical problem in
+computational physics cite:aarseth2003 in which $N$ bodies interact
+pairwise via Newtonian gravity. At each time step, the gravitational
+acceleration acting on body $i$ is computed by summing the
+contributions of all other $N-1$ bodies: $$\mathbf{a}_i = \sum_{j \neq i}
+\frac{G \, m_j \, \mathbf{r}_{ij}}{(\|\mathbf{r}_{ij}\|^2 + \epsilon^2)^{3/2}}$$ where
+$G$ is the gravitational constant, $m_j$ is the mass of body $j$,
+$\mathbf{r}_{ij} = \mathbf{r}_j - \mathbf{r}_i$ is the displacement
+vector from $i$ to $j$, and $\epsilon$ is a softening length that prevents
+force singularities at close range. This sum must be computed for
+everybody, yielding an inherent $O(N^2)$ computational complexity per
+step. Our application instantiates this problem as a 2D galaxy
+simulation in which particles orbit a central black hole.
 
 #+BEGIN_EXPORT latex
 \begin{figure}[htbp]
@@ -416,14 +416,14 @@ ranks participate equally in the gravitational computation. When a
 simulation request arrives, the coordinator (rank 0) divides the $N$
 particles into contiguous slices of approximately equal size, one per
 rank. Each rank is responsible for computing the forces and updating
-the positions of the particles in its assigned slice. However, since
+the particle positions within its assigned slice. However, since
 gravitational force is long-range, every rank must read the positions
-of all $N$ particles at each step and not only those in its own slice. After
-completing each iteration, all ranks participate in a collective
-operation that exchanges updated positions across the entire
-communicator, ensuring every rank holds the complete system state
-before the next step begins. Unlike the Mandelbrot coordinator, rank 0
-is also a worker, not merely a coordinator: it computes its own
+of all $N$ particles at each step and not only those in its own
+slice. After completing each iteration, all ranks participate in a
+collective operation that exchanges updated positions across the
+entire communicator, ensuring every rank holds the complete system
+state before the next step begins. Unlike the Mandelbrot coordinator,
+rank 0 is also a worker, not merely a coordinator: it computes its own
 particle slice alongside all other ranks. It additionally manages TCP
 networking through dedicated threads, receiving simulation requests
 from the client and forwarding results back as a stream of per-rank,
@@ -431,10 +431,10 @@ per-iteration responses.
 
 ***** Client
 
-The graphical client provides an interactive real-time view of the galaxy
-simulation, where users can start new simulations, adjust the number
-of particles, and navigate the scene by zooming and panning with the
-mouse. Particle positions are updated on screen as responses stream in
+The graphical client provides an interactive, real-time view of the
+galaxy simulation, allowing users to start new simulations, adjust the
+number of particles, and navigate the scene with mouse zoom and
+pan. Particle positions are updated on screen as responses stream in
 from the server, producing a smooth animation of the galaxy evolving
 under gravity.
 
