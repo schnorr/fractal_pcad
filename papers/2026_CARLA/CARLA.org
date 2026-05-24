@@ -1265,7 +1265,7 @@ demonstrations and the cluster tours conducted with visitors.
      doi = {10.1145/3027063.3053253},
      abstract = {Modern computing is increasingly handled in a parallel fashion, however, little is known about how individuals learn parallel programming. This paper focuses on the design of an educational game called Parallel, designed for both teaching parallel programming education for CS undergraduate curricula, as well as for gathering insights into how students learn, and solve parallel programming problems. Specifically, we focus on the key challenge of choosing the appropriate metaphors in order to facilitate transference between parallel programming and the game. In this paper, we describe our design methodology and results from our preliminary user evaluations.},
      booktitle = {Proceedings of the 2017 CHI Conference Extended Abstracts on Human Factors in Computing Systems},
-     pages = {2818–2824},
+     pages = {2818--2824},
      numpages = {7},
      keywords = {educational games, parallel programming, visual metaphors},
      location = {Denver, Colorado, USA},
