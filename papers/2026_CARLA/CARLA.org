@@ -116,23 +116,22 @@ having enough depth for formal academic use.
 [Open science, url, etc]
 *** Context                                                        :ignore:
 Modern computing is inherently parallel. With the start of the new
-millennium and the commercialization of multi-core processors, all
-sequential computation taught became only a part of how modern
-computer systems work.  Since 2013, IEEE/ACM teaching guidelines
-cite:curricula_computer_2013 includes parallel and distributed
-computing (PDC) as a required knowledge for Computer Science
-curricula.  Nevertheless, despite this reality, parallel computational
-teaching remains a late-stage topic in most Computer Science
-curricula. Concepts such as domain partitioning, task granularity,
-load balancing, speedup, and scalability are routinely deferred to
-upper-division or graduate electives, leaving students ill-equipped to
-reason about PDC problems.  This curricular gap begins even earlier:
-prospective students arriving from high school have virtually no
-exposure to parallel computational thinking, entering undergraduate
-programs without even an informal intuition for the concepts that
-professors will address years into the students' studies
+millennium and the widespread commercialization of multi-core
+processors, sequential computation alone, as typically taught, became
+only a partial description of how modern computer systems work. Since
+2013, IEEE/ACM teaching guidelines cite:curricula_computer_2013 have
+cited parallel and distributed computing (PDC) as a required knowledge
+for Computer Science curricula. Nevertheless, despite this reality,
+parallel computational teaching remains a late-stage topic in most
+Computer Science curricula. Concepts such as domain partitioning, task
+granularity, load balancing, speedup, and scalability are routinely
+deferred to upper-division or graduate electives, leaving students
+ill-equipped to reason about PDC problems. This curricular gap begins
+even earlier: prospective students arriving from high school have
+virtually no exposure to parallel computational thinking, entering
+undergraduate programs without even an informal intuition for the
+concepts that professors will address years into their studies
 cite:lara_soares_parallel_2019,libert_analysis_2019,lammers_exploring_2012.
-
 
 This situation is particularly consequential in the context of
 High-Performance Computing (HPC), where the construction of
