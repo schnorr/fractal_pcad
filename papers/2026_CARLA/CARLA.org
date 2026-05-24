@@ -720,6 +720,12 @@ parallel programming.
 
 # [Discussion]
 
+This section presents the pedagogical deployment of both applications
+and discusses the insights gathered from their use in practice. We
+describe how the tools were introduced to visitors at the UFRGS Open
+Day and then reflect on the observations collected across both editions,
+including the limitations of the format and the most effective
+pedagogical strategies that emerged from the experience.
 
 *** Pedagogical Deployment
 
