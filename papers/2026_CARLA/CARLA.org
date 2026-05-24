@@ -1124,8 +1124,15 @@ demonstrations and the cluster tours conducted with visitors.
      	pages = {1446--1457},
      }
 
-     @misc{noauthor_threadmentor_nodate,
-     	title = {{ThreadMentor}: a pedagogical tool for multithreaded programming: {Journal} on {Educational} {Resources} in {Computing}: {Vol} 3, {No} 1},
+     @article{noauthor_threadmentor_nodate,
+     	author = {Carr, Steve and Mayo, Jean and Shene, Ching-Kuang},
+     	title = {{ThreadMentor}: a pedagogical tool for multithreaded programming},
+     	journal = {ACM Journal on Educational Resources in Computing},
+     	volume = {3},
+     	number = {1},
+     	pages = {1},
+     	year = {2003},
+     	doi = {10.1145/958795.958796},
      	url = {https://dl.acm.org/doi/10.1145/958795.958796},
      	urldate = {2026-05-20},
      }
