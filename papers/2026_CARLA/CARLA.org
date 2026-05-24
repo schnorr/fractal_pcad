@@ -517,21 +517,21 @@ user can also view only the particles of a specific worker.
       \centering
       \fbox{\includegraphics[width=\textwidth]{imgs/nbody-random-white.pdf}}
       \caption{}
-      \label{fig:nbody-a}
+      \label{fig:workers-a}
     \end{subfigure}
     \hfill
     \begin{subfigure}[b]{0.3\textwidth}
       \centering
       \fbox{\includegraphics[width=\textwidth]{imgs/nbody-workers-white.pdf}}
       \caption{}
-      \label{fig:nbody-b}
+      \label{fig:workers-b}
     \end{subfigure}
     \hfill
     \begin{subfigure}[b]{0.3\textwidth}
       \centering
       \fbox{\includegraphics[width=\textwidth]{imgs/nbody-worker0-white.pdf}}
       \caption{}
-      \label{fig:nbody-b}
+      \label{fig:workers-c}
     \end{subfigure}
     \caption{(a) shows the particles colored randomly, (b) uses per-worker colors to show how work was distributed across (a), (c) shows only the particles for worker with rank 0 (4 workers, 10000 particles)}
     \label{fig:workers-n}
@@ -584,7 +584,7 @@ slice per rank.
       \centering
       \includegraphics[width=\textwidth]{imgs/mandelbrot-250.pdf}
       \caption{Granularity 250}
-      \label{fig:mandelbrot-g-b}
+      \label{fig:mandelbrot-g-c}
     \end{subfigure}
     \caption{Computation per-work for different granularity configuration in a 1920x1080 screen (3 workers)}
     \label{fig:mandelbrot-g}
@@ -679,7 +679,7 @@ slice per rank.
       \centering
       \fbox{\includegraphics[width=\textwidth]{imgs/ncorpos-scal-8-white.pdf}}
       \caption{}
-      \label{fig:nbody-b}
+      \label{fig:nbody-c}
     \end{subfigure}
     \caption{(a) shows a total of 15000 particles without specific coloring. (b) shows rank 0 workload for (a) when with 2 workers. (c) also shows a division of (a)'s work, but with 8 workers. The comparison between (b) and (c) evince that with more workers, each worker holds a smaller slice of particles, visually explaining the speedup gained from additional workers}
     \label{fig:nbody-speedup}
