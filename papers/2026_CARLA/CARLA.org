@@ -927,7 +927,8 @@ demonstrations and the cluster tours conducted with visitors.
                         Large Scale Computing Capabilities},
            booktitle = {Proceedings of the AFIPS Spring Joint Computer Conference},
            year      = {1967},
-           pages     = {483--485}
+           pages     = {483--485},
+           doi       = {10.1145/1465482.1465560}
            }
 
            @article{gustafson1988,
