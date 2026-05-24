@@ -57,7 +57,7 @@
 Rayan Raddatz de Matos\orcidID{0009-0009-9323-4730} \and
 Francisco Pegoraro Etcheverria\orcidID{0009-0004-8056-1322} \and
 Pedro Henrique Boniatti Colle\orcidID{0009-0002-7340-9213} \and
-Kenichi Brumati \and
+Kenichi Brumati\orcidID{0009-0003-8867-6012} \and
 Enzo Lisbôa Peixoto\orcidID{0009-0002-7722-7943} \and
 Otho José Sirtoli Marcondes\orcidID{0009-0000-6918-9508} \and
 Lucas Mello Schnorr\orcidID{0000-0003-4828-9942}}
