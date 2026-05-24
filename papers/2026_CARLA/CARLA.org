@@ -907,7 +907,7 @@ demonstrations and the cluster tours conducted with visitors.
    abstract = {"Digital fluency" should mean designing, creating, and remixing, not just browsing, chatting, and interacting.},
    journal = {Commun. ACM},
    month = nov,
-   pages = {60–67},
+   pages = {60--67},
    numpages = {8}
    }
 
