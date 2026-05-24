@@ -858,16 +858,17 @@ visitors.
 
 #+LATEX:\section*{Acknowledgements}
 
-We would like to thank the Institute of Informatics at the Universidade Federal do
-Rio Grande do Sul (INF/UFRGS) for the support during the Open Day
-editions in which the applications were demonstrated, and for
-providing access to the PCAD cluster (http://pcad.inf.ufrgs.br), which
-served as the parallel computing infrastructure for both the
-demonstrations and the cluster tours conducted with visitors.
-# This study was financed in part by the Coordenação de Aperfeiçoamento
-# de Pessoal de Nível Superior - Brasil (CAPES) - Finance Code 001.
-# We thank FAPERGS and CNPq for financial support, including scientific
-# initiation scholarships from FAPERGS (PROBIC) and CNPq (PBIC).
+We would like to thank the Institute of Informatics at the
+Universidade Federal do Rio Grande do Sul (INF/UFRGS) for the support
+during the Open Day editions in which we presented the applications,
+and for providing access to the PCAD cluster
+(http://pcad.inf.ufrgs.br), which served as the parallel computing
+infrastructure for both the demonstrations and the cluster tours
+conducted with visitors.  This study was financed in part by the
+Coordenação de Aperfeiçoamento de Pessoal de Nível Superior - Brasil
+(CAPES) - Finance Code 001.  We thank FAPERGS and CNPq for financial
+support, including scientific initiation scholarships from FAPERGS
+(PROBIC) and CNPq (BIC).
 
 * References                                                         :ignore:
 
