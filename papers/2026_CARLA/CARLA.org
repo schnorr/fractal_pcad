@@ -644,7 +644,7 @@ slice per rank.
   well. In the N-Body simulation, because every particle requires the
   same number of force evaluations, dividing particles equally across
   workers produces a naturally balanced load. Users can experience
-  this directly: with few workers, the simulation appears freezing,
+  this directly: with few workers, the simulation appears frozen,
   and as more workers are added, each taking an equal share of the
   computation, the simulation becomes visibly smoother and more
   responsive. Figure @@latex:\ref{fig:nbody-speedup}@@ contrasts the
