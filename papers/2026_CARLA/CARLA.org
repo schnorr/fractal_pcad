@@ -354,7 +354,7 @@ load balancing.
     \includegraphics[width=\textwidth]{imgs/mandelbrot1.pdf}
   \end{minipage}
   \caption{Example visualization from our Mandelbrot Set application}
-  \label{fig:example}
+  \label{fig:example-mandelbrot}
 \end{figure}
 #+END_EXPORT
 
@@ -496,14 +496,14 @@ user can also view only the particles of a specific worker.
       \centering
       \includegraphics[width=\textwidth]{imgs/mandelbrot-no-threads.pdf}
       \caption{}
-      \label{fig:mandelbrot-a}
+      \label{fig:mandelbrot-colormode-a}
     \end{subfigure}
     \hfill
     \begin{subfigure}[b]{0.48\textwidth}
       \centering
       \includegraphics[width=\textwidth]{imgs/mandelbrot-threads.pdf}
       \caption{}
-      \label{fig:mandelbrot-b}
+      \label{fig:mandelbrot-colormode-b}
     \end{subfigure}
     \caption{(b) uses per-worker colors to show how work was distributed across (a) (2 workers, granularity 100)}
     \label{fig:workers-m}
@@ -518,21 +518,21 @@ user can also view only the particles of a specific worker.
       \centering
       \fbox{\includegraphics[width=\textwidth]{imgs/nbody-random-white.pdf}}
       \caption{}
-      \label{fig:nbody-a}
+      \label{fig:nbody-colormode-a}
     \end{subfigure}
     \hfill
     \begin{subfigure}[b]{0.3\textwidth}
       \centering
       \fbox{\includegraphics[width=\textwidth]{imgs/nbody-workers-white.pdf}}
       \caption{}
-      \label{fig:nbody-b}
+      \label{fig:nbody-colormode-b}
     \end{subfigure}
     \hfill
     \begin{subfigure}[b]{0.3\textwidth}
       \centering
       \fbox{\includegraphics[width=\textwidth]{imgs/nbody-worker0-white.pdf}}
       \caption{}
-      \label{fig:nbody-b}
+      \label{fig:nbody-colormode-c}
     \end{subfigure}
     \caption{(a) shows the particles colored randomly, (b) uses per-worker colors to show how work was distributed across (a), (c) shows only the particles for worker with rank 0 (4 workers, 10000 particles)}
     \label{fig:workers-n}
@@ -571,21 +571,21 @@ slice per rank.
       \centering
       \includegraphics[width=\textwidth]{imgs/mandelbrot-10.pdf}
       \caption{Granularity 10}
-      \label{fig:mandelbrot-g-a}
+      \label{fig:mandelbrot-granularity-a}
     \end{subfigure}
     \hfill
     \begin{subfigure}[b]{0.3\textwidth}
       \centering
       \includegraphics[width=\textwidth]{imgs/mandelbrot-100.pdf}
       \caption{Granularity 100}
-      \label{fig:mandelbrot-g-b}
+      \label{fig:mandelbrot-granularity-b}
     \end{subfigure}
     \hfill
     \begin{subfigure}[b]{0.3\textwidth}
       \centering
       \includegraphics[width=\textwidth]{imgs/mandelbrot-250.pdf}
       \caption{Granularity 250}
-      \label{fig:mandelbrot-g-b}
+      \label{fig:mandelbrot-granularity-c}
     \end{subfigure}
     \caption{Computation per-work for different granularity configuration in a 1920x1080 screen (3 workers)}
     \label{fig:mandelbrot-g}
@@ -615,7 +615,7 @@ slice per rank.
   processing these dense blocks, the first worker to finish a boundary
   block immediately claims the fast-to-compute blocks above it,
   producing the characteristic vertical stripes of a single color
-  observed in Figure @@latex:\ref{fig:mandelbrot-g-a}@@. In regions
+  observed in Figure @@latex:\ref{fig:mandelbrot-granularity-a}@@. In regions
   away from the black area, where all blocks complete quickly, the
   distribution is more symmetric and no such stripes appear. In the
   N-Body simulation, load balance is near-perfect by
@@ -666,21 +666,21 @@ slice per rank.
       \centering
       \fbox{\includegraphics[width=\textwidth]{imgs/ncorpos-scal-white.pdf}}
       \caption{}
-      \label{fig:nbody-a}
+      \label{fig:nbody-scalability-a}
     \end{subfigure}
     \hfill
     \begin{subfigure}[b]{0.3\textwidth}
       \centering
       \fbox{\includegraphics[width=\textwidth]{imgs/ncorpos-scal-2-white.pdf}}
       \caption{}
-      \label{fig:nbody-b}
+      \label{fig:nbody-scalability-b}
     \end{subfigure}
     \hfill
     \begin{subfigure}[b]{0.3\textwidth}
       \centering
       \fbox{\includegraphics[width=\textwidth]{imgs/ncorpos-scal-8-white.pdf}}
       \caption{}
-      \label{fig:nbody-b}
+      \label{fig:nbody-scalability-c}
     \end{subfigure}
     \caption{(a) shows a total of 15000 particles without specific coloring. (b) shows rank 0 workload for (a) when with 2 workers. (c) also shows a division of (a)'s work, but with 8 workers. The comparison between (b) and (c) evince that with more workers, each worker holds a smaller slice of particles, visually explaining the speedup gained from additional workers}
     \label{fig:nbody-speedup}
@@ -903,7 +903,6 @@ demonstrations and the cluster tours conducted with visitors.
    volume = {52},
    number = {11},
    issn = {0001-0782},
-   url = {https://doi.org/10.1145/1592761.1592779},
    doi = {10.1145/1592761.1592779},
    abstract = {"Digital fluency" should mean designing, creating, and remixing, not just browsing, chatting, and interacting.},
    journal = {Commun. ACM},
@@ -979,7 +978,6 @@ demonstrations and the cluster tours conducted with visitors.
      	title = {Research on {Parallel} {Computing} {Teaching}: state of the art and future directions},
      	issn = {2377-634X},
      	shorttitle = {Research on {Parallel} {Computing} {Teaching}},
-     	url = {https://ieeexplore.ieee.org/abstract/document/9273914},
      	doi = {10.1109/FIE44824.2020.9273914},
      	abstract = {This research full paper identifies how the
                     teaching of parallel computing has been developing
@@ -1036,7 +1034,6 @@ demonstrations and the cluster tours conducted with visitors.
      	volume = {17},
      	issn = {1548-0992},
      	shorttitle = {Parallel {Programming} in {Computing} {Undergraduate} {Courses}},
-     	url = {https://ieeexplore.ieee.org/abstract/document/8932371},
      	doi = {10.1109/TLA.2019.8932371},
      	abstract = {Due to the current scenario in which multi-core architectures are predominant in most personal computers and servers, the knowledge of parallel programming content becomes fundamental for computer students to develop software capable of obtaining the best performance of these architectures. Considering the importance of this context, this paper presents the results of a systematic mapping of the literature related to the teaching-learning process of parallel programming in the computing programmes in three important databases: ACM, IEEE and Science Direct. The results obtained showed that in order to solve the challenges and differences found in teaching-learning parallel programming, reorganization is necessary in the undergraduate programmes. A standard for parallel programming teaching is important. This can be established by defining where and how to insert parallelism in the courses, adopting a methodology to teach the contents of parallelism in several different courses, beginning the study in the first year. The main languages, libraries, difficulties encountered and methods of classroom and distance teaching for parallel programming are presented in this paper. Distance learning is still little explored in this area of knowledge, but it can support the teaching and study of these contents.},
      	number = {08},
@@ -1051,7 +1048,6 @@ demonstrations and the cluster tours conducted with visitors.
 
      @inproceedings{brown_framework_2020,
      	title = {A {Framework} for the {Evaluation} of {Parallel} and {Distributed} {Computing} {Educational} {Resources}},
-     	url = {https://ieeexplore.ieee.org/abstract/document/9150314/citations},
      	doi = {10.1109/IPDPSW50202.2020.00057},
      	abstract = {This paper proposes a classification scheme for categorization of PDC educational resources. We have also proposed an evaluation framework for assessing the PDC resources. Under the proposed framework, each resource type has a set of criteria and an associated score. A PDC resource will obtain a score if evaluated under our proposed framework that is the sum of the scores of the criteria that the resource satisfies. The evaluation of whether a resource met a criterion is subjective. We have also presented our evaluation of PDC educational resources appropriate for CS1, CS2 (Computer Science 1 and 2), and DS/A (Data Structures and Algorithms) available on the web using our proposed framework.},
      	urldate = {2026-05-14},
@@ -1066,7 +1062,6 @@ demonstrations and the cluster tours conducted with visitors.
      @inproceedings{conte_teaching_2020,
      	title = {Teaching {Parallel} {Programming} for {Beginners} in {Computer} {Science}},
      	issn = {2377-634X},
-     	url = {https://ieeexplore.ieee.org/abstract/document/9274155},
      	doi = {10.1109/FIE44824.2020.9274155},
      	abstract = {This research full paper describes our experience in teaching parallel programming for students without previous knowledge of basic concepts of computing, comparing their levels of learning. The use of parallel software grew considerably in recent years due to the increasing availability of multi and many-core devices. The evolution of hardware and software resources collaborated for a remarkable computational processing power offered by parallel programs. However, parallel programming is taught usually in more advanced years of the undergraduate computer courses, due to its supposed prerequisites as sequential programming, operating systems, computer architectures and others. Postponing parallel programming teaching hinder students to apply parallelism other subjects, reducing the probability of these future professionals think on parallel solutions naturally. We executed 05 experiments teaching parallel programming subjects for 252 students. We analyzed whether students without prerequisites could learn parallel programming in the same level verified with students with prior computing knowledge. We used three different teaching methodologies: traditional, Problem Based Learning (PBL), and Team-Based Learning (TBL). The teaching and learning evaluation took into account such metrics: parallelism thinking of students, use of programming-model, correct output of the program, source-code readability and satisfaction of the students. The paper shows that it is possible to teach parallel programming to students without previous knowledge of computing, obtaining high scores and interest in such learning. Our results contribute positively to disseminate parallel programming, which is vital to extract performance from nowadays computers.},
      	urldate = {2026-05-14},
@@ -1094,7 +1089,6 @@ demonstrations and the cluster tours conducted with visitors.
      	title = {Experiences with {Teaching} a {Second} {Year} {Distributed} {Computing} {Course}},
      	volume = {10104},
      	isbn = {978-3-319-58942-8 978-3-319-58943-5},
-     	url = {https://link.springer.com/10.1007/978-3-319-58943-5_3},
      	doi = {10.1007/978-3-319-58943-5_3},
      	abstract = {The proliferation of parallel and distributed computing in the last years has led to calls for the early introduction of parallel and distributed computing in the undergraduate curriculum arguing that the topic should and can be offered at different levels but some basic knowledge must be acquired by every computer science graduate. However, there is no widespread agreement on how this can be achieved. This paper contributes to the debate by presenting the approach and experiences from designing and teaching a second year undergraduate distributed computing course that has been running for a decade in the School of Computer Science of the University of Manchester. The course evolved to follow an approach which presents material in a way that attempts to emphasize the importance of four key pillars of abstraction, which underpin the design and management of modern distributed systems, namely: trade-offs, failures, concurrency and synchronization, performance. The paper presents the details of this approach arguing that the use of suitable abstractions allows for a rewarding learning experience that helps students familiarize with and appreciate the challenges of distributed computing at an early stage.},
      	language = {en},
@@ -1114,7 +1108,6 @@ demonstrations and the cluster tours conducted with visitors.
      	title = {A {High} {Performance} {Computing} {Course} {Guided} by the {LU} {Factorization}},
      	volume = {29},
      	issn = {1877-0509},
-     	url = {https://www.sciencedirect.com/science/article/pii/S1877050914003081},
      	doi = {10.1016/j.procs.2014.05.131},
      	abstract = {This paper presents an experience of Problem-based learning in a High Performance Computing course. The course is part of the specialization in High Performance Architectures and Supercomputing on a Master in New Technologies in Computer Science. It is supposed the students have a basic knowledge of Parallel Programming, but previous studies and the place where they were taken mean the group is heterogeneous. The Problem-based learning approach therefore has to facilitate the individual development and supervision of the students. The course focuses on HPC, matrix computation, parallel libraries, heterogeneous computing and scientific applications of parallelism. The students work on the different aspects of the course using the LU factorization, developing their own implementations, using different libraries, combining different levels of parallelism and conducting experiments in a small heterogeneous cluster composed of multicores of different characteristics and with GPU of different types.},
      	urldate = {2026-05-20},
@@ -1142,7 +1135,6 @@ demonstrations and the cluster tours conducted with visitors.
      @inproceedings{rague_measuring_2011,
      	title = {Measuring {CS1} perceptions of parallelism},
      	issn = {2377-634X},
-     	url = {https://ieeexplore.ieee.org/document/6142705},
      	doi = {10.1109/FIE.2011.6142705},
      	abstract = {Educators in Computer Science (CS) generally agree that teaching concurrency can be difficult. CS programs typically offer parallel and distributed computing topics as advanced courses. A potential alternative approach is to provide instruction on parallelism early in the undergraduate curriculum, emphasizing conceptual design rather than implementation issues. This introduction of “parallel-thinking” to beginning CS undergraduates represents an innovation and significant extension to existing standard Computer Science curricula. The research described in this paper investigated the feasibility of integrating parallel computing concepts into a first-year CS course. To quantitatively assess student comprehension of parallel computing, an experimental two-factor mixed group design educational study was conducted to evaluate a control group and two instructional interventions: (1) lecture only, and (2) lecture with laboratory work using a software visualization Parallel Analysis Tool (PAT) specifically designed for this project. The Perceptions of Parallelism Survey (PoPS), a new evaluation instrument developed for this study and modeled after the Force Concept Inventory (FCI), was used to measure student learning. The results from this educational study show a statistically significant main effect among the repeated measures. PoPS results measured during the ninth week of the course reveal that performance levels remained high compared to pre-course performance scores.},
      	urldate = {2026-05-20},
@@ -1175,7 +1167,6 @@ demonstrations and the cluster tours conducted with visitors.
      @inproceedings{lammers_exploring_2012,
      	title = {Exploring student understanding of parallelism using concept maps},
      	issn = {2377-634X},
-     	url = {https://ieeexplore.ieee.org/document/6462511},
      	doi = {10.1109/FIE.2012.6462511},
      	abstract = {This work explores the conceptual understanding attained by students in the area of parallel computing. Parallelism is continuing to grow as an important topic area in computer engineering and computer science. Even as it increases in popularity, only a limited amount of research has been done to determine how well students construct their knowledge of the field. This work aims to begin exploring the structure of parallel computing as understood by undergraduate computer engineering students. A small group of students was selected to create concept maps that illustrate their understanding. These maps have been used in many different areas of science and engineering. The maps were then analyzed and compared to a reference concept map developed by a group of computer engineering faculty. The results of this analysis revealed that students in this sample demonstrated a limited knowledge of parallelism and concurrency through the organization of their concept maps. The analysis of the concept maps also provides evidence that there is a moderate level of understanding of the challenges to implementing and controlling concurrency. However, the linkages created in the maps reveal students' misinterpretation of the goals of exploiting parallelism.},
      	urldate = {2026-05-20},
@@ -1193,7 +1184,6 @@ demonstrations and the cluster tours conducted with visitors.
      	series = {{EASEAI} 2019},
      	title = {Analysis of students’ preconceptions of concurrency},
      	isbn = {978-1-4503-6852-0},
-     	url = {https://dl.acm.org/doi/10.1145/3340435.3342721},
      	doi = {10.1145/3340435.3342721},
      	abstract = {In previous literature, several authors have recommended teaching concurrent programming, as the current evolution of IT involves concurrency. However, in order to teach concurrent programming properly, in a constructivist educational learning framework, we need to know the preconceptions students have regarding it. In this paper, we report on the results found from data collected through a questionnaire submitted in secondary schools to 101 students aged from 12 to 15. We detail the preconceptions of concurrent programming we extracted from the questionnaire answers and formulate recommendations toward creating a course teaching concurrent programming.},
      	urldate = {2026-05-19},
@@ -1211,7 +1201,6 @@ demonstrations and the cluster tours conducted with visitors.
      	title = {Minimum {Time}, {Maximum} {Effect}: {Introducing} {Parallel} {Computing} in {CS0} and {STEM} {Outreach} {Activities} {Using} {Scratch}},
      	isbn = {978-1-4503-2893-7},
      	shorttitle = {Minimum {Time}, {Maximum} {Effect}},
-     	url = {https://dl.acm.org/doi/10.1145/2616498.2616568},
      	doi = {10.1145/2616498.2616568},
      	abstract = {This paper presents our experiences and outcomes using Scratch to teach parallel computing concepts to students just learning about computer science. We presented versions of this material to middle school and high school girls during a STEM workshop and then to undergraduate university students enrolled in an introductory computer science course. Using the Scratch development environment, students are able to build, modify and observe the changes in the performance of applications which utilize multi-threaded, concurrent, operations. This includes scenarios which involve more advanced topics such as race conditions and mutex locks.Developing these materials has allowed us to introduce these concepts in a programming environment much earlier than we have previously, giving instructors in down-stream courses the ability to build upon this early exposure. Survey results show that this approach resulted in a significant increase in both of these areas. For example, the number of students in our CS0 course who felt they could apply parallel programming to other problems using Scratch more than doubled, rising from 25 to 55 (out of 61 students that responded to both surveys). Likewise, the number of students who felt they understood what parallel programming means rose from 27 to 56. These results were achieved after just one class period. Similarly, 27 of the 37 girls responding to the workshop survey felt that they were capable of learning to write computer programs and 22 of 41 indicated they had an interest in a job using HPC to solve problems.},
      	urldate = {2026-05-19},
@@ -1227,7 +1216,6 @@ demonstrations and the cluster tours conducted with visitors.
      	title = {Has the time come to teach parallel programming to secondary school students?},
      	volume = {8},
      	issn = {2405-8440},
-     	url = {https://www.cell.com/heliyon/abstract/S2405-8440(21)02765-1},
      	doi = {10.1016/j.heliyon.2021.e08662},
      	abstract = {{\textless}h2{\textgreater}Abstract{\textless}/h2{\textgreater}{\textless}p{\textgreater}Today, almost every computer has at least one multicore processor. To remain in stride with hardware developments, numerous university faculties oriented towards computer science have introduced parallel programming as an integral part of their courses. The question is, given the availability of parallel architectures, and considering future trends in programming, whether it is time for parallel programming to also become an integral part of the informatics curriculum in secondary schools? This paper presents research conducted in three schools in Croatia over several school years. A total of 162 students from the science-mathematic high schools participated in the research. The results, based on student evaluations, suggest that this course content is equally interesting and somewhat more difficult, and perceived as equally useful as other course content taught to students. Moreover, the findings indicate that students can understand and later apply some of the fundamental concepts of parallel programming.{\textless}/p{\textgreater}},
      	language = {English},
@@ -1245,7 +1233,6 @@ demonstrations and the cluster tours conducted with visitors.
      	series = {{EduHPC} '15},
      	title = {A problem-based learning approach to {GPU} computing},
      	isbn = {978-1-4503-3961-2},
-     	url = {https://dl.acm.org/doi/10.1145/2831425.2833197},
      	doi = {10.1145/2831425.2833197},
      	abstract = {Compared to CPUs, modern GPUs exhibit a high ratio of computing performance per watt, and so current supercomputer designs often include multiple racks of GPUs in order to achieve high teraflop counts at minimal energy cost. GPU programming is thus becoming increasingly important, and yet it remains a challenging task. This paper describes a course in GPU programming for senior undergraduates and first-year graduates that has been taught at Clemson University annually since 2010. The course uses problem-based learning, with focus on a large, real-world problem, in particular, a system for parallel solution of partial differential equations. Although the system for solving PDEs is useful in its own right, the problem is used as a vehicle in which to explore design issues that face those attempting to achieve new levels of performance on architectures.},
      	urldate = {2026-05-21},
@@ -1264,7 +1251,6 @@ demonstrations and the cluster tours conducted with visitors.
      isbn = {9781450346566},
      publisher = {Association for Computing Machinery},
      address = {New York, NY, USA},
-     url = {https://doi.org/10.1145/3027063.3053253},
      doi = {10.1145/3027063.3053253},
      abstract = {Modern computing is increasingly handled in a parallel fashion, however, little is known about how individuals learn parallel programming. This paper focuses on the design of an educational game called Parallel, designed for both teaching parallel programming education for CS undergraduate curricula, as well as for gathering insights into how students learn, and solve parallel programming problems. Specifically, we focus on the key challenge of choosing the appropriate metaphors in order to facilitate transference between parallel programming and the game. In this paper, we describe our design methodology and results from our preliminary user evaluations.},
      booktitle = {Proceedings of the 2017 CHI Conference Extended Abstracts on Human Factors in Computing Systems},
@@ -1293,7 +1279,6 @@ demonstrations and the cluster tours conducted with visitors.
     publisher = {SBC},
     address   = {Porto Alegre, RS, Brasil},
     doi       = {10.5753/sscad_estendido.2025.15894},
-    url       = {https://sol.sbc.org.br/index.php/sscad_estendido/article/view/37928}
   }
 #+end_src
 
