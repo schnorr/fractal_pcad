@@ -290,7 +290,7 @@ support further study in formal undergraduate courses, as was done
 with the LU factorization as a vehicle to explore the many ways to
 parallelize a problem cite:bernabe_high_2014, and as we ourselves have
 done in a deeper analysis of the Mandelbrot application
-cite:sscad_estendido.
+cite:sscad_francisco.
 
 ** Methods and Materials
 :PROPERTIES:
@@ -349,7 +349,7 @@ the concepts of load distribution and dynamic load balancing.
     \centering
     \includegraphics[width=\textwidth]{imgs/mandelbrot1.pdf}
   \end{minipage}
-  \caption{Example visualization from our Mandelbrot Set application}
+  \caption{Example visualization from our Mandelbrot Set application.}
   \label{fig:example-mandelbrot}
 \end{figure}
 #+END_EXPORT
@@ -526,11 +526,11 @@ user can also view only the particles of a specific worker.
     \hfill
     \begin{subfigure}[b]{0.3\textwidth}
       \centering
-      \fbox{\includegraphics[width=\textwidth]{imgs/nbody-worker0-white.pdf}}
+      \fbox{\includegraphics[width=\textwidth]{imgs/nbody-worker3-white.pdf}}
       \caption{}
       \label{fig:nbody-colormode-c}
     \end{subfigure}
-    \caption{(a) shows the particles colored randomly, (b) uses per-worker colors to show how work was distributed across (a), (c) shows only the particles for worker with rank 0 (4 workers, 10000 particles)}
+    \caption{(a) shows the particles colored randomly, (b) uses per-worker colors to show how work was distributed across (a), (c) shows only the particles for worker with rank 3 (4 workers, 10000 particles, 4x zoom).}
     \label{fig:workers-n}
   \end{figure}
 #+END_EXPORT
@@ -582,7 +582,7 @@ rank.
       \caption{Granularity 250}
       \label{fig:mandelbrot-granularity-c}
     \end{subfigure}
-    \caption{Computation per-work for different granularity configuration in a 1920x1080 screen (3 workers)}
+    \caption{Computation per-work for different granularity configuration in a 1920x1080 screen (3 workers).}
     \label{fig:mandelbrot-g}
   \end{figure}
 #+END_EXPORT
@@ -590,7 +590,7 @@ rank.
 **** Load Balance
 
 Load balancing refers to how work is distributed evenly across workers
-cite: cybenko1989. A perfectly balanced execution has all workers
+cite:cybenko1989. A perfectly balanced execution has all workers
 finishing at the same time. Imbalance occurs when some workers
 complete their tasks early and sit idle while others are still
 computing. The two applications present contrasting situations. In the
@@ -631,7 +631,7 @@ is, whether the application sustains its gains or experiences
 diminishing returns. In the Mandelbrot application, speedup depends on
 the granularity parameter and the fractal region's computational
 intensity. In compute-intensive regions with appropriate granularity,
-near-linear speedup is achievable cite:sscad_estendido. However, a
+near-linear speedup is achievable cite:sscad_francisco. However, a
 granularity that is too fine floods the coordinator with small tasks,
 reducing efficiency. Users can observe this by varying granularity and
 comparing rendering times, discovering that even an embarrassingly
@@ -675,9 +675,9 @@ workers increases.
       \caption{}
       \label{fig:nbody-scalability-c}
     \end{subfigure}
-    \caption{A simulation with 15000 particles without workload coloring (a). 
-The subset of particles assigned to rank 0 when the simulation runs with 2 workers (b). 
-The corresponding workload partition with 8 workers (c). 
+    \caption{A simulation with 15000 particles without workload coloring (a).
+The subset of particles assigned to rank 0 when the simulation runs with 2 workers (b).
+The corresponding workload partition with 8 workers (c).
 Comparing (b) and (c) illustrates that increasing the number of workers reduces the number of particles assigned to each worker, visually demonstrating the source of the observed speedup.}
     \label{fig:nbody-speedup}
   \end{figure}
@@ -685,25 +685,33 @@ Comparing (b) and (c) illustrates that increasing the number of workers reduces 
 
 **** Concept Mapping
 
-Table [[tab:concepts]] summarizes how each application maps to the
+Table @@latex:\ref{tab:concepts}@@ summarizes how each application maps to the
 parallel concepts covered in this section. The two applications are
 deliberately complementary. Where one offers a natural and direct
 illustration of a concept, the other provides a contrasting
 perspective, together covering essential challenges and concepts of
 parallel programming.
 
-#+LATEX: \setlength{\tabcolsep}{4pt}
-#+CAPTION: Mapping of parallel concepts to the two applications.
-#+NAME: tab:concepts
-#+ATTR_LATEX: :booktabs t :align lll :center t
-| Concept               | Mandelbrot                         | N-Body                           |
-|-----------------------+------------------------------------+----------------------------------|
-| Problem coupling      | Embarrassingly parallel            | Tightly coupled                  |
-| Domain decomposition  | Square blocks, variable size       | Equal contiguous particle slices |
-| Granularity           | Explicit user-controlled parameter | Fixed (one slice per rank)       |
-| Load balance          | Irregular, dynamically managed     | Balanced by construction         |
-| Speedup & scalability | Granularity-dependent              | Communication-bounded            |
-#+LATEX: \setlength{\tabcolsep}{6pt}
+#+BEGIN_EXPORT latex
+\begin{table}[htbp]
+  \caption{Mapping of parallel concepts to the two applications.}
+  \label{tab:concepts}
+  \centering
+  \resizebox{\textwidth}{!}{%
+  \begin{tabular}{lll}
+    \toprule
+    Concept & Mandelbrot & N-Body \\
+    \midrule
+    Problem coupling      & Embarrassingly parallel            & Tightly coupled                  \\
+    Domain decomposition  & Square blocks, variable size       & Equal contiguous particle slices \\
+    Granularity           & Explicit user-controlled parameter & Fixed (one slice per rank)       \\
+    Load balance          & Irregular, dynamically managed     & Balanced by construction         \\
+    Speedup \& scalability & Granularity-dependent             & Communication-bounded            \\
+    \bottomrule
+  \end{tabular}%
+  }
+\end{table}
+#+END_EXPORT
 
 ** Results and Discussion
 :PROPERTIES:
@@ -778,7 +786,7 @@ work, demonstrating that the tool adapts naturally to formal classroom
 instruction. Furthermore, a rigorous performance analysis of the
 Mandelbrot application, employing a full factorial experimental design
 across multiple granularity levels and node counts, was conducted and
-published separately cite:sscad_estendido. Together, these experiences
+published separately cite:sscad_francisco. Together, these experiences
 illustrate that the same application accessible to high school
 visitors can serve as a vehicle for both formal undergraduate
 instruction and research-level investigation into parallel computing
@@ -1278,10 +1286,10 @@ support, including scientific initiation scholarships from FAPERGS
        title        = {{The Deadlock Empire}: Slay dragons, master concurrency!},
        howpublished = {\url{https://deadlockempire.github.io}},
        year         = {2014},
-       note         = {Accessed: 2026}
+       note         = {Accessed: 2026},
      }
 
-  @inproceedings{sscad_estendido,
+  @inproceedings{sscad_francisco,
     author    = {Francisco Etcheverria and Rayan Matos and Kenichi Brumati and Lucas Schnorr},
     title     = {Dynamic Load Balancing and Scalability Analysis of the Mandelbrot Set in a Multi-Threaded {HPC} Application},
     booktitle = {Anais Estendidos do XXVI Simp\'{o}sio em Sistemas Computacionais de Alto Desempenho},
