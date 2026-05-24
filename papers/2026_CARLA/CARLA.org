@@ -132,7 +132,7 @@ virtually no exposure to parallel computational thinking, entering
 undergraduate programs without even an informal intuition for the
 concepts that professors will address years into their studies
 cite:lara_soares_parallel_2019,libert_analysis_2019,lammers_exploring_2012.
-
+#+latex: %
 This situation is particularly consequential in the context of
 High-Performance Computing (HPC), where the construction of
 parallelism as a way of seeing problems is not just a tool of the
