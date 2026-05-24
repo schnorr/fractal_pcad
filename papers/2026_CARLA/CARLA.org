@@ -298,23 +298,22 @@ cite:sscad_estendido.
 :END:
 
 This section describes the design and implementation of the two
-educational applications, together with the parallel computing concepts
-they are designed to convey. We first present the common client--server
+educational applications, along with the parallel computing concepts
+they aim to convey. We first present the common client-server
 architecture shared by both tools, then detail the individual design
 choices of the Mandelbrot and N-Body applications. We then explain how
-each application maps to the core parallel computing concepts covered in
-this work, including problem coupling, domain decomposition, granularity,
-load balance, speedup, efficiency, and scalability.
+each application maps to the core parallel computing concepts covered
+in this work, including problem coupling, domain decomposition,
+granularity, load balance, speedup, efficiency, and scalability.
 
 *** Parallel Applications Design
-
 **** Common Client/Server Design
 
-Both applications share a common client–server architecture, in which
-a graphical client and an MPI-based server run as separate processes,
-communicating over a TCP connection. The client is a lightweight
-application running on a local machine that simply requests work from
-the coordinator based on user input.  Meanwhile, the server is a
+Both applications use a typical client-server architecture, in which a
+graphical client and an MPI-based server run as separate processes and
+communicate over a TCP connection. The client is a lightweight
+application running on a local machine that requests work from the
+coordinator based on user input. Meanwhile, the server is a
 distributed MPI application executing on a dedicated cluster, taking
 responsibility for domain decomposition, process synchronization, and
 the relevant numerical calculations. This distinction is important, as
@@ -323,23 +322,20 @@ dispatching work to a larger computational system.
 
 **** Mandelbrot Set
 
-
 The Mandelbrot Set cite:mandelbrot1980 is a well-known compute-bound
 application that is considered embarrassingly parallel. It consists of
 iteratively applying the complex function $f(z) = z^2 + c$, starting
 from $z=0$. The complex number $c$ belongs to the Mandelbrot set if
-its value does not exceed a fixed radius before an iteration limit is
-reached.  The Mandelbrot Set is commonly visualized by mapping points
-on the 2D plane of the screen to points $c$ on the complex plane, with
-each point representing a pixel colored by the number of iterations
-until the point escapes. While all points can be computed
-independently, different points require a varying number of iterations
-to compute before escaping, and as such, the application shows a
-highly irregular workload. This irregularity, as well as the intuitive
-visualization, makes the Mandelbrot Set an ideal pedagogical tool for
-introducing students to the concepts of load distribution and dynamic
-load balancing.
-
+its value does not exceed a fixed radius before reaching an iteration
+limit. Visualization is the common method to observe the Mandelbrot
+Set. It consists of mapping screen points to points $c$ in the complex
+plane, with each point representing a pixel colored by the number of
+iterations until it escapes. As point computation is independent,
+different points require varying numbers of iterations to escape, and
+as a result, the application shows a highly irregular workload. This
+irregularity, along with its intuitive visualization, makes the
+Mandelbrot Set an ideal pedagogical tool for introducing students to
+the concepts of load distribution and dynamic load balancing.
 
 #+BEGIN_EXPORT latex
 \begin{figure}[htbp]
@@ -358,7 +354,6 @@ load balancing.
 \end{figure}
 #+END_EXPORT
 
-
 ***** Architecture
 
 The Mandelbrot server relies on a demand-driven load balancer designed
@@ -366,28 +361,28 @@ around a coordinator-worker model. The coordinator (MPI rank 0)
 receives the user's rendering request and discretizes the fractal
 space into smaller payloads based on a specified
 \textit{granularity}. The granularity parameter dictates the size of
-the square blocks into which the workload is partitioned for workers.  A
-pool of MPI workers actively requests work from the coordinator.  Once
-a worker finishes calculating the numerical depths for its assigned
-block, it returns the response to the coordinator and requests a new
-set of points.  This dynamic distribution ensures that computationally
-light regions do not cause workers to idle while others are stuck
-processing dense regions.
+the square blocks used for work partitioning before sending data to
+workers. A pool of MPI workers actively requests work from the
+coordinator. Once a worker finishes calculating the numerical depths
+for its assigned block, it returns the response to the coordinator and
+requests a new set of points. This dynamic distribution ensures that
+computationally light regions do not cause workers to idle while
+others are stuck processing dense regions.
 
 ***** Client
 
-The graphical client is designed to be interactive and responsive,
+We designed the graphical client to be interactive and responsive,
 allowing users to select a color scheme, configure parameters such as
-granularity, and zoom into regions of the complex plane via mouse and
-keyboard. It operates using threads to handle TCP
+granularity, and zoom into regions of the complex plane using the
+mouse and keyboard. It operates using threads to handle TCP
 communication and UI rendering simultaneously. Crucially, the
-coordinator delivers results back to the client block by block. As
-these responses arrive asynchronously, the client applies a coloring
-function and incrementally updates a shared pixel buffer. When users
-zoom into computationally dense fractal regions, they visually
-perceive load imbalance in real time, as the "easy" blocks render
-almost instantaneously, while the "hard" blocks stall as the worker
-nodes process them.
+coordinator delivers results back to the client continuously, block by
+block. As these responses arrive asynchronously, the client applies a
+coloring function and incrementally updates a shared pixel
+buffer. When users zoom into computationally dense fractal regions,
+they visually perceive load imbalance in real time, as the "easy"
+blocks render almost instantaneously. In contrast, the "hard" blocks
+stall as the worker nodes process them.
 
 **** N-Body Simulation
   The N-Body gravitational simulation is a classical problem in
