@@ -85,14 +85,14 @@ applications, a Mandelbrot Set renderer and an N-Body gravitational
 simulation, developed as pedagogical tools to convey core PDC concepts
 through direct visual observation. Both tools are built on an
 MPI-based client-server architecture and provide real-time
-visualization of the parallel computation, allowing users to observe
-domain decomposition, granularity, load balance, speedup and
-scalability without any programming prerequisite. The applications
+visualization of parallel computation, allowing users to observe
+domain decomposition, granularity, load balance, speedup, and
+scalability without any programming prerequisites. The applications
 were deployed at the UFRGS Open Day in 2025 and 2026, reaching waves
 of prospective students with no computing background. The deployments
 followed a two-stage approach: first interacting with the application,
-then visiting the physical cluster where the computation was
-executed. The experience reinforces the case for visually rich,
+then visiting the physical cluster where the computation takes
+place. The experience reinforces the case for visually rich,
 interactive tools as a good entry point for PDC education, while also
 having enough depth for formal academic use.
 
@@ -116,23 +116,22 @@ having enough depth for formal academic use.
 [Open science, url, etc]
 *** Context                                                        :ignore:
 Modern computing is inherently parallel. With the start of the new
-millennium and the commercialization of multi-core processors, all
-sequential computation taught became only a part of how modern
-computer systems work.  Since 2013, IEEE/ACM teaching guidelines
-cite:curricula_computer_2013 includes parallel and distributed
-computing (PDC) as a required knowledge for Computer Science
-curricula.  Nevertheless, despite this reality, parallel computational
-teaching remains a late-stage topic in most Computer Science
-curricula. Concepts such as domain partitioning, task granularity,
-load balancing, speedup, and scalability are routinely deferred to
-upper-division or graduate electives, leaving students ill-equipped to
-reason about PDC problems.  This curricular gap begins even earlier:
-prospective students arriving from high school have virtually no
-exposure to parallel computational thinking, entering undergraduate
-programs without even an informal intuition for the concepts that
-professors will address years into the students' studies
+millennium and the widespread commercialization of multi-core
+processors, sequential computation alone, as typically taught, became
+only a partial description of how modern computer systems work. Since
+2013, IEEE/ACM teaching guidelines cite:curricula_computer_2013 have
+cited parallel and distributed computing (PDC) as a required knowledge
+for Computer Science curricula. Nevertheless, despite this reality,
+parallel computational teaching remains a late-stage topic in most
+Computer Science curricula. Concepts such as domain partitioning, task
+granularity, load balancing, speedup, and scalability are routinely
+deferred to upper-division or graduate electives, leaving students
+ill-equipped to reason about PDC problems. This curricular gap begins
+even earlier: prospective students arriving from high school have
+virtually no exposure to parallel computational thinking, entering
+undergraduate programs without even an informal intuition for the
+concepts that professors will address years into their studies
 cite:lara_soares_parallel_2019,libert_analysis_2019,lammers_exploring_2012.
-
 
 This situation is particularly consequential in the context of
 High-Performance Computing (HPC), where the construction of
@@ -150,17 +149,17 @@ tangible. When a student can directly observe how domain partitioning
 affects load balance, or watch speedup curves shift in response to
 granularity choices, abstract concepts acquire intuitive
 grounding. Most tools focus on direct student interaction, focusing on
-the visualization of the user's inputted code
+the visualization of user-written code
 cite:noauthor_threadmentor_nodate,carr_concurrentmentor_nodate.  Other
-work, from courses developed to students starting CS
+work, from courses developed for students beginning their CS studies
 cite:feldhausen_minimum_2014,ghafoor_integrating_2018,conte_teaching_2020,
 focus on developing PDC thinking with the student's current knowledge
 at that point in the curricula. Most of these tools and resources can
-be graded with the framework proposed in Brown's work
-cite:brown_framework_2020. However, there is a blind spot in existing resources
-that are able to communicate to the layman the concepts of PDC, and
-instigate those with no prior computing background the possibilities
-of parallel programming.
+be evaluated using the framework proposed in Brown's work
+cite:brown_framework_2020. However, existing resources largely overlook the challenge of
+communicating PDC concepts to a general audience and of inspiring those
+with no prior computing background to explore the possibilities of
+parallel programming.
 
 # *** Bridge to our strategy :ignore:
 
@@ -172,7 +171,7 @@ with no formal computing background, for a first hands-on encounter
 with Computer Science. This setting imposed strict design
 constraints. The tools had to be immediately accessible, visually
 compelling, and capable of conveying non-trivial parallel-computing
-concepts during a brief, informal interaction. At the same time, these tools should scale in depth, remaining useful in formal
+concepts during a brief, informal interaction. At the same time, these tools needed to scale in depth, remaining useful in formal
 undergraduate instruction.
 
 *** The two applications overview                                  :ignore:
@@ -193,7 +192,7 @@ students to the challenges of tightly coupled parallelism:
 synchronization, communication overhead, and the tension between
 scalability and correctness. Together, the two problems span a
 representative spectrum of parallel computing, from trivially
-decomposable to communication-bound, with a visual interactive
+decomposable to communication-bound, within a shared visual interactive
 framework.
 
 The rendering and simulation processes then become live experiments in
@@ -245,13 +244,13 @@ This document is structured as follows. Section [[#sec.rw]] surveys
 :CUSTOM_ID: sec.rw
 :END:
 
-The related works for this paper were extracted from two literature
+The related work for this paper was drawn from two literature
 mappings of the state of the art in the teaching of PDC
 cite:lara_soares_parallel_2019,de_jesus_oliveira_duraes_research_2020. Their
 findings reflect a shared consensus: the world needs more programmers
 able to work in PDC, but the curriculum is not sufficient to cater to
 that demand. Soares cite:lara_soares_parallel_2019 reinforces the
-necessity of bringing the teaching of PDC earlier in CS curriculum.
+necessity of bringing the teaching of PDC earlier in the CS curriculum.
 
 The work of Feldhausen et al. cite:feldhausen_minimum_2014 with
 Scratch in CS0 and outreach programs shows the capacity of highly
@@ -267,15 +266,15 @@ educational resources for PDC. It divides them between /Instructional/
 for use in the classroom with a professor; /Hardware/, where the
 students can execute their parallel code; and /Tools/, where resources
 are available for students to work hands-on and exercise their
-knowledge. For each of these categories, one scale was proposed to
+knowledge. For each of these categories, a scale was proposed to
 evaluate them. Tools such as Parallel Game cite:ontanon_designing_2017
 and DeadLock Empire Game cite:hudecek2014deadlock are effective
 introductory tools for early or inexperienced programmers. They gamify
 concepts of PDC, making them more approachable for high school and
 early CS students. This translation of concepts to a visual and
 interactive medium demonstrates that such tools are extremely
-effective in communicating information to students, as they can engage
-them more than a simple speedup of an arbitrary program. While some
+effective in communicating information to students, as they engage
+students more effectively than a simple speedup measurement of an arbitrary program. While some
 tools focus on visualizing user-written code and others engage
 students through programming exercises, our applications take a
 different stance: rather than teaching how to write parallel programs,
@@ -366,7 +365,7 @@ around a coordinator-worker model. The coordinator (MPI rank 0)
 receives the user's rendering request and discretizes the fractal
 space into smaller payloads based on a specified
 \textit{granularity}. The granularity parameter dictates the size of
-the square blocks the workload is partitioned into for workers.  A
+the square blocks into which the workload is partitioned for workers.  A
 pool of MPI workers actively requests work from the coordinator.  Once
 a worker finishes calculating the numerical depths for its assigned
 block, it returns the response to the coordinator and requests a new
@@ -377,9 +376,9 @@ processing dense regions.
 ***** Client
 
 The graphical client is designed to be interactive and responsive,
-allowing users to select color scheme, set configurations such as
-granularity and select regions to zoom across the complex plane via
-mouse and keyboard. It operates using threads to handle TCP
+allowing users to select a color scheme, configure parameters such as
+granularity, and zoom into regions of the complex plane via mouse and
+keyboard. It operates using threads to handle TCP
 communication and UI rendering simultaneously. Crucially, the
 coordinator delivers results back to the client block by block. As
 these responses arrive asynchronously, the client applies a coloring
@@ -423,12 +422,12 @@ particles into contiguous slices of approximately equal size, one per
 rank. Each rank is responsible for computing the forces and updating
 the positions of the particles in its assigned slice. However, since
 gravitational force is long-range, every rank must read the positions
-of all $N$ particles at each step and not only its own slice. After
+of all $N$ particles at each step and not only those in its own slice. After
 completing each iteration, all ranks participate in a collective
 operation that exchanges updated positions across the entire
 communicator, ensuring every rank holds the complete system state
 before the next step begins. Unlike the Mandelbrot coordinator, rank 0
-is also a worker, and not only a coordinator: it computes its own
+is also a worker, not merely a coordinator: it computes its own
 particle slice alongside all other ranks. It additionally manages TCP
 networking through dedicated threads, receiving simulation requests
 from the client and forwarding results back as a stream of per-rank,
@@ -438,7 +437,7 @@ per-iteration responses.
 
 The graphical client provides an interactive real-time view of the galaxy
 simulation, where users can start new simulations, adjust the number
-of particles and navigate the scene by zooming and panning with the
+of particles, and navigate the scene by zooming and panning with the
 mouse. Particle positions are updated on screen as responses stream in
 from the server, producing a smooth animation of the galaxy evolving
 under gravity.
@@ -464,9 +463,9 @@ difference becomes apparent when scaling the number of workers: adding
 more workers to the Mandelbrot set consistently reduces rendering
 time, while the N-Body simulation gains less and less from additional
 workers as the cost of the mandatory synchronization grows. This gives
-users an immediate intuition about the different problems each
-application needs to face and the fundamental structural difference of
-the problems.
+users an immediate intuition about the different challenges each
+application needs to face and the fundamental structural differences
+between the two problems.
 
 **** Domain Decomposition
 
@@ -556,7 +555,7 @@ others to compute, leaving workers idle; with a fine granularity, work
 is spread across many small blocks and the rendering progresses more
 uniformly. Figure @@latex:\ref{fig:mandelbrot-g}@@ shows an example of
 the Mandelbrot application rendering the same area with different
-granularity and representing how the work was distributed. By changing
+granularity and illustrating how the work was distributed. By changing
 the =granularity= value and showing the resulting work partition, one
 can easily explain why granularity has significant impacts on load
 balance and overall computation time. There is no equivalent of this
@@ -597,7 +596,7 @@ slice per rank.
   Load balance refers to how evenly computational work is distributed
   across workers cite:cybenko1989. A perfectly balanced execution has
   all workers finishing at the same time. Imbalance occurs when some
-  workers complete their tasks early and idle while others are still
+  workers complete their tasks early and sit idle while others are still
   computing.  The two applications present contrasting situations. In the
   Mandelbrot set, load imbalance is inherent to the problem: different
   regions of the complex plane require vastly different numbers of
@@ -749,7 +748,7 @@ particle array, and how adding more workers affects performance. The
 per-worker coloring mode was particularly effective at making these
 abstract concepts tangible, as visitors could directly observe how the
 work was split and rendered across the cluster in real time, and see
-how the parallel concepts were directly influencing the image on
+how the parallel concepts were directly reflected in the image on
 screen. For the N-Body simulation, we also directly compared a local
 execution with the cluster execution while guiding the students. They
 were able to see the galaxy slow down as particles were added in the
@@ -793,7 +792,7 @@ to support formal academic use.
 The Open Day format also revealed inherent limitations. The short
 duration of each interaction and the informal setting made it
 impossible to conduct a formal assessment of learning outcomes or to
-go deep into the concepts. Nevertheless, the goal was never to fully
+delve deeply into the concepts. Nevertheless, the goal was never to fully
 teach parallel computing in a single session, but to give visitors an
 idea and an intuition for the concepts, and this proved achievable.
 The physical cluster tour, while a highlight of the experience, is
@@ -809,8 +808,8 @@ application and walked them through the concepts.
 
 The most effective pedagogical sequence that emerged from both
 deployments was to first show the application running locally with few
-workers, showing how the computation can get visibly slow and then
-switch to the full cluster configuration. Using the per-worker
+workers, demonstrating how the computation can become visibly slow, and
+then switch to the full cluster configuration. Using the per-worker
 coloring mode, we demonstrated how each additional worker takes on a
 smaller share of the same problem, directly connecting the visual
 partition to faster execution. This progression from slow to fast,
@@ -854,7 +853,7 @@ computing education, even for audiences with no computing background.
 Future work includes conducting formal assessments of learning
 outcomes, extending or creating new tools to tackle additional
 parallel concepts, and exploring their use in further undergraduate
-courses to build a broader pedagogical experience report.
+courses to build a broader body of pedagogical experience.
 
 ** Acknowledgments                                                 :ignore:
 
