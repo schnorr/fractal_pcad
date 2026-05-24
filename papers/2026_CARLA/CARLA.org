@@ -21,6 +21,7 @@
 #+LATEX_HEADER: \usepackage{subcaption}
 #+LATEX_HEADER: \usepackage[normalem]{ulem}
 #+LATEX_HEADER: \usepackage{booktabs}
+#+LATEX_HEADER: \setlength{\fboxsep}{0pt}
 
 
 # You need at least Org 9 and Emacs 24 to make this work.
@@ -407,7 +408,7 @@ nodes process them.
 #+BEGIN_EXPORT latex
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.5\textwidth]{imgs/nbody.pdf}
+  \fbox{\includegraphics[width=0.5\textwidth]{imgs/nbody-white.pdf}}
   \caption{Example visualization from our N-Body simulation}
   \label{fig:nbody-example}
 \end{figure}
@@ -515,21 +516,21 @@ user can also view only the particles of a specific worker.
     \centering
     \begin{subfigure}[b]{0.3\textwidth}
       \centering
-      \includegraphics[width=\textwidth]{imgs/nbody-random.pdf}
+      \fbox{\includegraphics[width=\textwidth]{imgs/nbody-random-white.pdf}}
       \caption{}
       \label{fig:nbody-a}
     \end{subfigure}
     \hfill
     \begin{subfigure}[b]{0.3\textwidth}
       \centering
-      \includegraphics[width=\textwidth]{imgs/nbody-workers.pdf}
+      \fbox{\includegraphics[width=\textwidth]{imgs/nbody-workers-white.pdf}}
       \caption{}
       \label{fig:nbody-b}
     \end{subfigure}
     \hfill
     \begin{subfigure}[b]{0.3\textwidth}
       \centering
-      \includegraphics[width=\textwidth]{imgs/nbody-worker0.pdf}
+      \fbox{\includegraphics[width=\textwidth]{imgs/nbody-worker0-white.pdf}}
       \caption{}
       \label{fig:nbody-b}
     \end{subfigure}
@@ -663,25 +664,25 @@ slice per rank.
     \centering
     \begin{subfigure}[b]{0.3\textwidth}
       \centering
-      \includegraphics[width=\textwidth]{imgs/ncorpos-scal.pdf}
+      \fbox{\includegraphics[width=\textwidth]{imgs/ncorpos-scal-white.pdf}}
       \caption{}
       \label{fig:nbody-a}
     \end{subfigure}
     \hfill
     \begin{subfigure}[b]{0.3\textwidth}
       \centering
-      \includegraphics[width=\textwidth]{imgs/ncorpos-scal-2.pdf}
-      \caption{2 workers}
+      \fbox{\includegraphics[width=\textwidth]{imgs/ncorpos-scal-2-white.pdf}}
+      \caption{}
       \label{fig:nbody-b}
     \end{subfigure}
     \hfill
     \begin{subfigure}[b]{0.3\textwidth}
       \centering
-      \includegraphics[width=\textwidth]{imgs/ncorpos-scal-8.pdf}
-      \caption{8 workers}
+      \fbox{\includegraphics[width=\textwidth]{imgs/ncorpos-scal-8-white.pdf}}
+      \caption{}
       \label{fig:nbody-b}
     \end{subfigure}
-    \caption{Comparison of per-worker distribution between 2 workers (b) and 8 workers (c). (a) shows the total particles without specific coloring. With more workers, each worker holds a smaller slice of particles, explaining the speedup gained from additional workers. (15000 particles)}
+    \caption{(a) shows a total of 15000 particles without specific coloring. (b) shows rank 0 workload for (a) when with 2 workers. (c) also shows a division of (a)'s work, but with 8 workers. The comparison between (b) and (c) evince that with more workers, each worker holds a smaller slice of particles, visually explaining the speedup gained from additional workers}
     \label{fig:nbody-speedup}
   \end{figure}
 #+END_EXPORT
