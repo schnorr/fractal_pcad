@@ -674,7 +674,10 @@ workers increases.
       \caption{}
       \label{fig:nbody-scalability-c}
     \end{subfigure}
-    \caption{(a) shows a total of 15000 particles without specific coloring. (b) shows rank 0 workload for (a) when with 2 workers. (c) also shows a division of (a)'s work, but with 8 workers. The comparison between (b) and (c) evince that with more workers, each worker holds a smaller slice of particles, visually explaining the speedup gained from additional workers}
+    \caption{A simulation with 15000 particles without workload coloring (a). 
+The subset of particles assigned to rank 0 when the simulation runs with 2 workers (b). 
+The corresponding workload partition with 8 workers (c). 
+Comparing (b) and (c) illustrates that increasing the number of workers reduces the number of particles assigned to each worker, visually demonstrating the source of the observed speedup.}
     \label{fig:nbody-speedup}
   \end{figure}
 #+END_EXPORT
