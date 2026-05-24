@@ -153,7 +153,7 @@ the visualization of user-written code
 cite:noauthor_threadmentor_nodate,carr_concurrentmentor_nodate.  Other
 work, from courses developed for students beginning their CS studies
 cite:feldhausen_minimum_2014,ghafoor_integrating_2018,conte_teaching_2020,
-focus on developing PDC thinking with the student's current knowledge
+focuses on developing PDC thinking with the student's current knowledge
 at that point in the curricula. Most of these tools and resources can
 be evaluated using the framework proposed in Brown's work
 cite:brown_framework_2020. However, existing resources largely overlook the challenge of
@@ -396,7 +396,7 @@ $G$ is the gravitational constant, $m_j$ is the mass of body $j$,
 $\mathbf{r}_{ij} = \mathbf{r}_j - \mathbf{r}_i$ is the displacement
 vector from $i$ to $j$, and $\epsilon$ is a softening length that prevents
 force singularities at close range. This sum must be computed for
-everybody, yielding an inherent $O(N^2)$ computational complexity per
+every body, yielding an inherent $O(N^2)$ computational complexity per
 step. Our application instantiates this problem as a 2D galaxy
 simulation in which particles orbit a central black hole.
 
@@ -552,7 +552,7 @@ leaving workers idle; with fine granularity, many small blocks have a
 more evenly distributed workload, and rendering progresses more
 uniformly. Figure @@latex:\ref{fig:mandelbrot-g}@@ shows an example of
 the Mandelbrot application rendering the same area with different
-granularity and illustrating work distribution. By changing the
+granularities, illustrating work distribution. By changing the
 =granularity= value and showing the resulting work partition, one can
 easily see why granularity has a significant impact on load balance
 and overall computation time. There is no equivalent of this parameter
@@ -737,7 +737,7 @@ strategies that emerged from the experience.
 The two applications were deployed in consecutive editions of the
 annual Open Day at UFRGS, each receiving waves of prospective
 students, predominantly high schoolers with no formal computing
-background. The Mandelbrot application appears in the 2025 edition,
+background. The Mandelbrot application was used in the 2025 edition,
 and the N-Body simulation in the 2026 edition. In both cases, the
 setup consisted of a local workstation running the graphical client,
 connected to the PCAD cluster as the server, which provided six
