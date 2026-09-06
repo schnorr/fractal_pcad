@@ -1,0 +1,333 @@
+# -*- coding: utf-8 -*-
+# -*- mode: org -*-
+
+#+SETUPFILE: ~/templates/beamer-setup.org
+#+LANGUAGE: en
+#+TAGS: noexport(n)
+#+EXPORT_EXCLUDE_TAGS: noexport
+
+#+LaTeX_CLASS_OPTIONS: [presentation, aspectratio=169, 11pt]
+#+LATEX_HEADER: \graphicspath{{figures/}{../2026_CARLA/imgs/}}
+
+#+begin_export latex
+\titleframe%
+  {Using Mandelbrot Set and N-Body Simulation as Pedagogic Tools in the Teaching of Parallel Computing Concepts}%
+  {\scriptsize Rayan Raddatz de Matos, Francisco Pegoraro Etcheverria, Kenichi Brumati, Enzo Lisboa Peixoto, Pedro Henrique Boniatti Colle, Otho Jose Sirtoli Marcondes, Lucas Mello Schnorr}%
+  {\{rayan.raddatz, fpetcheverria, kbrumati, elpeixoto, phbcolle, ojsmarcondes, schnorr\}@inf.ufrgs.br}%
+  {CARLA 2026}
+#+end_export
+
+* Motivation
+
+** The gap in PDC teaching
+
+- IEEE/ACM guidelines have listed PDC as required knowledge since 2013.
+#+latex: \vfill\pause
+- In practice, decomposition, granularity, load balance, speedup and
+  scalability are still taught in late-stage electives.
+#+latex: \vfill\pause
+- Students arriving from high school have no intuition for parallelism
+  at all.
+#+latex: \vfill\pause
+- Most existing tools visualize code the student wrote, so they assume
+  a programming background a general audience does not have.
+
+** Our proposal
+
+Two open-source interactive applications for teaching parallel
+computing concepts through direct observation, with no programming
+prerequisite.
+
+#+latex: \vfill\pause
+
+*** Mandelbrot                                                      :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :END:
+
+#+ATTR_LATEX: :width 0.85\textwidth :center
+[[file:mandelbrot1.pdf]]
+
+\centering \small Mandelbrot: embarrassingly parallel
+
+*** N-Body                                                          :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :END:
+
+#+ATTR_LATEX: :width 0.85\textwidth :center
+[[file:nbody-white.pdf]]
+
+\centering \small N-Body: tightly coupled
+
+* Methods and Materials
+
+** Common client/server design
+
+*** Text                                                            :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.55
+    :END:
+
+- *Client:* graphical application on a local machine, handling user
+  input and rendering.
+#+latex: \vfill\pause
+- *Server:* MPI application on a cluster, doing the domain
+  decomposition and the numerical work.
+#+latex: \vfill\pause
+- They communicate over TCP, and results stream back block by block.
+#+latex: \vfill\pause
+- The user sees the interaction dispatch work to a larger system.
+
+*** Image                                                           :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.45
+    :END:
+
+#+ATTR_LATEX: :width \textwidth
+[[file:mandelbrot2.pdf]]
+
+** Mandelbrot: decomposition and granularity
+
+Rank 0 splits the canvas into square blocks whose side is the
+granularity chosen by the user, and the workers request blocks on
+demand.
+
+#+latex: \vfill
+
+*** G10                                                             :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.33
+    :END:
+#+ATTR_LATEX: :width \textwidth
+[[file:mandelbrot-10.pdf]]
+
+\centering \small Granularity 10
+
+*** G100                                                            :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.33
+    :END:
+#+ATTR_LATEX: :width \textwidth
+[[file:mandelbrot-100.pdf]]
+
+\centering \small Granularity 100
+
+*** G250                                                            :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.33
+    :END:
+#+ATTR_LATEX: :width \textwidth
+[[file:mandelbrot-250.pdf]]
+
+\centering \small Granularity 250
+
+** Mandelbrot: load balance
+
+*** Text                                                            :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.45
+    :END:
+
+- The imbalance is inherent to the problem: blocks of equal pixel size
+  carry very unequal cost.
+#+latex: \vfill\pause
+- The demand-driven coordinator handles it dynamically, since whoever
+  finishes first asks for the next block.
+#+latex: \vfill\pause
+- The vertical stripes are a single worker taking the cheap blocks
+  above a costly boundary block.
+
+*** Image                                                           :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.55
+    :END:
+
+#+ATTR_LATEX: :width \textwidth
+[[file:mandelbrot-threads.pdf]]
+
+** N-Body simulation
+
+$$\mathbf{a}_i = \sum_{j \neq i} \frac{G \, m_j \, \mathbf{r}_{ij}}{(\|\mathbf{r}_{ij}\|^2 + \epsilon^2)^{3/2}}$$
+
+\small
+- $O(N^2)$ per step, with the particles split into equal contiguous
+  slices, one per rank.
+- Gravity is long-range, so every iteration ends in a collective
+  exchange of all positions.
+- Load balance is even by construction, and the limiting factor is
+  communication.
+
+#+latex: \vfill
+
+*** A                                                               :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.33
+    :END:
+#+ATTR_LATEX: :width 0.8\textwidth :center
+[[file:nbody-random-white.pdf]]
+
+\centering \footnotesize Random coloring
+
+*** B                                                               :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.33
+    :END:
+#+ATTR_LATEX: :width 0.8\textwidth :center
+[[file:nbody-workers-white.pdf]]
+
+\centering \footnotesize Per-worker coloring
+
+*** C                                                               :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.33
+    :END:
+#+ATTR_LATEX: :width 0.8\textwidth :center
+[[file:nbody-worker3-white.pdf]]
+
+\centering \footnotesize Rank 3 only
+
+** N-Body: speedup and scalability
+
+\small With more workers each slice gets smaller, so there is less to
+compute before the next iteration and the simulation runs visibly
+faster. The position exchange after every step is what limits how far
+this scales.
+
+#+latex: \vfill
+
+*** A                                                               :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.33
+    :END:
+#+ATTR_LATEX: :width 0.85\textwidth :center
+[[file:ncorpos-scal-white.pdf]]
+
+\centering \small 15000 particles
+
+*** B                                                               :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.33
+    :END:
+#+ATTR_LATEX: :width 0.85\textwidth :center
+[[file:ncorpos-scal-2-white.pdf]]
+
+\centering \small Rank 0, 2 workers
+
+*** C                                                               :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.33
+    :END:
+#+ATTR_LATEX: :width 0.85\textwidth :center
+[[file:ncorpos-scal-8-white.pdf]]
+
+\centering \small Rank 0, 8 workers
+
+** Concept mapping
+
+\scriptsize
+#+ATTR_LATEX: :booktabs t :align lll
+| *Concept*             | *Mandelbrot*                       | *N-Body*                         |
+|-----------------------+------------------------------------+----------------------------------|
+| Problem coupling      | Embarrassingly parallel            | Tightly coupled                  |
+| Domain decomposition  | Square blocks, variable size       | Equal contiguous particle slices |
+| Granularity           | Explicit user-controlled parameter | Fixed (one slice per rank)       |
+| Load balance          | Irregular, dynamically managed     | Balanced by construction         |
+| Speedup & scalability | Granularity-dependent              | Communication-bounded            |
+
+#+latex: \vfill
+
+\small We chose the two applications to be complementary. Where one
+illustrates a concept directly, the other offers the contrasting case.
+
+* Results and Discussion
+
+** Pedagogical deployment: UFRGS Open Day
+
+\small Both editions received waves of prospective students, mostly
+high schoolers with no computing background. We used Mandelbrot in
+2025 and N-Body in 2026, with the client on a local workstation and
+the server on 6 PCAD nodes, 144 cores in total.
+
+#+latex: \vfill\pause
+
+\small In the first stage, visitors interacted with the application
+while we walked them through decomposition, granularity, load
+distribution and the effect of adding workers. The per-worker coloring
+was the most effective element here.
+
+#+latex: \vfill\pause
+
+\small In the second stage, we took them to see the machines that had
+run their computation. Connecting the image on screen to the physical
+hardware was the highlight of the visit.
+
+** What worked, and what did not
+
+\small
+- The most effective sequence was to run the application locally with
+  few workers, then switch to the full cluster.
+#+latex: \vfill\pause
+- Mandelbrot also worked in formal settings: an undergraduate
+  Operating Systems course, and a full factorial performance study
+  published separately.
+#+latex: \vfill\pause
+- On the limitations, the sessions are short and informal, which rules
+  out any formal assessment, and the cluster tour is not reproducible
+  everywhere.
+#+latex: \vfill\pause
+- With fewer parameters to explore, N-Body visitors ended up following
+  the guided explanation more closely than Mandelbrot ones.
+
+* Conclusion
+
+** Conclusion and future work
+
+- Two open-source MPI applications that make decomposition,
+  granularity, load balance, speedup and scalability directly
+  observable.
+#+latex: \vfill\pause
+- They serve as an entry point for audiences with no computing
+  background, and still carry enough depth for formal academic use.
+#+latex: \vfill\pause
+- As future work, we intend to assess learning outcomes, cover
+  additional concepts, reach more courses, and convey the balance
+  between network and compute capability.
+
+#+latex: \vfill
+
+\centering \small \url{https://github.com/rddtz/pcad-applications}
+
+** @@x:@@
+   :PROPERTIES:
+   :BEAMER_FRAME_OPTIONS: plain
+   :END:
+
+*** Text                                                            :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.6
+    :END:
+
+**** \Huge *Questions?*
+
+\vspace{25px}
+
+\footnotesize Contact: rayan.raddatz@inf.ufrgs.br
+
+\vspace{8px}
+
+\footnotesize \url{https://github.com/rddtz/pcad-applications}
+
+*** Logos                                                           :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.4
+    :END:
+
+\includegraphics[width=0.11\paperwidth,keepaspectratio]{figures/capes.jpg}
+\includegraphics[width=0.11\paperwidth,keepaspectratio]{figures/fapergs.png}
+
+\vspace{10px}
+
+\includegraphics[width=0.11\paperwidth,keepaspectratio]{figures/cnpq.png}
+\includegraphics[width=0.11\paperwidth,keepaspectratio]{~/logos/UFRGS.png}
+\includegraphics[width=0.11\paperwidth,keepaspectratio]{~/logos/INF.png}
