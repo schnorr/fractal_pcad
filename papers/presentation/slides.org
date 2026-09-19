@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 # -*- mode: org -*-
 
-#+SETUPFILE: ~/templates/beamer-setup.org
+#+SETUPFILE: setup.org
 #+LANGUAGE: en
 #+TAGS: noexport(n)
 #+EXPORT_EXCLUDE_TAGS: noexport
 
 #+LaTeX_CLASS_OPTIONS: [presentation, aspectratio=169, 11pt]
 #+LATEX_HEADER: \graphicspath{{figures/}{../2026_CARLA/imgs/}}
+#+LATEX_HEADER: \renewcommand{\beamerlogoA}{figures/INF.png}
+#+LATEX_HEADER: \renewcommand{\beamerlogoB}{figures/UFRGS.png}
 
 #+begin_export latex
 \titleframe%
@@ -329,5 +331,5 @@ hardware was the highlight of the visit.
 \vspace{10px}
 
 \includegraphics[width=0.11\paperwidth,keepaspectratio]{figures/cnpq.png}
-\includegraphics[width=0.11\paperwidth,keepaspectratio]{~/logos/UFRGS.png}
-\includegraphics[width=0.11\paperwidth,keepaspectratio]{~/logos/INF.png}
+\includegraphics[width=0.11\paperwidth,keepaspectratio]{figures/UFRGS.png}
+\includegraphics[width=0.11\paperwidth,keepaspectratio]{figures/INF.png}

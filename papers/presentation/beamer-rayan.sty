@@ -1,0 +1,92 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{beamer-rayan}[2025/10/14 Rayan's Beamer Theme Helpers]
+
+% ── Dependencies ──────────────────────────────────────────────────────────────
+\usepackage{booktabs}
+\usepackage{tgheros}
+\usepackage[absolute,overlay]{textpos}
+\usepackage{graphicx}
+\usepackage{tikz}
+
+% ── Color palette ─────────────────────────────────────────────────────────────
+\definecolor{mywhite}{HTML}{FFFFFF}
+\definecolor{titlebg}{HTML}{FFFFFF}       % white title area background
+\definecolor{darktext}{HTML}{1D1D1D}      % near-black for titles and headings
+\definecolor{bodytext}{HTML}{333333}      % body text
+\definecolor{accentred}{HTML}{CC1133}     % primary accent (red, more refined)
+\definecolor{subtlegray}{HTML}{DEDEDE}    % thin separator lines
+% kept for backward compat with \color{...} in .org slides
+\definecolor{slidetitlecolor}{HTML}{CC1133}
+\definecolor{mblack}{HTML}{1D1D1D}
+\definecolor{mybold}{HTML}{1D1D1D}
+\definecolor{titlecolor}{HTML}{1D1D1D}
+\definecolor{namecolor}{HTML}{555555}
+\definecolor{R}{HTML}{CC1133}
+
+% ── Beamer overrides (deferred so they run after \usetheme has loaded) ────────
+\AtBeginDocument{%
+  % ── Backgrounds ─────────────────────────────────────────────────────────────
+  \setbeamercolor{background canvas}{bg=mywhite}%
+  \setbeamercolor{normal text}{fg=bodytext, bg=mywhite}%
+  %
+  % ── Frame title: white area, dark text — accent comes from the template ──────
+  \setbeamercolor{frametitle}{fg=darktext, bg=titlebg}%
+  \setbeamerfont{frametitle}{size=\normalsize, series=\bfseries}%
+  %
+  % ── Accent / interactive elements ────────────────────────────────────────────
+  \setbeamercolor{alerted text}{fg=accentred}%
+  \setbeamerfont{alerted text}{series=\bfseries}%
+  \setbeamercolor{title separator}{fg=accentred}%
+  \setbeamercolor{progress bar}{fg=accentred, bg=subtlegray}%
+  \setbeamercolor{itemize item}{fg=accentred}%
+  \setbeamercolor{itemize subitem}{fg=accentred}%
+  \setbeamercolor{enumerate item}{fg=accentred}%
+  %
+  % ── Frame title template: clean white, dark text, no decorations ────────
+  \setbeamertemplate{frametitle}{%
+    \nointerlineskip%
+    \begin{beamercolorbox}[wd=\paperwidth, sep=0pt, leftskip=16pt, rightskip=16pt]{frametitle}%
+      \vskip10pt%
+      \usebeamerfont{frametitle}\insertframetitle%
+      \vskip8pt%
+    \end{beamercolorbox}%
+  }%
+  %
+  % ── Section page: vertically centered title, no decorations ──────────────
+  \setbeamertemplate{section page}{%
+    \vfill%
+    \begin{center}%
+      {\large\bfseries\color{darktext}\insertsectionhead}%
+    \end{center}%
+    \vfill%
+  }%
+}
+
+% ── Logo paths (override in your presentation if needed) ─────────────────────
+\newcommand{\beamerlogoA}{~/logos/INF.png}
+\newcommand{\beamerlogoB}{~/logos/UFRGS.png}
+
+% ── \titleframe{title}{authors}{emails}{event} ───────────────────────────────
+\newcommand{\titleframe}[4]{%
+  \begin{frame}[plain]
+    \setlength{\TPHorizModule}{1cm}
+    \setlength{\TPVertModule}{1cm}
+    \begin{textblock*}{2.5cm}(13.2cm, 7cm)
+      \includegraphics[width=2.5cm]{\beamerlogoA}
+    \end{textblock*}
+    \begin{textblock*}{2.5cm}(.5cm, 6.8cm)
+      \includegraphics[width=2cm]{\beamerlogoB}
+    \end{textblock*}
+    \vfill
+    \begin{center}
+      \begin{minipage}{0.78\paperwidth}
+        \centering
+        {\normalsize\color{titlecolor}\textbf{#1}}\\[10pt]
+        {\small\color{namecolor}\textbf{#2}}\\[4pt]
+        {\tiny\color{namecolor}#3}\\[0.8cm]
+        {\footnotesize\color{namecolor}#4}
+      \end{minipage}
+    \end{center}
+    \vfill
+  \end{frame}
+}

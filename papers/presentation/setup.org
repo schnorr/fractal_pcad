@@ -1,0 +1,11 @@
+#+OPTIONS:   H:2 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+INFOJS_OPT: view:nil toc:nil ltoc:t mouse:underline buttons:0
+
+#+STARTUP: beamer
+#+LaTeX_CLASS: beamer
+#+LaTeX_CLASS_OPTIONS: [presentation, aspectratio=169, 14pt]
+
+#+BEAMER_THEME: metropolis
+#+LATEX_HEADER: \usepackage{beamer-rayan}
